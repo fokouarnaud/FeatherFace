@@ -1,7 +1,4 @@
 
-
-
-
 ## 설치
 #### clone
 1. git clone https://github.com/dohun-mat/FeatherFace
@@ -45,7 +42,6 @@ python test_widerface.py --trained_model ./weights/mobilenet0.25_Final.pth --net
 2. txt 결과를 평가합니다. 데모는 [Here](https://github.com/wondervictor/WiderFace-Evaluation) 에서 제공됩니다. 
 ```Shell
 cd ./widerface_evaluate
-python setup.py build_ext --inplace
 python evaluation.py -p ./widerface_txt -g ./eval_tools/ground_truth
 ```
 3. [Here](http://mmlab.ie.cuhk.edu.hk/projects/WIDERFace/WiderFace_Results.html) 에서 wideface 공식 Matlab 평가 데모를 사용할 수도 있습니다.  
