@@ -7,7 +7,7 @@
 정리된 데이터 세트를 제공합니다.
 Link: from [google cloud](https://drive.google.com/open?id=11UGV3nbVv1x9IC--_tK3Uxf7hA6rlbsS) or [baidu cloud](https://pan.baidu.com/s/1jIp9t30oYivrAvrgUgIoLQ) Password: ruck
 
-3. 데이터셋 디렉토리를 다음과 같이 구성합니다.
+데이터셋 디렉토리를 다음과 같이 구성합니다.
 ```Shell
   ./data/widerface/
     train/
