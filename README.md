@@ -20,7 +20,7 @@ Link: from [google cloud](https://drive.google.com/open?id=11UGV3nbVv1x9IC--_tK3
 ps: wider_val.txt only include val file names but not label information.
 
 ## train
-[google cloud](https://drive.google.com/open?id=1oZRSG0ZegbVkVwUd8wUIQx8W7yfZ_ki1)이 링크에서 MobilenetV1X0.25_pretrain.tar를 다운로드 받습니다.
+download the pre-trained weights file MobilenetV1X0.25_pretrain.tar for the backbone from this link. [google cloud](https://drive.google.com/open?id=1oZRSG0ZegbVkVwUd8wUIQx8W7yfZ_ki1) 
 ```Shell
   ./weights/
       mobilenetV1X0.25_pretrain.tar
