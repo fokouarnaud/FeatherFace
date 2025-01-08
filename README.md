@@ -1,6 +1,5 @@
 
 ## install
-#### clone
 1. git clone https://github.com/dohun-mat/FeatherFace
 
 ## data
