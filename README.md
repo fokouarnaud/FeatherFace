@@ -1,6 +1,7 @@
 # FeatherFace
 
-official implement of Paper: FeatherFace: Robust and Lightweight Face Detection via Optimal Feature Integration
+### official implement of Paper
+FeatherFace: Robust and Lightweight Face Detection via Optimal Feature Integration
 
 Kim, D.; Jung, J.; Kim, J. FeatherFace: Robust and Lightweight Face Detection via Optimal Feature Integration. Electronics 2025
 
