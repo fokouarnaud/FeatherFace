@@ -6,7 +6,7 @@ FeatherFace: Robust and Lightweight Face Detection via Optimal Feature Integrati
 Kim, D.; Jung, J.; Kim, J. FeatherFace: Robust and Lightweight Face Detection via Optimal Feature Integration. Electronics 2025
 
 ### Architecture
-<img src="https://github.com/user-attachments/assets/62817c49-afeb-4254-91a1-fe78261f50f2" width="500">
+<img src="https://github.com/user-attachments/assets/62817c49-afeb-4254-91a1-fe78261f50f2" width="900">
 
 
 ## install
