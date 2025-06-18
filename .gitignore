@@ -169,3 +169,36 @@ widerface/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+
+# FeatherFace specific
+data/widerface/
+weights/*.pth
+weights/*.tar
+weights/*.onnx
+results/
+*.jpg
+*.png
+!docs/*.png
+
+# Notebooks
+notebooks/.ipynb_checkpoints/
+notebooks/*.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Model checkpoints
+checkpoints/
+runs/
