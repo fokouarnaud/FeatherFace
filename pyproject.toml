@@ -67,7 +67,7 @@ quantization = [
 ]
 
 [tool.setuptools]
-packages = ["models", "layers", "utils", "training"]
+packages = ["models", "layers", "utils"]
 # Exclude notebooks from packaging
 exclude = ["notebooks*", "analysis*", "results*", "weights*"]
 
