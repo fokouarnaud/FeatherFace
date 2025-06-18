@@ -20,7 +20,6 @@ dependencies = [
     "torchvision>=0.11.0",
     
     # Computer Vision
-    "opencv-python>=4.5.0",
     "opencv-contrib-python>=4.5.0",
     "albumentations>=1.0.0",
     
@@ -63,17 +62,15 @@ dev = [
 ]
 
 quantization = [
-    "pytorch-quantization>=2.1.0",
+    "pytorch_quantization>=2.1.0",
 ]
 
 [tool.setuptools]
-packages = ["models", "layers", "utils"]
-# Exclude notebooks from packaging
-exclude = ["notebooks*", "analysis*", "results*", "weights*"]
+packages = {find = {exclude = ["notebooks*", "analysis*", "results*", "weights*", "widerface_evaluate*"]}}
 
 [tool.black]
 line-length = 100
-target-version = ['py37', 'py38', 'py39']
+target-version = ['py37', 'py38', 'py39', 'py310', 'py311', 'py312']
 
 [tool.isort]
 profile = "black"
