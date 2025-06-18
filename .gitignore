@@ -163,7 +163,7 @@ data/widerface
 results/
 widerface_evaluate/widerface_txt
 wandb/
-weights/
+#weights/
 widerface/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
@@ -171,11 +171,11 @@ widerface/
 
 
 # FeatherFace specific
-data/widerface/
-weights/*.pth
-weights/*.tar
-weights/*.onnx
-results/
+#data/widerface/
+#weights/*.pth
+#weights/*.tar
+#weights/*.onnx
+#results/
 *.jpg
 *.png
 !docs/*.png
