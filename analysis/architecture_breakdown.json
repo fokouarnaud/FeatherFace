@@ -1,0 +1,53 @@
+{
+  "total_params": 592371,
+  "components": {
+    "Backbone": 213072,
+    "BiFPN": 112606,
+    "SSH modules": 246885,
+    "CBAM modules": 54272,
+    "Detection Heads": 6240
+  },
+  "detailed_breakdown": {
+    "body": 213072,
+    "bacbkbone_0_cbam": 680,
+    "relu_0": 0,
+    "bacbkbone_1_cbam": 2284,
+    "relu_1": 0,
+    "bacbkbone_2_cbam": 8564,
+    "relu_2": 0,
+    "bifpn": 112606,
+    "bif_cbam_0": 680,
+    "bif_relu_0": 0,
+    "bif_cbam_1": 680,
+    "bif_relu_1": 0,
+    "bif_cbam_2": 680,
+    "bif_relu_2": 0,
+    "ssh1": 77655,
+    "ssh2": 77655,
+    "ssh3": 77655,
+    "ssh1_cs": 4640,
+    "ssh2_cs": 4640,
+    "ssh3_cs": 4640,
+    "ClassHead": 780,
+    "BboxHead": 1560,
+    "LandmarkHead": 3900
+  },
+  "optimization_targets": {
+    "bifpn": {
+      "current": 112606,
+      "target_reduction": 0.45
+    },
+    "heads": {
+      "current": 6240,
+      "target_reduction": 0.6
+    },
+    "cbam": {
+      "current": 54272,
+      "target_reduction": 0.5
+    },
+    "ssh": {
+      "current": 246885,
+      "target_reduction": 0.2
+    }
+  }
+}
