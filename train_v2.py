@@ -34,7 +34,7 @@ parser.add_argument('--resume_epoch', default=0, type=int, help='resume iter for
 parser.add_argument('--weight_decay', default=5e-4, type=float, help='Weight decay for SGD')
 parser.add_argument('--save_folder', default='./weights/', help='Location to save checkpoint models')
 # Knowledge Distillation arguments
-parser.add_argument('--teacher_model', default='./weights/FeatherNetB_se.pth', help='Path to teacher model')
+parser.add_argument('--teacher_model', default='./weights/mobilenet0.25_Final.pth', help='Path to teacher model')
 parser.add_argument('--temperature', default=4.0, type=float, help='Temperature for distillation')
 parser.add_argument('--alpha', default=0.7, type=float, help='Weight for distillation loss')
 parser.add_argument('--feature_weight', default=0.1, type=float, help='Weight for feature matching loss')
