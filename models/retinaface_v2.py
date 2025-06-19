@@ -11,17 +11,30 @@ import torchvision.models._utils as _utils
 from collections import OrderedDict
 
 # Import original backbone
-from models.net import MobileNetV1
+try:
+    from models.net import MobileNetV1
+except ImportError:
+    from net import MobileNetV1
 
 # Import V2 optimized modules
-from models.modules_v2 import (
-    CBAM_Plus, 
-    SharedMultiHead, 
-    BiFPN_Light, 
-    SSH_Grouped,
-    SharedCBAMManager,
-    ChannelShuffle_Light
-)
+try:
+    from models.modules_v2 import (
+        CBAM_Plus, 
+        SharedMultiHead, 
+        BiFPN_Light, 
+        SSH_Grouped,
+        SharedCBAMManager,
+        ChannelShuffle_Light
+    )
+except ImportError:
+    from modules_v2 import (
+        CBAM_Plus, 
+        SharedMultiHead, 
+        BiFPN_Light, 
+        SSH_Grouped,
+        SharedCBAMManager,
+        ChannelShuffle_Light
+    )
 
 class RetinaFaceV2(nn.Module):
     """
