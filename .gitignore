@@ -176,8 +176,8 @@ widerface/
 #weights/*.tar
 #weights/*.onnx
 #results/
-*.jpg
-*.png
+#*.jpg
+#*.png
 !docs/*.png
 
 # Notebooks
