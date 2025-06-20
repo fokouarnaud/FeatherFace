@@ -24,7 +24,7 @@ cfg_mnet = {
 
 # Configuration for FeatherFace V2
 cfg_mnet_v2 = {
-    'name': 'mobilenet0.25',
+    'name': 'FeatherFaceV2',
     'min_sizes': [[16, 32], [64, 128], [256, 512]],
     'steps': [8, 16, 32],
     'variance': [0.1, 0.2],

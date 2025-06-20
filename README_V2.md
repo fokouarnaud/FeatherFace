@@ -52,11 +52,8 @@ cd FeatherFace
 python start_v2_training.py
 
 # Option 2: Direct training
-python train_v2.py --epochs 400 --teacher_model weights/FeatherNetB_se.pth
+python train_v2.py --epochs 400 --teacher_model weights/mobilenet0.25_Final
 
-# Option 3: Use provided scripts
-./train_v2.sh  # Linux/Mac
-train_v2.bat   # Windows
 ```
 
 ### 4. Evaluate Model
@@ -165,6 +162,6 @@ Same as original FeatherFace project.
 
 ---
 
-**Developed by**: FeatherFace V2 Team  
+**Developed by**: Fokou Arnaud Cedric  
 **Date**: June 2025  
 **Status**: Production Ready 🚀

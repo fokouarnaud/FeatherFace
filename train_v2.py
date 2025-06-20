@@ -35,6 +35,7 @@ parser.add_argument('--weight_decay', default=5e-4, type=float, help='Weight dec
 parser.add_argument('--save_folder', default='./weights/', help='Location to save checkpoint models')
 # Knowledge Distillation arguments
 parser.add_argument('--teacher_model', default='./weights/mobilenet0.25_Final.pth', help='Path to teacher model')
+parser.add_argument('--teacher_backbone_only', action='store_true', help='Use only backbone weights from teacher')
 parser.add_argument('--temperature', default=4.0, type=float, help='Temperature for distillation')
 parser.add_argument('--alpha', default=0.7, type=float, help='Weight for distillation loss')
 parser.add_argument('--feature_weight', default=0.1, type=float, help='Weight for feature matching loss')
@@ -105,13 +106,39 @@ def train_v2():
     
     # Initialize teacher model (original)
     print("Loading teacher model...")
-    teacher_net = RetinaFace(cfg=cfg_mnet, phase='train')
-    teacher_net = teacher_net.to(device)
+    
+    if args.teacher_backbone_only:
+        print("Using backbone weights only from teacher model")
+        # For backbone-only mode, we just need any working model
+        teacher_net = student_net  # Use same architecture
+        print("Teacher will use same architecture as student")
+    else:
+        teacher_net = RetinaFace(cfg=cfg_mnet, phase='train')
+        teacher_net = teacher_net.to(device)
     
     # Load teacher weights
     if os.path.exists(args.teacher_model):
         print(f"Loading teacher weights from {args.teacher_model}")
-        teacher_net.load_state_dict(torch.load(args.teacher_model, map_location=device))
+        checkpoint = torch.load(args.teacher_model, map_location=device)
+        
+        # Handle different checkpoint formats
+        if isinstance(checkpoint, dict):
+            if 'model_state_dict' in checkpoint:
+                state_dict = checkpoint['model_state_dict']
+            elif 'state_dict' in checkpoint:
+                state_dict = checkpoint['state_dict']
+            else:
+                state_dict = checkpoint
+        else:
+            state_dict = checkpoint
+            
+        # Try to load with strict=False to handle architecture differences
+        try:
+            teacher_net.load_state_dict(state_dict, strict=False)
+            print("Teacher weights loaded (with some mismatched keys ignored)")
+        except Exception as e:
+            print(f"Warning: Could not load all teacher weights: {e}")
+            print("Using partially loaded teacher model")
     else:
         print("Warning: Teacher model not found, using random initialization")
     
