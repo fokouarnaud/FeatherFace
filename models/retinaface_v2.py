@@ -58,18 +58,29 @@ class RetinaFaceV2(nn.Module):
         self.cfg = cfg
         self.phase = phase
         
-        # Initialize backbone
+        # Initialize backbone with error handling
         backbone = None
         if cfg['name'] == 'mobilenet0.25':
             backbone = MobileNetV1()
             if cfg['pretrain']:
-                checkpoint = torch.load("./weights/mobilenetV1X0.25_pretrain.tar", 
-                                      map_location=torch.device('cpu'))
-                new_state_dict = OrderedDict()
-                for k, v in checkpoint['state_dict'].items():
-                    name = k[7:]  # remove module.
-                    new_state_dict[name] = v
-                backbone.load_state_dict(new_state_dict)        
+                try:
+                    checkpoint = torch.load("./weights/mobilenetV1X0.25_pretrain.tar", 
+                                          map_location=torch.device('cpu'))
+                    new_state_dict = OrderedDict()
+                    for k, v in checkpoint['state_dict'].items():
+                        name = k[7:]  # remove module.
+                        new_state_dict[name] = v
+                    backbone.load_state_dict(new_state_dict)
+                    print("✓ Loaded pretrained backbone weights")
+                except FileNotFoundError:
+                    print("⚠️ Pretrained weights not found, using random initialization")
+        else:
+            raise ValueError(f"Unsupported backbone: {cfg['name']}. Expected 'mobilenet0.25'")
+        
+        # Verify backbone was initialized
+        if backbone is None:
+            raise RuntimeError("Backbone initialization failed - backbone is None")
+            
         # Setup backbone feature extractor
         self.body = _utils.IntermediateLayerGetter(backbone, cfg['return_layers'])
         
@@ -236,29 +247,8 @@ def get_retinaface_v2(cfg, phase='train'):
     return model
 
 
-# Configuration for RetinaFaceV2
-cfg_mnet_v2 = {
-    'name': 'mobilenet0.25',
-    'min_sizes': [[16, 32], [64, 128], [256, 512]],
-    'steps': [8, 16, 32],
-    'variance': [0.1, 0.2],
-    'clip': False,
-    'loc_weight': 2.0,
-    'gpu_train': True,
-    'batch_size': 32,
-    'ngpu': 1,
-    'epoch': 400,  # More epochs for knowledge distillation
-    'decay1': 250,
-    'decay2': 350,
-    'image_size': 640,
-    'pretrain': True,
-    'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
-    'in_channel': 32,
-    'out_channel': 64,  # Original config
-    'out_channel_v2': 32,  # V2 uses 32 channels
-    'lr': 1e-3,
-    'optim': 'adamw'
-}
+# NOTE: cfg_mnet_v2 is now centralized in data/config.py
+# Import it using: from data.config import cfg_mnet_v2
 
 if __name__ == "__main__":
     """Test RetinaFaceV2 architecture"""
