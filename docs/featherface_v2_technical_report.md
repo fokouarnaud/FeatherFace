@@ -35,6 +35,22 @@ criterion = MultiBoxLoss(num_classes, 0.35, True, 0, True, 7, 0.35, False)
 
 **Validation**: La classe MultiBoxLoss gère automatiquement le placement GPU via `cfg_mnet['gpu_train']`.
 
+#### **Fix #6: Output Unpacking Error (train_v2.py:233-238)**
+**Problème**: `AttributeError: 'list' object has no attribute 'size'` dans MultiBoxLoss.forward()
+
+**Cause**: Les outputs des modèles V2 étaient mal décomposés. V2 retourne `(bbox_regressions, classifications, landmarks)` mais le code assumait `(classifications, bbox_regressions, landmarks)`.
+
+**Solution**:
+```python
+# AVANT (ordre incorrect)
+student_cls, student_bbox, student_ldm = student_outputs
+
+# APRÈS (ordre correct V2)
+student_bbox, student_cls, student_ldm = student_outputs
+```
+
+**Validation**: MultiBoxLoss attend `(loc_data, conf_data, landm_data)` correspondant à `(bbox, classifications, landmarks)`.
+
 ## 1. Fondements Théoriques
 
 ### 1.1 Knowledge Distillation (Hinton et al., 2015)
@@ -451,13 +467,14 @@ FeatherFace V2 démontre qu'une **réduction drastique de 56.7% des paramètres*
 
 ## 11. Status Final du Projet
 
-### ✅ Toutes les Corrections Appliquées (V2.4)
+### ✅ Toutes les Corrections Appliquées (V2.5)
 
 1. **Fix #1**: Configuration cfg_mnet_v2 centralisée ✅
 2. **Fix #2**: Initialisation backbone RetinaFaceV2 ✅  
 3. **Fix #3**: Ordre des outputs aligné V1/V2 ✅
 4. **Fix #4**: Détection compatibilité teacher model ✅
 5. **Fix #5**: Paramètres MultiBoxLoss corrigés ✅
+6. **Fix #6**: Décomposition outputs V2 corrigée ✅
 
 ### 🚀 Prêt pour Knowledge Distillation
 

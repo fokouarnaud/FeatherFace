@@ -230,13 +230,13 @@ def train_v2():
             # Compute losses
             # For detection task, we need to handle the outputs properly
             if isinstance(student_outputs, tuple):
-                # Unpack classification, bbox, landmarks
-                student_cls, student_bbox, student_ldm = student_outputs
-                teacher_cls, teacher_bbox, teacher_ldm = teacher_outputs
+                # Unpack in correct order: (bbox_regressions, classifications, landmarks)
+                student_bbox, student_cls, student_ldm = student_outputs
+                teacher_bbox, teacher_cls, teacher_ldm = teacher_outputs
                 
-                # Combine for MultiBoxLoss (expects predictions and priors)
-                student_pred = (student_cls, student_bbox, student_ldm)
-                teacher_pred = (teacher_cls, teacher_bbox, teacher_ldm)
+                # MultiBoxLoss expects (loc_data, conf_data, landm_data)
+                student_pred = (student_bbox, student_cls, student_ldm)
+                teacher_pred = (teacher_bbox, teacher_cls, teacher_ldm)
                 
                 # Calculate task loss
                 loss_cls, loss_box, loss_ldm = criterion(student_pred, priors, targets)
