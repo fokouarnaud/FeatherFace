@@ -328,15 +328,3 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     evaluation(args.pred, args.gt)
-
-
-
-
-
-
-
-
-
-
-
-
