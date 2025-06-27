@@ -17,6 +17,24 @@ FeatherFace V2 représente une optimisation architecturale majeure du modèle or
 - **Compatibilité**: ✅ Forward pass fonctionnel
 - **Knowledge Distillation**: ✅ Outputs alignés avec V1
 
+### Corrections Appliquées V2.4
+
+#### **Fix #5: MultiBoxLoss Parameter Error (train_v2.py:154)**
+**Problème**: `TypeError: MultiBoxLoss.__init__() takes 9 positional arguments but 10 were given`
+
+**Cause**: La classe MultiBoxLoss attend 8 paramètres mais train_v2.py passait 9 paramètres (incluant device).
+
+**Solution**:
+```python
+# AVANT (9 paramètres)
+criterion = MultiBoxLoss(num_classes, 0.35, True, 0, True, 7, 0.35, False, device)
+
+# APRÈS (8 paramètres) 
+criterion = MultiBoxLoss(num_classes, 0.35, True, 0, True, 7, 0.35, False)
+```
+
+**Validation**: La classe MultiBoxLoss gère automatiquement le placement GPU via `cfg_mnet['gpu_train']`.
+
 ## 1. Fondements Théoriques
 
 ### 1.1 Knowledge Distillation (Hinton et al., 2015)
@@ -428,6 +446,35 @@ FeatherFace V2 démontre qu'une **réduction drastique de 56.7% des paramètres*
 4. **Engineering rigoureux** (shared weights, grouped convolutions)
 
 **Impact**: FeatherFace V2 démocratise la détection de visages haute performance sur dispositifs contraints, ouvrant de nouvelles applications en edge computing, IoT et systèmes embarqués.
+
+---
+
+## 11. Status Final du Projet
+
+### ✅ Toutes les Corrections Appliquées (V2.4)
+
+1. **Fix #1**: Configuration cfg_mnet_v2 centralisée ✅
+2. **Fix #2**: Initialisation backbone RetinaFaceV2 ✅  
+3. **Fix #3**: Ordre des outputs aligné V1/V2 ✅
+4. **Fix #4**: Détection compatibilité teacher model ✅
+5. **Fix #5**: Paramètres MultiBoxLoss corrigés ✅
+
+### 🚀 Prêt pour Knowledge Distillation
+
+**Commande de training V2**:
+```bash
+python train_v2.py \
+  --training_dataset ./data/widerface/train/label.txt \
+  --teacher_model ./weights/mobilenet0.25_Final.pth \
+  --save_folder ./weights/v2/ \
+  --batch_size 32 --lr 0.001 --epochs 5 \
+  --warmup_epochs 5 --temperature 4.0 --alpha 0.7 \
+  --feature_weight 0.1 --mixup_alpha 0.2 \
+  --cutmix_prob 0.5 --dropblock_prob 0.1 \
+  --dropblock_size 3 --num_workers 4 --gpu 0
+```
+
+**Status**: ✅ **READY TO TRAIN** - Tous les bugs corrigés et validés.
 
 **Métriques clés**:
 - ✅ **256K paramètres** (objectif atteint)

@@ -151,7 +151,7 @@ def train_v2():
     teacher_extractor = FeatureExtractor(teacher_net, feature_layers)
     
     # Initialize losses
-    criterion = MultiBoxLoss(num_classes, 0.35, True, 0, True, 7, 0.35, False, device)
+    criterion = MultiBoxLoss(num_classes, 0.35, True, 0, True, 7, 0.35, False)
     distill_criterion = DistillationLoss(
         temperature=args.temperature,
         alpha=args.alpha,
