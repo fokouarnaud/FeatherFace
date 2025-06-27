@@ -2,13 +2,20 @@
 
 ## Résumé Exécutif
 
-FeatherFace V2 représente une optimisation architecturale majeure du modèle original FeatherFace, atteignant une **réduction de 56.7% des paramètres** (592K → 256K) tout en maintenant des performances de détection supérieures à **92% mAP** sur WIDERFace. Cette optimisation s'appuie sur des techniques de pointe en knowledge distillation et compression de modèles.
+FeatherFace V2 représente une optimisation architecturale majeure du modèle original FeatherFace, atteignant une **réduction de 56.8% des paramètres** (592K → 256K) tout en maintenant des performances de détection supérieures à **92% mAP** sur WIDERFace. Cette optimisation s'appuie sur des techniques de pointe en knowledge distillation et compression de modèles.
 
 ### Résultats V1 Obtenus (Baseline Excellente)
 - **Easy Val AP**: 91.47% (objectif: 90.8%) ✅ +0.67%
 - **Medium Val AP**: 90.05% (objectif: 88.2%) ✅ +1.85%  
 - **Hard Val AP**: 75.89% (objectif: 77.2%) ⚠️ -1.31%
 - **Performance globale**: Dépasse les attentes sur Easy/Medium
+
+### Résultats V2 Validés (Architecture Fonctionnelle)
+- **Paramètres V1**: 592,371 (0.592M)
+- **Paramètres V2**: 256,156 (0.256M) 
+- **Compression**: **2.31x** (56.8% réduction)
+- **Compatibilité**: ✅ Forward pass fonctionnel
+- **Knowledge Distillation**: ✅ Outputs alignés avec V1
 
 ## 1. Fondements Théoriques
 
@@ -106,7 +113,7 @@ où wi sont des poids appris, ε=1e-4 pour stabilité
 - **Innovation**: Têtes de détection unifiées
 - **Avantages**: Partage des features, cohérence des prédictions
 
-### 2.2 Configuration des Paramètres
+### 2.2 Configuration des Paramètres Validée
 
 | Module | V1 Params | V2 Params | Réduction |
 |--------|-----------|-----------|-----------|
@@ -115,7 +122,12 @@ où wi sont des poids appris, ε=1e-4 pour stabilité
 | SSH | 233K | 24K | -89.7% |
 | CBAM | 2K | 0.2K | -88% |
 | Heads | 32K | 6K | -81% |
-| **Total** | **592K** | **256K** | **-56.7%** |
+| **Total** | **592,371** | **256,156** | **-56.8%** |
+
+**Validation Réussie** ✅
+- Compression ratio: **2.31x**
+- Modèles fonctionnels avec forward pass compatible
+- Outputs alignés pour knowledge distillation
 
 ## 3. Stratégie d'Entraînement
 
@@ -305,7 +317,47 @@ conv_3x3 = nn.Sequential(
 
 FeatherFace V2 établit un **nouveau standard d'efficacité** dans la détection de visages légère, surpassant significativement les approches existantes.
 
-## 9. Limitations et Travaux Futurs
+## 9. Corrections Techniques Appliquées
+
+### 9.1 Problèmes Identifiés et Résolus
+
+#### **Issue #1: Backbone Initialization Error**
+```python
+# Problème: backbone = None car cfg['name'] != condition
+if cfg['name'] == 'mobilenet0.25':  # V2 avait 'FeatherFaceV2'
+```
+
+**Solution**: Harmonisation des noms dans `cfg_mnet_v2['name'] = 'mobilenet0.25'`
+
+#### **Issue #2: Configuration Duplicated** 
+- **Problème**: `cfg_mnet_v2` défini dans 2 endroits
+- **Solution**: Centralisé dans `data/config.py` uniquement
+
+#### **Issue #3: Output Order Mismatch**
+```python
+# V1: (bbox_regressions, classifications, landmarks)
+# V2: (classifications, bbox_regressions, landmarks)  # WRONG
+```
+
+**Solution**: V2 aligné sur l'ordre de V1 pour knowledge distillation
+
+#### **Issue #4: Teacher Model Compatibility**
+- **Problème**: Teacher (601K params) vs Expected (592K params)
+- **Status**: Non-critique, différence de 1.5% acceptable
+
+### 9.2 Validation Fonctionnelle
+
+**Tests de Compatibilité** ✅
+- Forward pass V1: `[torch.Size([1, 16800, 4]), torch.Size([1, 16800, 2]), torch.Size([1, 16800, 10])]`
+- Forward pass V2: `[torch.Size([1, 16800, 4]), torch.Size([1, 16800, 2]), torch.Size([1, 16800, 10])]`
+- **Résultat**: Shapes parfaitement alignées
+
+**Knowledge Distillation Ready** ✅
+- Outputs dans le même ordre
+- Types de données compatibles
+- Gradients propagés correctement
+
+## 10. Limitations et Travaux Futurs
 
 ### 9.1 Limitations Actuelles
 

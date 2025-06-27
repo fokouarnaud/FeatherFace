@@ -213,8 +213,9 @@ class RetinaFaceV2(nn.Module):
             landmarks.append(ldm)
         
         # Return outputs in the same format as original RetinaFace
+        # FIXED: Match V1 output order (bbox, classification, landmarks)
         if self.phase == 'train':
-            return (classifications, bbox_regressions, landmarks)
+            return (bbox_regressions, classifications, landmarks)
         else:
             # For inference, concatenate all scales
             classifications = torch.cat(classifications, dim=1)
@@ -225,7 +226,7 @@ class RetinaFaceV2(nn.Module):
             if self.cfg['name'] == 'mobilenet0.25':
                 classifications = F.softmax(classifications, dim=-1)
             
-            return (classifications, bbox_regressions, landmarks)
+            return (bbox_regressions, classifications, landmarks)
 
 def count_parameters(model):
     """Count the number of trainable parameters in a model"""
