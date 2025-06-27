@@ -51,6 +51,29 @@ student_bbox, student_cls, student_ldm = student_outputs
 
 **Validation**: MultiBoxLoss attend `(loc_data, conf_data, landm_data)` correspondant à `(bbox, classifications, landmarks)`.
 
+#### **Fix #7: List vs Tensor Output Issue (retinaface_v2.py:217-229)**
+**Problème**: `AttributeError: 'list' object has no attribute 'size'` persiste car les outputs V2 restent des listes en mode train.
+
+**Cause**: En mode training, V2 retournait des listes `[tensor1, tensor2, tensor3]` au lieu de tenseurs concaténés `torch.cat([tensor1, tensor2, tensor3], dim=1)`.
+
+**Solution**: Forcer la concaténation des outputs dans tous les modes:
+```python
+# AVANT (listes en mode train)
+if self.phase == 'train':
+    return (bbox_regressions, classifications, landmarks)  # Listes!
+
+# APRÈS (tenseurs concaténés toujours)
+# Always concatenate outputs for consistency with MultiBoxLoss expectations
+classifications = torch.cat(classifications, dim=1)
+bbox_regressions = torch.cat(bbox_regressions, dim=1) 
+landmarks = torch.cat(landmarks, dim=1)
+
+if self.phase == 'train':
+    return (bbox_regressions, classifications, landmarks)  # Tenseurs!
+```
+
+**Validation**: MultiBoxLoss peut maintenant accéder à `loc_data.size(0)` car tous les outputs sont des tenseurs PyTorch.
+
 ## 1. Fondements Théoriques
 
 ### 1.1 Knowledge Distillation (Hinton et al., 2015)
@@ -467,7 +490,7 @@ FeatherFace V2 démontre qu'une **réduction drastique de 56.7% des paramètres*
 
 ## 11. Status Final du Projet
 
-### ✅ Toutes les Corrections Appliquées (V2.5)
+### ✅ Toutes les Corrections Appliquées (V2.6)
 
 1. **Fix #1**: Configuration cfg_mnet_v2 centralisée ✅
 2. **Fix #2**: Initialisation backbone RetinaFaceV2 ✅  
@@ -475,6 +498,7 @@ FeatherFace V2 démontre qu'une **réduction drastique de 56.7% des paramètres*
 4. **Fix #4**: Détection compatibilité teacher model ✅
 5. **Fix #5**: Paramètres MultiBoxLoss corrigés ✅
 6. **Fix #6**: Décomposition outputs V2 corrigée ✅
+7. **Fix #7**: Outputs V2 forcés en tenseurs (pas listes) ✅
 
 ### 🚀 Prêt pour Knowledge Distillation
 

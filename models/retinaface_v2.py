@@ -214,14 +214,14 @@ class RetinaFaceV2(nn.Module):
         
         # Return outputs in the same format as original RetinaFace
         # FIXED: Match V1 output order (bbox, classification, landmarks)
+        # Always concatenate outputs for consistency with MultiBoxLoss expectations
+        classifications = torch.cat(classifications, dim=1)
+        bbox_regressions = torch.cat(bbox_regressions, dim=1)
+        landmarks = torch.cat(landmarks, dim=1)
+        
         if self.phase == 'train':
             return (bbox_regressions, classifications, landmarks)
         else:
-            # For inference, concatenate all scales
-            classifications = torch.cat(classifications, dim=1)
-            bbox_regressions = torch.cat(bbox_regressions, dim=1)
-            landmarks = torch.cat(landmarks, dim=1)
-            
             # Apply softmax to classifications for inference
             if self.cfg['name'] == 'mobilenet0.25':
                 classifications = F.softmax(classifications, dim=-1)
