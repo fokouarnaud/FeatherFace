@@ -13,10 +13,10 @@ This document summarizes the comprehensive enhancements made to the FeatherFace 
 
 ```
 FeatherFace/
-├── 📊 experiments/          # Jupyter notebooks and logs
-│   ├── 01_train_evaluate_featherface_v1.ipynb (ENHANCED)
-│   ├── 03_train_evaluate_featherface_v2.ipynb (FIXED)
-│   └── logs/               # Training metrics and logs
+├── 📊 notebooks/            # Jupyter notebooks and logs
+│   ├── 01_train_evaluate_featherface.ipynb    (ENHANCED)
+│   ├── 02_compare_featherface_v2.ipynb        (COMPARISON)
+│   └── 03_train_evaluate_featherface_v2.ipynb (FIXED)
 ├── 🚀 deployment/          # Production-ready models
 │   ├── v1_optimized/      # V1 model (489K params)
 │   ├── v2_enhanced/       # V2 model (256K params)
@@ -308,9 +308,9 @@ To use the enhanced notebooks and utilities:
    ```
 
 2. **Use organized structure**:
-   - Notebooks: `experiments/`
+   - Notebooks: `notebooks/`
    - Models: `deployment/`
-   - Logs: `experiments/logs/`
+   - Logs: Training logs in notebooks
 
 3. **Follow enhanced workflow**:
    - Setup GPU optimization

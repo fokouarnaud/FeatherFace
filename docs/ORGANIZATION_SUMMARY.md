@@ -20,7 +20,7 @@ FeatherFace/
 ├── 📖 README.md                    # UNIQUE source de vérité
 ├── 📄 CLAUDE.md                    # Instructions pour Claude AI
 │
-├── 📊 experiments/                 # Notebooks améliorés et logs
+├── 📊 notebooks/                   # Notebooks améliorés et logs
 ├── 🚀 deployment/                  # Modèles production + guide
 ├── 🔧 utils/                      # Utilitaires GPU, monitoring, validation
 ├── 📋 scripts/                    # Scripts organisés par fonction
@@ -53,8 +53,8 @@ FeatherFace/
 - **utils/validation.py** → Validation complète des modèles
 
 ### 📊 Notebooks Améliorés
-- **experiments/01_train_evaluate_featherface_v1.ipynb** → V1 optimisé avec monitoring
-- **experiments/03_train_evaluate_featherface_v2.ipynb** → V2 corrigé et stable
+- **notebooks/01_train_evaluate_featherface.ipynb** → V1 optimisé avec monitoring
+- **notebooks/03_train_evaluate_featherface_v2.ipynb** → V2 corrigé et stable
 
 ## 🎯 Bénéfices de l'Organisation
 
@@ -65,7 +65,7 @@ FeatherFace/
 
 ### ✅ Productivité Améliorée
 - **Moins de temps perdu** → Trouver rapidement les fichiers
-- **Workflow professionnel** → Notebooks dans `experiments/`
+- **Workflow professionnel** → Notebooks dans `notebooks/`
 - **Déploiement simplifié** → Tout dans `deployment/`
 
 ### ✅ Maintenance Facilitée
@@ -81,7 +81,7 @@ FeatherFace/
 cat README.md
 
 # 2. Explorer les notebooks
-jupyter notebook experiments/
+jupyter notebook notebooks/
 
 # 3. Vérifier la documentation
 ls docs/
@@ -123,7 +123,7 @@ ls docs/archive/
 ### ✅ À Faire
 - **Nouveau code** → `utils/` ou structure appropriée
 - **Documentation** → `docs/` avec sous-dossiers
-- **Expérimentations** → `experiments/`
+- **Expérimentations** → `notebooks/`
 - **Production** → `deployment/`
 
 ### ❌ À Éviter

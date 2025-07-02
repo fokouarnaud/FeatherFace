@@ -155,11 +155,11 @@ python -c "from utils.monitoring import setup_training_monitoring; print('Monito
 
 ## 🔗 Related Files
 
-- **Interactive Training**: [experiments/](../../experiments/) - Jupyter notebooks for development
+- **Interactive Training**: [notebooks/](../../notebooks/) - Jupyter notebooks for development
 - **Validation**: [../validation/](../validation/) - Model validation scripts
 - **Monitoring Utils**: [utils/monitoring.py](../../utils/monitoring.py) - Training monitoring tools
 - **GPU Utils**: [utils/gpu_optimization.py](../../utils/gpu_optimization.py) - GPU optimization
 
 ---
 
-**Recommendation**: For first-time training or experimentation, use the Jupyter notebooks in `experiments/`. Use these command-line scripts for production training or automated pipelines.
+**Recommendation**: For first-time training or experimentation, use the Jupyter notebooks in `notebooks/`. Use these command-line scripts for production training or automated pipelines.

@@ -11,10 +11,10 @@ FeatherFace/
 ├── 📄 LICENSE                     # Project license
 ├── ⚙️ pyproject.toml              # Python project configuration
 │
-├── 📊 experiments/                 # Training notebooks and experiments
-│   ├── 01_train_evaluate_featherface_v1.ipynb    # V1 training (enhanced)
-│   ├── 03_train_evaluate_featherface_v2.ipynb    # V2 training (fixed)
-│   └── logs/                       # Training logs and metrics
+├── 📊 notebooks/                   # Training notebooks and analysis
+│   ├── 01_train_evaluate_featherface.ipynb       # V1 training (enhanced)
+│   ├── 02_compare_featherface_v2.ipynb           # V1 vs V2 comparison
+│   └── 03_train_evaluate_featherface_v2.ipynb    # V2 training (fixed)
 │
 ├── 🚀 deployment/                  # Production deployment files
 │   ├── README.md                   # Deployment guide
@@ -69,7 +69,7 @@ FeatherFace/
 
 ### 🚀 Getting Started
 1. **First-time users**: Start with [README.md](../README.md)
-2. **Training**: Use notebooks in [experiments/](../experiments/)
+2. **Training**: Use notebooks in [notebooks/](../notebooks/)
 3. **Production**: Check [deployment/](../deployment/)
 
 ### 📖 Finding Documentation
@@ -81,7 +81,7 @@ FeatherFace/
 ### 🔧 Development Files
 - **Utilities**: [utils/](../utils/) for monitoring and validation
 - **Models**: [models/](../models/) for architectures
-- **Training**: [experiments/](../experiments/) for interactive development
+- **Training**: [notebooks/](../notebooks/) for interactive development
 - **Scripts**: [scripts/](../scripts/) for command-line tools
 
 ### 📦 Archived Content
@@ -93,10 +93,10 @@ FeatherFace/
 
 ### ✅ What Goes Where
 
-#### `experiments/` - Active Development
+#### `notebooks/` - Active Development
 - Jupyter notebooks for training and evaluation
-- Experiment logs and results
 - Interactive development work
+- Model comparison and analysis
 
 #### `deployment/` - Production Ready
 - ONNX models and PyTorch checkpoints
@@ -133,8 +133,8 @@ FeatherFace/
 
 ### Training Information
 ```
-experiments/01_train_evaluate_featherface_v1.ipynb    # V1 training
-experiments/03_train_evaluate_featherface_v2.ipynb    # V2 training
+notebooks/01_train_evaluate_featherface.ipynb         # V1 training
+notebooks/03_train_evaluate_featherface_v2.ipynb      # V2 training
 docs/training_v2_guide.md                           # Detailed training guide
 docs/technical/TECHNICAL_DOCUMENTATION.md            # Implementation details
 ```
@@ -168,7 +168,7 @@ tests/                                            # Test suites
 ### Adding New Files
 1. **Documentation**: Place in appropriate `docs/` subdirectory
 2. **Code utilities**: Add to `utils/` with proper documentation
-3. **Experiments**: Use `experiments/` for notebooks and logs
+3. **Notebooks**: Use `notebooks/` for interactive development
 4. **Production assets**: Place in `deployment/`
 
 ### Archiving Old Files
@@ -215,7 +215,7 @@ tests/                                            # Test suites
 
 ### For Users
 1. **Start with README**: Main project information
-2. **Use experiments/**: For interactive development
+2. **Use notebooks/**: For interactive development
 3. **Check docs/**: For detailed information
 4. **Use deployment/**: For production deployment
 

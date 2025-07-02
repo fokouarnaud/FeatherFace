@@ -54,7 +54,7 @@ outputs = model(input_tensor)
 
 ```
 FeatherFace/
-├── 📊 experiments/          # Jupyter notebooks for training/evaluation
+├── 📊 notebooks/            # Jupyter notebooks for training/evaluation
 ├── 🚀 deployment/           # Production-ready models and configs  
 ├── 🔧 utils/               # Monitoring and validation utilities
 ├── 📋 scripts/             # Organized command-line scripts
@@ -113,10 +113,10 @@ Download MobileNetV1X0.25 pretrained weights from [Google Drive](https://drive.g
 ### Interactive Training (Recommended)
 ```bash
 # Start with V1 training
-jupyter notebook experiments/01_train_evaluate_featherface_v1.ipynb
+jupyter notebook notebooks/01_train_evaluate_featherface.ipynb
 
 # Then proceed to V2 training  
-jupyter notebook experiments/03_train_evaluate_featherface_v2.ipynb
+jupyter notebook notebooks/03_train_evaluate_featherface_v2.ipynb
 ```
 
 ### Command Line Training

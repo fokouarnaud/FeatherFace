@@ -85,11 +85,11 @@ python scripts/detection/detect_faces_v2_fixed.py --image path/to/image.jpg
 
 ## 💡 Tips
 
-- Use **notebooks in experiments/** for interactive development
+- Use **notebooks in notebooks/** for interactive development
 - Use **scripts/** for automated training and batch processing
 - Check **utils/** for GPU optimization and monitoring utilities
 - See **deployment/** for production-ready models and configurations
 
 ---
 
-**Note**: For interactive development and experimentation, prefer using the Jupyter notebooks in the `experiments/` directory. These scripts are optimized for command-line usage and batch processing.
+**Note**: For interactive development and experimentation, prefer using the Jupyter notebooks in the `notebooks/` directory. These scripts are optimized for command-line usage and batch processing.
