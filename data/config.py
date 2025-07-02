@@ -17,7 +17,7 @@ cfg_mnet = {
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
-    'out_channel': 64,
+    'out_channel': 24,  # OPTIMIZED: Reduced from 64 to 24 for 489K parameter target
     'lr' : 1e-3,
     'optim' : 'adamw'
 }
