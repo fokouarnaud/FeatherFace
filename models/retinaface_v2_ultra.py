@@ -190,8 +190,8 @@ class RetinaFaceV2Ultra(nn.Module):
             in_channels_stage2 * 8,   # 256
         ]
         
-        # V2 Ultra: Reduced to 28 channels for <250K target
-        out_channels = cfg.get('out_channel_v2', 28)
+        # V2 Ultra: Use configured output channels for optimal parameter count
+        out_channels = cfg.get('out_channel_v2', 32)
         
         # Create all ultra-lightweight innovations
         self.innovations = create_ultra_lightweight_modules(cfg)
@@ -262,18 +262,27 @@ class RetinaFaceV2Ultra(nn.Module):
     def _create_channel_shuffle(self, channels: int) -> nn.Module:
         """Create zero-parameter channel shuffle"""
         class ZeroParamShuffle(nn.Module):
-            def __init__(self, groups=8):
+            def __init__(self, channels):
                 super().__init__()
-                self.groups = groups
+                # Choose optimal groups based on channel count
+                if channels % 4 == 0:
+                    self.groups = 4
+                elif channels % 2 == 0:
+                    self.groups = 2
+                else:
+                    self.groups = 1  # No shuffling for odd channels
                 
             def forward(self, x):
+                if self.groups == 1:
+                    return x  # No shuffle needed
+                    
                 b, c, h, w = x.size()
                 channels_per_group = c // self.groups
                 x = x.view(b, self.groups, channels_per_group, h, w)
                 x = x.transpose(1, 2).contiguous()
                 return x.view(b, c, h, w)
                 
-        return ZeroParamShuffle()
+        return ZeroParamShuffle(channels)
     
     def forward(self, inputs: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """

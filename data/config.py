@@ -41,14 +41,14 @@ cfg_mnet_v2 = {
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
     'out_channel': 64,  # Original config (for compatibility)
-    'out_channel_v2': 32,  # V2 Ultra: 32 channels for full compatibility
+    'out_channel_v2': 20,  # V2 Ultra: 20 channels for <250K target
     'lr': 1e-3,
     'optim': 'adamw',
     # V2 Ultra Innovations (Zero/Low Parameter)
-    'smart_features': False,     # Disabled due to channel mismatch  
+    'smart_features': True,      # Enabled with channel-aligned strategy
     'attention_multiply': 3,     # Attention Multiplication (0 params)  
     'cbam_reduction': 128,       # CBAM reduction ratio (75% param reduction)
-    'ssh_groups': 8,             # SSH groups (8 for 32 channels)
+    'ssh_groups': 1,             # SSH groups (1 for minimal parameters: 32//1=32, 16//1=16, 8//1=8)
     'dynamic_sharing': True,     # Dynamic Weight Sharing (<1K params)
     'progressive_enhance': True, # Progressive Feature Enhancement (0 params)
     'multi_teacher': True,       # Multi-teacher distillation

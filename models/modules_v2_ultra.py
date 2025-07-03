@@ -37,32 +37,36 @@ class SmartFeatureReuse(nn.Module):
     def forward(self, backbone_features: List[torch.Tensor], 
                 bifpn_features: List[torch.Tensor]) -> List[torch.Tensor]:
         """
-        Smart feature reuse strategy:
-        - P3: Combine backbone P3 + downsampled BiFPN P4 for small face enhancement
-        - P4: Combine backbone P4 + BiFPN P3+P5 for balanced feature enrichment  
-        - P5: Combine backbone P5 + upsampled BiFPN P4 for large face enhancement
-        """
-        enhanced_features = []
+        Smart feature reuse strategy (channel-aligned):
+        - P3: Enhance with context from P4/P5 at same channel depth
+        - P4: Enhance with context from P3/P5 for balanced enrichment  
+        - P5: Enhance with context from P3/P4 for large face enhancement
         
-        # Enhanced P3: Small face detection improvement
-        backbone_P3, backbone_P4, backbone_P5 = backbone_features
+        All operations within BiFPN feature space (28 channels) for compatibility
+        """
+        
+        # Work with BiFPN features (all same channels) to avoid mismatch
         bifpn_P3, bifpn_P4, bifpn_P5 = bifpn_features
         
-        # P3 enhancement: Original + context from P4
-        enhanced_P3 = backbone_P3 + 0.3 * F.interpolate(
-            bifpn_P4, size=backbone_P3.shape[2:], mode='bilinear', align_corners=False
-        )
-        
-        # P4 enhancement: Original + multi-scale context
-        enhanced_P4 = backbone_P4 + 0.2 * F.interpolate(
-            bifpn_P3, size=backbone_P4.shape[2:], mode='bilinear', align_corners=False
+        # P3 enhancement: Original + downsampled context from larger scales
+        enhanced_P3 = bifpn_P3 + 0.3 * F.interpolate(
+            bifpn_P4, size=bifpn_P3.shape[2:], mode='bilinear', align_corners=False
         ) + 0.2 * F.interpolate(
-            bifpn_P5, size=backbone_P4.shape[2:], mode='bilinear', align_corners=False
+            bifpn_P5, size=bifpn_P3.shape[2:], mode='bilinear', align_corners=False
         )
         
-        # P5 enhancement: Original + context from P4  
-        enhanced_P5 = backbone_P5 + 0.3 * F.interpolate(
-            bifpn_P4, size=backbone_P5.shape[2:], mode='bilinear', align_corners=False
+        # P4 enhancement: Original + multi-scale context from both directions
+        enhanced_P4 = bifpn_P4 + 0.2 * F.interpolate(
+            bifpn_P3, size=bifpn_P4.shape[2:], mode='bilinear', align_corners=False
+        ) + 0.2 * F.interpolate(
+            bifpn_P5, size=bifpn_P4.shape[2:], mode='bilinear', align_corners=False
+        )
+        
+        # P5 enhancement: Original + upsampled context from smaller scales  
+        enhanced_P5 = bifpn_P5 + 0.3 * F.interpolate(
+            bifpn_P4, size=bifpn_P5.shape[2:], mode='bilinear', align_corners=False
+        ) + 0.2 * F.interpolate(
+            bifpn_P3, size=bifpn_P5.shape[2:], mode='bilinear', align_corners=False
         )
         
         return [enhanced_P3, enhanced_P4, enhanced_P5]
@@ -149,6 +153,16 @@ class ProgressiveFeatureEnhancement(nn.Module):
     def _channel_shuffle(self, x: torch.Tensor, groups: int) -> torch.Tensor:
         """Channel shuffle for feature mixing without parameters"""
         batch_size, channels, height, width = x.size()
+        
+        # Adaptive group selection based on channel count
+        if channels % groups != 0:
+            if channels % 4 == 0:
+                groups = 4
+            elif channels % 2 == 0:
+                groups = 2
+            else:
+                return x  # No shuffle for incompatible channels
+                
         channels_per_group = channels // groups
         
         # Reshape and transpose for shuffling
