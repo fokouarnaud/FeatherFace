@@ -1,58 +1,34 @@
 # FeatherFace Documentation
 
-This directory contains all documentation for the FeatherFace project.
+This directory contains the essential documentation for the FeatherFace project.
 
-## 📚 Documentation Structure
+## 📚 Files
 
-### 🔧 Technical Documentation
-- **[Technical Documentation](technical/TECHNICAL_DOCUMENTATION.md)** - Comprehensive technical implementation details
-- **[Project Enhancement Summary](technical/PROJECT_ENHANCEMENT_SUMMARY.md)** - Overview of recent improvements and optimizations
+### 🏗️ Architecture Documentation
+- **[ARCHITECTURE_V1_VRAIE.md](ARCHITECTURE_V1_VRAIE.md)** - Complete FeatherFace V1 architecture analysis
+  - Real implementation details from source code
+  - Pipeline: Backbone → CBAM → BiFPN → CBAM → SSH → Heads
+  - Parameter breakdown: ~592K total parameters
+  - Forward pass detailed explanation
 
-### 📖 Training & Development Guides
-- **[FeatherFace V2 Technical Report](featherface_v2_technical_report.md)** - Detailed V2 architecture analysis
-- **[Teacher Model Issue Fix](teacher_model_issue_fix.md)** - Compatibility fixes for knowledge distillation
-- **[Training V2 Guide](training_v2_guide.md)** - Step-by-step V2 training instructions
-- **[Weight Files Explanation](weight_files_explanation.md)** - Model weights and checkpoints guide
+### 📊 Visual Documentation  
+- **[architecture_diagram.txt](architecture_diagram.txt)** - ASCII architecture diagram
+  - Visual representation of the model structure
+  - Parameter distribution by component
+  - Data flow illustration
 
-### 📦 Archived Documentation
-The `archive/` directory contains legacy documentation that may still be useful for reference:
+## 🎯 Quick Reference
 
-- **Original README files** - Previous project documentation
-- **Legacy reports** - Historical analysis and compatibility reports
-- **Development notes** - Temporary documentation from development phases
+### Model Specifications
+- **FeatherFace V1**: 489K parameters, out_channel=48 (paper-compliant)
+- **FeatherFace V2**: 256K parameters, 47.6% reduction via knowledge distillation
+- **Pipeline**: Both versions use the same architecture flow
+- **Performance**: V1 ~87% mAP, V2 target 92%+ mAP
 
-## 🔗 Quick Links
+### Key Parameters
+- **out_channel**: 48 (SSH constraint: divisible by 4, 489K target)
+- **in_channel**: 32 (MobileNetV1 0.25x)
+- **Image size**: 640×640
+- **Output**: [bbox_reg, classifications, landmarks]
 
-### For New Users
-1. Start with the main [README](../README.md) for quick setup
-2. Follow [Training V2 Guide](training_v2_guide.md) for detailed training
-3. Check [Technical Documentation](technical/TECHNICAL_DOCUMENTATION.md) for implementation details
-
-### For Developers
-1. Review [Project Enhancement Summary](technical/PROJECT_ENHANCEMENT_SUMMARY.md) for recent changes
-2. Check [FeatherFace V2 Technical Report](featherface_v2_technical_report.md) for architecture details
-3. Use [Weight Files Explanation](weight_files_explanation.md) for model management
-
-### For Deployment
-1. See [Deployment Guide](../deployment/README.md) for production setup
-2. Review [Technical Documentation](technical/TECHNICAL_DOCUMENTATION.md) for optimization details
-
-## 📋 Documentation Guidelines
-
-When adding new documentation:
-- Place technical implementation details in `technical/`
-- Keep training and usage guides in the main `docs/` directory
-- Archive outdated documentation in `archive/`
-- Update this index when adding new documents
-
-## 🔄 Updates
-
-This documentation is actively maintained. For the latest information:
-- Check the main [README](../README.md) for current status
-- Review git commit history for recent changes
-- Check [Technical Documentation](technical/TECHNICAL_DOCUMENTATION.md) for implementation updates
-
----
-
-**Last Updated**: December 2024
-**Version**: 2.0
+For complete implementation details, see the main [README.md](../README.md) in the project root.

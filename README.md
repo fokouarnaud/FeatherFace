@@ -5,7 +5,28 @@ A production-ready implementation of FeatherFace with optimized V1 (489K paramet
 > **Paper**: Kim, D.; Jung, J.; Kim, J. FeatherFace: Robust and Lightweight Face Detection via Optimal Feature Integration. Electronics 2025 - [link](https://www.mdpi.com/2079-9292/14/3/517)
 
 ## 🏗️ Architecture
-<img src="https://github.com/user-attachments/assets/62817c49-afeb-4254-91a1-fe78261f50f2" width="900">
+
+![FeatherFace Architecture](docs/architecture_diagram.png)
+
+### Model Overview
+FeatherFace employs a carefully optimized RetinaNet architecture with:
+
+- **Backbone**: MobileNetV1 0.25x (213K params)
+- **Feature Pyramid**: BiFPN for efficient multi-scale fusion (84K→10K params in V2)  
+- **Attention**: CBAM modules for adaptive feature enhancement (12K→4K params in V2)
+- **Detection**: SSH context modules with channel shuffle optimization (174K→18K params in V2)
+
+```
+Input (640×640) → MobileNet → BiFPN → CBAM → SSH → [Class, BBox, Landmarks]
+```
+
+**Key Innovations:**
+- 🎯 **Parameter Efficiency**: 56.7% reduction (592K→256K) with knowledge distillation
+- ⚡ **Speed Optimized**: BiFPN_Light + SSH_Grouped convolutions  
+- 🧠 **Smart Training**: MixUp + CutMix + DropBlock augmentation
+- 📱 **Mobile Ready**: ONNX export with <2MB footprint
+
+📖 **[Complete Architecture Documentation](docs/ARCHITECTURE.md)**
 
 ## 🚀 Quick Start
 
@@ -45,7 +66,7 @@ outputs = model(input_tensor)
 
 | Model | Parameters | Size | mAP | Use Case |
 |-------|------------|------|-----|----------|
-| **V1 Optimized** | 489K | 2.0MB | 87.2% | Balanced accuracy/efficiency |
+| **V1 Optimized** | 489K | 1.9MB | 87.2% | Paper-compliant baseline |
 | **V2 Enhanced** | 256K | 1.2MB | 89.0%* | Mobile/Edge deployment |
 
 *Target performance with advanced training techniques
