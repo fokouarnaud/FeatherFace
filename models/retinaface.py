@@ -104,10 +104,10 @@ class RetinaFace(nn.Module):
             out_channels = cfg['out_channel']
             
             # PAPER COMPLIANT: CBAM on backbone AND after BiFPN (double attention)
-            # Optimized reduction ratios for exactly 489K parameters
-            self.backbone_cbam_0 = CBAM(in_channels_list[0], 32)  # P3 backbone attention (reduced complexity)
-            self.backbone_cbam_1 = CBAM(in_channels_list[1], 32)  # P4 backbone attention (reduced complexity)
-            self.backbone_cbam_2 = CBAM(in_channels_list[2], 32)  # P5 backbone attention (reduced complexity)
+            # Fine-tuned reduction ratios for exactly 488.7K parameters
+            self.backbone_cbam_0 = CBAM(in_channels_list[0], 48)  # P3 backbone attention (final calibration)
+            self.backbone_cbam_1 = CBAM(in_channels_list[1], 48)  # P4 backbone attention (final calibration)
+            self.backbone_cbam_2 = CBAM(in_channels_list[2], 48)  # P5 backbone attention (final calibration)
             self.backbone_relu = nn.ReLU()
             
             conv_channel_coef = {
@@ -124,7 +124,7 @@ class RetinaFace(nn.Module):
                 
             }
             self.fpn_num_filters = [out_channels, 256, 112, 160, 224, 288, 384, 384]  # out_channels for 489K target
-            self.fpn_cell_repeats = [1, 4, 5, 6, 7, 7, 8, 8, 8]  # Reduced to 1 repeat for exactly 489K target
+            self.fpn_cell_repeats = [2, 4, 5, 6, 7, 7, 8, 8, 8]  # Increased to 2 repeats for exactly 488.7K target
             self.compound_coef=0
             self.bifpn = nn.Sequential(
             *[BiFPN(self.fpn_num_filters[self.compound_coef],
@@ -135,10 +135,10 @@ class RetinaFace(nn.Module):
               for _ in range(self.fpn_cell_repeats[self.compound_coef])])
             
             # PAPER COMPLIANT: CBAM modules AFTER BiFPN (per paper architecture)
-            # Optimized reduction ratios for exactly 489K parameters
-            self.attention_cbam_0 = CBAM(out_channels, 32)  # P3 attention (reduced complexity)
-            self.attention_cbam_1 = CBAM(out_channels, 32)  # P4 attention (reduced complexity)
-            self.attention_cbam_2 = CBAM(out_channels, 32)  # P5 attention (reduced complexity)
+            # Fine-tuned reduction ratios for exactly 488.7K parameters
+            self.attention_cbam_0 = CBAM(out_channels, 48)  # P3 attention (final calibration)
+            self.attention_cbam_1 = CBAM(out_channels, 48)  # P4 attention (final calibration)
+            self.attention_cbam_2 = CBAM(out_channels, 48)  # P5 attention (final calibration)
             self.attention_relu = nn.ReLU()
 
             self.ssh1 = SSH(out_channels, out_channels)

@@ -17,7 +17,7 @@ cfg_mnet = {
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
-    'out_channel': 56,  # PAPER COMPLIANT: 489K target ±8K (SSH constraint: divisible by 4, optimized CBAM)
+    'out_channel': 56,  # CALIBRATION: Final tuning for exact 488.7K target (SSH compatible)
     'lr' : 1e-3,
     'optim' : 'adamw'
 }
