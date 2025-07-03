@@ -492,6 +492,10 @@ def create_advanced_distillation_pipeline(primary_teacher: nn.Module,
     return multi_teacher, distill_loss
 
 
+# Alias for backward compatibility with V2 Ultra notebook
+UltraDistillationLoss = AdvancedDistillationLoss
+
+
 if __name__ == "__main__":
     """Test advanced distillation components"""
     
