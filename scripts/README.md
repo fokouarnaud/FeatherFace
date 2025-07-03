@@ -39,10 +39,22 @@ python scripts/training/train_v2.py --teacher_model weights/mobilenet0.25_Final.
 python scripts/training/start_v2_training.py
 ```
 
+### Setup
+```bash
+# Install all dependencies
+python scripts/setup/install_dependencies.py
+```
+
 ### Validation
 ```bash
 # Validate parameter counts
 python scripts/validation/validate_parameters.py
+
+# Quick parameter test
+python scripts/validation/quick_test.py
+
+# Test model parameters
+python scripts/validation/test_parameters.py
 
 # Comprehensive validation
 python scripts/validation/final_validation.py
