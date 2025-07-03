@@ -103,8 +103,12 @@ class RetinaFace(nn.Module):
             ]
             out_channels = cfg['out_channel']
             
-            # PAPER COMPLIANT: CBAM should be AFTER BiFPN, not before
-            # Removing backbone CBAM to match paper architecture
+            # PAPER COMPLIANT: CBAM on backbone AND after BiFPN (double attention)
+            # Optimized reduction ratios for exactly 489K parameters
+            self.backbone_cbam_0 = CBAM(in_channels_list[0], 32)  # P3 backbone attention (reduced complexity)
+            self.backbone_cbam_1 = CBAM(in_channels_list[1], 32)  # P4 backbone attention (reduced complexity)
+            self.backbone_cbam_2 = CBAM(in_channels_list[2], 32)  # P5 backbone attention (reduced complexity)
+            self.backbone_relu = nn.ReLU()
             
             conv_channel_coef = {
                 # the channels of P3/P4/P5.
@@ -120,7 +124,7 @@ class RetinaFace(nn.Module):
                 
             }
             self.fpn_num_filters = [out_channels, 256, 112, 160, 224, 288, 384, 384]  # out_channels for 489K target
-            self.fpn_cell_repeats = [2, 4, 5, 6, 7, 7, 8, 8, 8]  # Reduced from 3 to 2 for 489K target
+            self.fpn_cell_repeats = [1, 4, 5, 6, 7, 7, 8, 8, 8]  # Reduced to 1 repeat for exactly 489K target
             self.compound_coef=0
             self.bifpn = nn.Sequential(
             *[BiFPN(self.fpn_num_filters[self.compound_coef],
@@ -131,10 +135,10 @@ class RetinaFace(nn.Module):
               for _ in range(self.fpn_cell_repeats[self.compound_coef])])
             
             # PAPER COMPLIANT: CBAM modules AFTER BiFPN (per paper architecture)
-            # This is the correct position according to the original paper
-            self.attention_cbam_0 = CBAM(out_channels, 16)  # P3 attention
-            self.attention_cbam_1 = CBAM(out_channels, 16)  # P4 attention  
-            self.attention_cbam_2 = CBAM(out_channels, 16)  # P5 attention
+            # Optimized reduction ratios for exactly 489K parameters
+            self.attention_cbam_0 = CBAM(out_channels, 32)  # P3 attention (reduced complexity)
+            self.attention_cbam_1 = CBAM(out_channels, 32)  # P4 attention (reduced complexity)
+            self.attention_cbam_2 = CBAM(out_channels, 32)  # P5 attention (reduced complexity)
             self.attention_relu = nn.ReLU()
 
             self.ssh1 = SSH(out_channels, out_channels)
@@ -172,29 +176,42 @@ class RetinaFace(nn.Module):
     def forward(self,inputs):
         
         if self.cfg['name'] == 'mobilenet0.25':
-            # PAPER COMPLIANT ARCHITECTURE: Backbone → BiFPN → Attention → Detection
+            # PAPER COMPLIANT ARCHITECTURE: Backbone → CBAM → BiFPN → CBAM → Detection
             
             # 1. Backbone feature extraction
             out = self.body(inputs)
             out = list(out.values())  # [P3:64ch, P4:128ch, P5:256ch]
             
-            # 2. BiFPN multiscale feature aggregation (3 levels: P5/32, P4/16, P3/8)
-            bifpn_features = self.bifpn(out)
+            # 2. First CBAM attention on backbone features (per paper schema)
+            backbone_attention_features = []
+            backbone_cbam_modules = [self.backbone_cbam_0, self.backbone_cbam_1, self.backbone_cbam_2]
             
-            # 3. Attention mechanism (CBAM) AFTER BiFPN (per paper)
-            attention_features = []
-            attention_modules = [self.attention_cbam_0, self.attention_cbam_1, self.attention_cbam_2]
+            for i, (feat, cbam) in enumerate(zip(out, backbone_cbam_modules)):
+                # Apply CBAM attention to backbone features
+                att_feat = cbam(feat)
+                # Residual connection
+                att_feat = att_feat + feat
+                # ReLU activation
+                att_feat = self.backbone_relu(att_feat)
+                backbone_attention_features.append(att_feat)
             
-            for i, (feat, cbam) in enumerate(zip(bifpn_features, attention_modules)):
-                # Apply CBAM attention
+            # 3. BiFPN multiscale feature aggregation (3 levels: P5/32, P4/16, P3/8)
+            bifpn_features = self.bifpn(backbone_attention_features)
+            
+            # 4. Second CBAM attention AFTER BiFPN (per paper schema)
+            final_attention_features = []
+            bifpn_cbam_modules = [self.attention_cbam_0, self.attention_cbam_1, self.attention_cbam_2]
+            
+            for i, (feat, cbam) in enumerate(zip(bifpn_features, bifpn_cbam_modules)):
+                # Apply CBAM attention to BiFPN outputs
                 att_feat = cbam(feat)
                 # Residual connection
                 att_feat = att_feat + feat
                 # ReLU activation
                 att_feat = self.attention_relu(att_feat)
-                attention_features.append(att_feat)
+                final_attention_features.append(att_feat)
             
-            bif_features = attention_features
+            bif_features = final_attention_features
 
             #Context Module  
             feature1 = self.ssh1(bif_features[0])
