@@ -136,14 +136,14 @@ class RetinaFace(nn.Module):
                     )
               for _ in range(self.fpn_cell_repeats[self.compound_coef])])
             
-            # REMOVED: BiFPN CBAM modules for parameter optimization (saves ~12K params)
-            # Original paper likely uses attention more sparingly
-            # self.bif_cbam_0 = CBAM(out_channels, 16)
-            # self.bif_relu_0 = nn.ReLU()
-            # self.bif_cbam_1 = CBAM(out_channels, 16)
-            # self.bif_relu_1 = nn.ReLU()
-            # self.bif_cbam_2 = CBAM(out_channels, 16)
-            # self.bif_relu_2 = nn.ReLU()
+            # BiFPN CBAM modules - Required for paper-compliant 489K parameters
+            # These are essential according to the architecture diagram
+            self.bif_cbam_0 = CBAM(out_channels, 16)
+            self.bif_relu_0 = nn.ReLU()
+            self.bif_cbam_1 = CBAM(out_channels, 16)
+            self.bif_relu_1 = nn.ReLU()
+            self.bif_cbam_2 = CBAM(out_channels, 16)
+            self.bif_relu_2 = nn.ReLU()
 
             self.ssh1 = SSH(out_channels, out_channels)
             self.ssh2 = SSH(out_channels, out_channels)
@@ -201,9 +201,21 @@ class RetinaFace(nn.Module):
             #BiFPN
             bifpn = self.bifpn(b_cbam)
             
-            # OPTIMIZED: Skip BiFPN CBAM processing (removed modules)
-            # Use BiFPN outputs directly for better parameter efficiency
-            bif_features = bifpn  # Direct assignment instead of CBAM processing
+            # BiFPN CBAM processing - Required for paper compliance
+            # Apply attention to BiFPN outputs as shown in architecture diagram
+            bif_cbam_0 = self.bif_cbam_0(bifpn[0])
+            bif_cbam_1 = self.bif_cbam_1(bifpn[1])
+            bif_cbam_2 = self.bif_cbam_2(bifpn[2])
+
+            bif_cbam_0 = bif_cbam_0 + bifpn[0]
+            bif_cbam_1 = bif_cbam_1 + bifpn[1]
+            bif_cbam_2 = bif_cbam_2 + bifpn[2]
+
+            bif_cbam_0 = self.bif_relu_0(bif_cbam_0)
+            bif_cbam_1 = self.bif_relu_1(bif_cbam_1)
+            bif_cbam_2 = self.bif_relu_2(bif_cbam_2)
+
+            bif_features = [bif_cbam_0, bif_cbam_1, bif_cbam_2]
 
             #Context Module  
             feature1 = self.ssh1(bif_features[0])
