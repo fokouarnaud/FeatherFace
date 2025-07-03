@@ -3,6 +3,13 @@
 Quick parameter count test for debugging
 """
 
+import sys
+from pathlib import Path
+
+# Add project root to path for imports (go up 2 levels from scripts/validation/)
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
 def test_model_parameters():
     """Test model parameters and architecture."""
     try:

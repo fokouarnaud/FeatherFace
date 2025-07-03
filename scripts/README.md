@@ -6,12 +6,17 @@ This directory contains organized scripts for different FeatherFace operations.
 
 ```
 scripts/
+├── setup/              # Environment setup scripts
+│   ├── install_dependencies.py # Dependency installer
+│   └── README.md               # Setup documentation
 ├── training/           # Training scripts
 │   ├── train.py                # V1 training (original)
 │   ├── train_v2.py             # V2 training with knowledge distillation
 │   └── start_v2_training.py    # Quick V2 training starter
 ├── validation/         # Validation and testing scripts
 │   ├── validate_parameters.py  # Parameter count validation
+│   ├── test_parameters.py      # Quick parameter testing
+│   ├── quick_test.py           # Parameter debugging
 │   └── final_validation.py     # Comprehensive model validation
 ├── deployment/         # Deployment and export scripts
 │   └── export_dynamic_onnx.py  # Dynamic ONNX export
