@@ -17,7 +17,7 @@ cfg_mnet = {
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
-    'out_channel': 51,  # PAPER COMPLIANT: Calculated value for exact 489K parameter target
+    'out_channel': 52,  # PAPER COMPLIANT: Must be divisible by 4 for SSH module (52 ÷ 4 = 13)
     'lr' : 1e-3,
     'optim' : 'adamw'
 }

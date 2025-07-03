@@ -50,8 +50,10 @@ def auto_tune_parameters():
     best_diff = float('inf')
     best_params = None
     
-    # Test range around current value
-    test_range = range(max(32, current_channel - 5), current_channel + 10)
+    # Test range around current value (only values divisible by 4 for SSH compatibility)
+    start_val = max(32, current_channel - 8)
+    end_val = current_channel + 12
+    test_range = [i for i in range(start_val, end_val) if i % 4 == 0]
     
     print(f"\nTesting out_channel values from {min(test_range)} to {max(test_range)}:")
     
