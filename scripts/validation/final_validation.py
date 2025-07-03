@@ -64,9 +64,11 @@ class FeatherFaceValidator:
             print(f"   Status: {'✅ TARGET MET' if target_met else '❌ TARGET MISSED'}")
             
             # Configuration verification
-            config_check = cfg_mnet['out_channel'] == 24
+            config_check = cfg_mnet['out_channel'] == 52  # Updated: SSH-compatible value
+            ssh_check = cfg_mnet['out_channel'] % 4 == 0  # SSH constraint validation
             print(f"\n⚙️  Configuration Check:")
             print(f"   out_channel = {cfg_mnet['out_channel']} {'✅' if config_check else '❌'}")
+            print(f"   SSH constraint (÷4) = {'✅ VALID' if ssh_check else '❌ INVALID'}")
             print(f"   in_channel = {cfg_mnet['in_channel']} (should be 32)")
             
             # Architecture verification
