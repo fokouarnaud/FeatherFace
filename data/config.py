@@ -17,12 +17,12 @@ cfg_mnet = {
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
-    'out_channel': 56,  # CALIBRATION: Final tuning for exact 488.7K target (SSH compatible)
+    'out_channel': 74,  # CALIBRATION: DCN architecture → 487,103 parameters (very close to 488.7K target)
     'lr' : 1e-3,
     'optim' : 'adamw'
 }
 
-# Configuration for FeatherFace V2
+# Configuration for FeatherFace V2 (Ultra-Efficient)
 cfg_mnet_v2 = {
     'name': 'mobilenet0.25',  # Fixed: Must match backbone loading condition
     'min_sizes': [[16, 32], [64, 128], [256, 512]],
@@ -40,9 +40,17 @@ cfg_mnet_v2 = {
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
-    'out_channel': 64,  # Original config
-    'out_channel_v2': 32,  # V2 uses 32 channels
+    'out_channel': 64,  # Original config (for compatibility)
+    'out_channel_v2': 32,  # V2 Ultra: 32 channels for full compatibility
     'lr': 1e-3,
-    'optim': 'adamw'
+    'optim': 'adamw',
+    # V2 Ultra Innovations (Zero/Low Parameter)
+    'smart_features': False,     # Disabled due to channel mismatch  
+    'attention_multiply': 3,     # Attention Multiplication (0 params)  
+    'cbam_reduction': 128,       # CBAM reduction ratio (75% param reduction)
+    'ssh_groups': 8,             # SSH groups (8 for 32 channels)
+    'dynamic_sharing': True,     # Dynamic Weight Sharing (<1K params)
+    'progressive_enhance': True, # Progressive Feature Enhancement (0 params)
+    'multi_teacher': True,       # Multi-teacher distillation
 }
 

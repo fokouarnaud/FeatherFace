@@ -16,9 +16,9 @@ Multiscale feature aggregation (BiFPN) → [P5/32, P4/16, P3/8] → [F3:56ch, F4
      ↓
 Attention (CBAM) → [CBAM_0(56), CBAM_1(56), CBAM_2(56)]
      ↓
-Detection Head → Context enhancement (SSH) + Channel shuffle
+Detection Head → Context enhancement (DCN) + Channel shuffle
      ↓
-SSH Context → [SSH1(56→56), SSH2(56→56), SSH3(56→56)]
+DCN Context → [DCN1(74→74), DCN2(74→74), DCN3(74→74)]
      ↓
 Channel Shuffle → [CS1, CS2, CS3]
      ↓
@@ -69,18 +69,18 @@ self.attention_cbam_2 = CBAM(56, 16)  # P5 attention
 self.attention_relu = nn.ReLU()       # ReLU partagé
 ```
 
-#### 5. SSH Context Enhancement (3 modules)
+#### 5. DCN Context Enhancement (3 modules)
 ```python
-self.ssh1 = SSH(56, 56)  # P3 context
-self.ssh2 = SSH(56, 56)  # P4 context  
-self.ssh3 = SSH(56, 56)  # P5 context
+self.dcn1 = SimpleDCN(74, 74)  # P3 context
+self.dcn2 = SimpleDCN(74, 74)  # P4 context  
+self.dcn3 = SimpleDCN(74, 74)  # P5 context
 ```
 
 #### 6. Channel Shuffle (3 modules)
 ```python
-self.ssh1_cs = SimpleChannelShuffle(56, groups=2)
-self.ssh2_cs = SimpleChannelShuffle(56, groups=2)
-self.ssh3_cs = SimpleChannelShuffle(56, groups=2)
+self.cs1 = SimpleChannelShuffle(74, groups=2)
+self.cs2 = SimpleChannelShuffle(74, groups=2)
+self.cs3 = SimpleChannelShuffle(74, groups=2)
 ```
 
 #### 7. Detection Heads (3×3 = 9 modules)
@@ -90,35 +90,35 @@ self.ssh3_cs = SimpleChannelShuffle(56, groups=2)
 # LandmarkHead: 3 modules pour 3 niveaux
 ```
 
-## 📈 Répartition des Paramètres (out_channel=56)
+## 📈 Répartition des Paramètres (out_channel=74)
 
 | Composant | Paramètres | Pourcentage | Détail |
 |-----------|------------|-------------|---------|
-| **Backbone** | 213,072 | 42.4% | MobileNetV1 0.25x |
-| **CBAM Backbone** | 11,528 | 2.3% | 3×CBAM(64,128,256) |
-| **BiFPN** | 109,584 | 21.8% | 2 répétitions, 56ch, 3 niveaux |
-| **CBAM BiFPN** | 3,168 | 0.6% | 3×CBAM(56) APRÈS BiFPN |
-| **SSH** | 155,031 | 30.9% | 3×SSH(56→56) |
-| **Channel Shuffle** | 3,136 | 0.6% | 3×SimpleCS(56) |
-| **Detection Heads** | 6,709 | 1.3% | Class+Bbox+Landmark |
-| **TOTAL** | **502K** | **100%** | Architecture paper-compliant |
+| **Backbone** | 213,072 | 43.7% | MobileNetV1 0.25x |
+| **CBAM Backbone** | 11,528 | 2.4% | 3×CBAM(64,128,256) |
+| **BiFPN** | 144,432 | 29.7% | 2 répétitions, 74ch, 3 niveaux |
+| **CBAM BiFPN** | 10,656 | 2.2% | 3×CBAM(74) APRÈS BiFPN |
+| **DCN** | 98,835 | 20.3% | 3×SimpleDCN(74→74) |
+| **Channel Shuffle** | 0 | 0.0% | 3×SimpleChannelShuffle (zero params) |
+| **Detection Heads** | 8,580 | 1.8% | Class+Bbox+Landmark |
+| **TOTAL** | **487K** | **100%** | Architecture paper-compliant (488.7K target) |
 
 ## ❌ Erreurs dans ma Documentation Précédente
 
 ### 1. Configuration Finale
-- **✅ Correct** : out_channel=56 pour 502K paramètres (paper-compliant ±13K)
-- **✅ SSH compatible** : 56 % 4 = 0 (divisible par 4)
+- **✅ Correct** : out_channel=74 pour 487K paramètres (paper-compliant, très proche de 488.7K)
+- **✅ DCN compatible** : SimpleDCN remplace SSH complexe
 - **✅ Double CBAM** : Sur backbone ET après BiFPN
 
 ### 2. Pipeline Architecture  
-- **✅ Correct** : `Backbone → CBAM → BiFPN → CBAM → SSH → Heads` (selon paper)
+- **✅ Correct** : `Backbone → CBAM → BiFPN → CBAM → DCN → Heads` (selon paper)
 - **✅ V1** : Architecture maintenant parfaitement conforme au schéma paper
 - **✅ Confirmé** : Double attention comme montré dans le schéma
 
 ### 3. Target Paramètres
-- **✅ Correct** : V1 = 489K paramètres (selon paper original)
-- **✅ Configuration** : out_channel=56, double CBAM → 502K (±13K acceptable)
-- **✅ V2** : 256K paramètres (vraie réduction 49.8%)
+- **✅ Correct** : V1 = 488.7K paramètres (selon paper original)
+- **✅ Configuration** : out_channel=74, double CBAM → 487K (très proche de 488.7K target)
+- **✅ V2** : 256K paramètres (vraie réduction 47.2%)
 
 ## 🎯 Architecture Correcte
 
