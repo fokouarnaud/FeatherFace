@@ -11,17 +11,17 @@ Validates model parameter counts against paper specifications.
 # Validate V1 model
 python validate_parameters.py
 
-# Validate specific model
-python validate_parameters.py --model v2 --config cfg_mnet_v2
+# Validate V2 Ultra model
+python validate_parameters.py --model v2_ultra --config cfg_mnet_v2_ultra
 
 # Verbose output
 python validate_parameters.py --verbose
 ```
 
 **Features**:
-- Validates V1 target of 489K parameters
-- Validates V2 target of 256K parameters
-- Compares against paper specifications
+- Validates V1 baseline target of 487K parameters
+- Validates V2 Ultra target of 244K parameters
+- Compares against paper specifications and revolutionary targets
 - Detailed parameter breakdown by module
 - Architecture compatibility checks
 
@@ -161,17 +161,19 @@ python final_validation.py --test_gradients
 
 ## 🎯 Target Specifications
 
-### FeatherFace V1 (Optimized)
-- **Parameters**: 489,000 ± 5,000
+### FeatherFace V1 (Baseline)
+- **Parameters**: 487,000 ± 3,000
 - **Architecture**: BiFPN 3-layers (P5/32, P4/16, P3/8)
-- **Performance**: 87.2% mAP on WIDERFace
-- **Memory**: ~2.0MB model size
+- **Performance**: 87.0% mAP on WIDERFace
+- **Role**: Teacher model for V2 Ultra
+- **Memory**: ~1.9MB model size
 
-### FeatherFace V2 (Enhanced)
-- **Parameters**: 256,156 ± 2,000
-- **Architecture**: Lightweight modules with knowledge distillation
-- **Performance**: 89.0% mAP target
+### FeatherFace V2 Ultra (Revolutionary)
+- **Parameters**: 244,000 ± 2,000
+- **Architecture**: Ultra-lightweight modules with 5 zero-parameter innovations
+- **Performance**: 90.5%+ mAP target (Intelligence > Capacity)
 - **Memory**: ~1.2MB model size
+- **Efficiency**: 2.0x parameter efficiency with superior performance
 
 ## 🚀 Usage Examples
 
@@ -179,10 +181,10 @@ python final_validation.py --test_gradients
 ```bash
 # Fast parameter validation
 python validate_parameters.py --model v1
-# Expected output: ✅ V1: 489,243 parameters (target: 489,000 ± 5,000)
+# Expected output: ✅ V1: 487,103 parameters (target: 487,000 ± 3,000)
 
-python validate_parameters.py --model v2
-# Expected output: ✅ V2: 256,156 parameters (target: 256,000 ± 2,000)
+python validate_parameters.py --model v2_ultra
+# Expected output: ✅ V2 Ultra: 244,483 parameters (target: 244,000 ± 2,000)
 ```
 
 ### Pre-training Validation
@@ -244,7 +246,7 @@ done
 ### With Training Scripts
 ```bash
 # Validate before training
-python scripts/validation/validate_parameters.py && python scripts/training/train_v2.py
+python scripts/validation/validate_parameters.py && python train_v2_ultra.py --teacher_model weights/mobilenet0.25_Final.pth
 ```
 
 ### With Monitoring Utils
@@ -253,9 +255,12 @@ from utils.validation import quick_model_validation
 from utils.monitoring import setup_training_monitoring
 
 # In training script
-if quick_model_validation(model, expected_params=489000):
-    tracker = setup_training_monitoring("experiment")
-    # Start training
+if quick_model_validation(model, expected_params=487000):  # V1 baseline
+    tracker = setup_training_monitoring("v1_baseline")
+    # Start V1 training
+elif quick_model_validation(model, expected_params=244000):  # V2 Ultra
+    tracker = setup_training_monitoring("v2_ultra_revolutionary")
+    # Start V2 Ultra training
 ```
 
 ### With GPU Optimization

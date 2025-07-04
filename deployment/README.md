@@ -101,7 +101,7 @@ classifications, bbox_regressions, landmarks = outputs
 ### Production Configuration (`configs/production.yaml`)
 ```yaml
 model:
-  version: "v2_enhanced"
+  version: "v2_ultra"
   input_size: 640
   batch_size: 4
   device: "cuda"
@@ -120,7 +120,7 @@ optimization:
 ### Edge Device Configuration (`configs/edge_device.yaml`)
 ```yaml
 model:
-  version: "v2_enhanced"
+  version: "v2_ultra"
   input_size: 416
   batch_size: 1
   device: "cpu"

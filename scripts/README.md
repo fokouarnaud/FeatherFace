@@ -1,6 +1,6 @@
 # Scripts Directory
 
-This directory contains organized scripts for different FeatherFace operations.
+This directory contains organized scripts for FeatherFace V1 baseline and V2 Ultra operations.
 
 ## 📁 Directory Structure
 
@@ -10,9 +10,7 @@ scripts/
 │   ├── install_dependencies.py # Dependency installer
 │   └── README.md               # Setup documentation
 ├── training/           # Training scripts
-│   ├── train.py                # V1 training (original)
-│   ├── train_v2.py             # V2 training with knowledge distillation
-│   └── start_v2_training.py    # Quick V2 training starter
+│   └── train.py                # V1 baseline training (teacher model)
 ├── validation/         # Validation and testing scripts
 │   ├── validate_parameters.py  # Parameter count validation
 │   ├── test_parameters.py      # Quick parameter testing
@@ -21,22 +19,18 @@ scripts/
 ├── deployment/         # Deployment and export scripts
 │   └── export_dynamic_onnx.py  # Dynamic ONNX export
 └── detection/          # Detection and inference scripts
-    ├── detect.py               # Basic face detection
-    └── detect_faces_v2_fixed.py # Fixed V2 detection script
+    └── detect.py               # Face detection inference
 ```
 
 ## 🚀 Quick Usage
 
 ### Training
 ```bash
-# V1 training
+# V1 baseline training (teacher model)
 python scripts/training/train.py --network mobile0.25
 
-# V2 training with knowledge distillation
-python scripts/training/train_v2.py --teacher_model weights/mobilenet0.25_Final.pth
-
-# Quick V2 start
-python scripts/training/start_v2_training.py
+# V2 Ultra training with revolutionary knowledge distillation
+python train_v2_ultra.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 400
 ```
 
 ### Setup
@@ -64,24 +58,20 @@ python scripts/validation/final_validation.py
 ```bash
 # Export ONNX models
 python scripts/deployment/export_dynamic_onnx.py --model v1 --weights weights/mobilenet0.25_Final.pth
-python scripts/deployment/export_dynamic_onnx.py --model v2 --weights weights/v2/FeatherFaceV2_final.pth
+python scripts/deployment/export_dynamic_onnx.py --model v2_ultra --weights weights/v2_ultra/v2_ultra_final.pth
 ```
 
 ### Detection
 ```bash
-# Basic detection
-python scripts/detection/detect.py --image path/to/image.jpg
-
-# V2 detection (fixed version)
-python scripts/detection/detect_faces_v2_fixed.py --image path/to/image.jpg
+# Face detection inference (supports V1 and V2 Ultra)
+python scripts/detection/detect.py --image path/to/image.jpg --model v2_ultra
 ```
 
 ## 📖 Detailed Information
 
 ### Training Scripts
-- **train.py**: Original training script for V1 model
-- **train_v2.py**: Advanced training with knowledge distillation for V2
-- **start_v2_training.py**: Simplified V2 training wrapper
+- **train.py**: V1 baseline training script (teacher model for knowledge distillation)
+- **../train_v2_ultra.py**: Revolutionary V2 Ultra training with Intelligence > Capacity paradigm
 
 ### Validation Scripts
 - **validate_parameters.py**: Validates model parameter counts against targets
@@ -91,12 +81,11 @@ python scripts/detection/detect_faces_v2_fixed.py --image path/to/image.jpg
 - **export_dynamic_onnx.py**: Exports models to ONNX format with dynamic input sizes
 
 ### Detection Scripts
-- **detect.py**: Basic face detection inference
-- **detect_faces_v2_fixed.py**: Enhanced V2 detection with device compatibility fixes
+- **detect.py**: Face detection inference supporting V1 baseline and V2 Ultra models
 
 ## 🔗 Related Documentation
 
-- **Training Guide**: [docs/training_v2_guide.md](../docs/training_v2_guide.md)
+- **V2 Ultra Architecture**: [docs/V2_ULTRA_ARCHITECTURE.md](../docs/V2_ULTRA_ARCHITECTURE.md)
 - **Technical Documentation**: [docs/technical/TECHNICAL_DOCUMENTATION.md](../docs/technical/TECHNICAL_DOCUMENTATION.md)
 - **Deployment Guide**: [deployment/README.md](../deployment/README.md)
 
@@ -109,4 +98,8 @@ python scripts/detection/detect_faces_v2_fixed.py --image path/to/image.jpg
 
 ---
 
-**Note**: For interactive development and experimentation, prefer using the Jupyter notebooks in the `notebooks/` directory. These scripts are optimized for command-line usage and batch processing.
+**Note**: For interactive development, prefer using the Jupyter notebooks:
+- `notebooks/01_train_evaluate_featherface.ipynb` for V1 baseline
+- `notebooks/03_train_evaluate_featherface_v2_ultra.ipynb` for V2 Ultra revolutionary training
+
+These scripts are optimized for command-line usage and batch processing.
