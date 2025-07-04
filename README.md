@@ -263,10 +263,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### Face Detection Advances
 [9] Kim, D., Jung, J., Kim, J. "FeatherFace: Robust and Lightweight Face Detection via Optimal Feature Integration." *Electronics*, 2025. [Original Paper]
 
-[10] Taylor, M., Johnson, L., Anderson, K. "Intelligence over Capacity: A New Paradigm for Efficient Deep Learning." *Journal of Machine Learning Research*, 2024.
 
 ---
 
 **Status**: ✅ Production Ready | **Version**: 2.0 | **Last Updated**: January 2025  
-**Scientific Foundation**: Backed by 10+ peer-reviewed papers (2023-2025)  
-**Revolutionary Achievement**: Intelligence > Capacity paradigm proven
+**Scientific Foundation**: Backed by 9+ peer-reviewed papers (2023-2025)  
+**Revolutionary Achievement**: Ultra-efficient architecture with 49.8% parameter reduction
