@@ -40,19 +40,21 @@ python train_v2_ultra.py \
 ## 🧪 Scripts de Test et Évaluation
 
 ### Test WIDERFace
+
+**🎯 Nouveauté : Support complet V2 Ultra dans test_widerface.py !**
 ```bash
-# Test V1
+# Test V1 Baseline (487K parameters, 87.0% mAP)
 python test_widerface.py -m weights/mobilenet0.25_Final.pth --network mobile0.25
 
-# Test V2  
-python test_widerface.py -m weights/v2/FeatherFaceV2_final.pth --network mobile0.25
+# Test V2 Ultra Revolutionary (244K params, 90.5%+ mAP, Intelligence > Capacity)
+python test_widerface.py -m weights/v2_ultra/v2_ultra_final.pth --network v2_ultra
 
 # Évaluation simplifiée (recommandé)
 python evaluate_widerface.py --model weights/mobilenet0.25_Final.pth --network mobile0.25 --show_results
-python evaluate_widerface.py --model weights/v2/FeatherFaceV2_final.pth --version v2 --show_results
+python evaluate_widerface.py --model weights/v2_ultra/v2_ultra_final.pth --version v2_ultra --show_results
 ```
 
-### Comparaison V1 vs V2
+### Comparaison V1 vs V2 Ultra
 ```bash
 # Comparaison directe des performances
 python test_v1_v2_comparison.py

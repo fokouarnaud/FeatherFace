@@ -178,11 +178,16 @@ python start_v2_ultra_training.py
 ```
 
 ### Evaluation
+
+**🚀 New: Complete V2 Ultra support in test_widerface.py!**
 ```bash
-# Generate predictions
+# Generate predictions - V1 Baseline (487K parameters)
 python test_widerface.py --trained_model weights/mobilenet0.25_Final.pth --network mobile0.25
 
-# Evaluate results
+# Generate predictions - V2 Ultra Revolutionary (244K parameters, Intelligence > Capacity)
+python test_widerface.py --trained_model weights/v2_ultra/v2_ultra_final.pth --network v2_ultra
+
+# Evaluate results (same process for both models)
 cd widerface_evaluate
 python evaluation.py -p ./widerface_txt -g ./eval_tools/ground_truth
 
