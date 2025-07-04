@@ -29,7 +29,7 @@ Our revolutionary approach is built on cutting-edge research:
 ### Revolutionary V2 Ultra Innovations
 
 ```
-Input (640×640) → Shared MobileNet → Ultra-Light Modules → Revolutionary Innovations → Ultra-Smart Detection
+Input (640×640×3) → Shared MobileNet → Ultra-Light Modules → Revolutionary Innovations → Ultra-Smart Detection
 ```
 
 **🧠 Zero-Parameter Intelligence Techniques:**
