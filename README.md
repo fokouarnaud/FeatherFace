@@ -6,7 +6,7 @@ A scientifically-grounded implementation featuring FeatherFace V1 baseline (487K
 
 ## 🚀 Revolutionary V2 Ultra Architecture
 
-![FeatherFace V2 Ultra](docs/v2_ultra_architecture_diagram.png)
+![FeatherFace V2 Ultra](docs/featherface_v2_ultra_architecture.png)
 
 ### Scientific Foundation
 Our revolutionary approach is built on cutting-edge research:
