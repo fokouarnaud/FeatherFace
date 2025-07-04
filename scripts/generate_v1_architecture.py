@@ -1,201 +1,280 @@
 #!/usr/bin/env python3
 """
-FeatherFace V1 Architecture Diagram Generator
-Creates a clear architectural diagram following reference model with explicit parallel flows
+FeatherFace V1 Academic Architecture Diagram Generator
+Creates a clean, professional diagram following academic standards with CORRECT SEQUENCE
+Sequence: Input → Backbone → Features → CBAM1 → BiFPN → CBAM2 → Detection → Context → Output
 """
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib.patches import FancyBboxPatch, ConnectionPatch
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 import numpy as np
 
-def create_v1_architecture_diagram():
-    """Create FeatherFace V1 architecture diagram with explicit parallel flows"""
+def create_v1_academic_diagram():
+    """Create FeatherFace V1 academic architecture diagram with correct sequence"""
     
-    # Create figure with optimized landscape layout
-    fig, ax = plt.subplots(1, 1, figsize=(18, 10))
-    ax.set_xlim(0, 18)
-    ax.set_ylim(0, 10)
+    # Create figure with landscape academic layout
+    fig, ax = plt.subplots(1, 1, figsize=(20, 12))
+    ax.set_xlim(0, 20)
+    ax.set_ylim(0, 12)
     ax.axis('off')
     
-    # Clean color scheme matching reference
+    # Academic color palette - professional and accessible
     colors = {
-        'input': '#E3F2FD',
-        'backbone': '#81D4FA', 
-        'features': '#64B5F6',
-        'attention': '#66BB6A',
-        'bifpn': '#FFB74D',
-        'detection': '#F06292',
-        'output': '#CE93D8'
+        'input': '#E3F2FD',           # Light blue
+        'backbone': '#BBDEFB',        # Medium blue  
+        'features': '#90CAF9',        # Blue
+        'cbam1': '#66BB6A',          # Green (First CBAM)
+        'bifpn': '#FFB74D',          # Orange
+        'cbam2': '#4CAF50',          # Dark Green (Second CBAM)
+        'detection': '#F06292',       # Pink
+        'context': '#FFCDD2',        # Light pink
+        'output': '#CE93D8',         # Purple
+        'text': '#263238',           # Dark blue-grey
+        'arrow': '#546E7A'           # Medium grey
     }
     
-    # Title - minimal
-    ax.text(9, 9.5, 'FeatherFace V1 Architecture', fontsize=20, fontweight='bold', 
-            ha='center', va='center', color='#2E2E2E')
+    # Title and subtitle - academic format
+    ax.text(10, 11.5, 'FeatherFace V1 Architecture', fontsize=22, fontweight='bold', 
+            ha='center', va='center', color=colors['text'])
+    ax.text(10, 11.1, '487K Parameters • 87.0% mAP • Double CBAM Pipeline', fontsize=16, 
+            ha='center', va='center', color='#D32F2F')
     
-    # Main architecture components positioning
-    # Input
-    input_box = FancyBboxPatch((0.5, 4), 2, 2, 
-                              boxstyle="round,pad=0.1", 
+    # CORRECT SEQUENCE IMPLEMENTATION
+    
+    # Stage 1: Input
+    input_box = FancyBboxPatch((0.5, 9.5), 2.5, 1.2, 
+                              boxstyle="round,pad=0.05", 
                               facecolor=colors['input'], 
-                              edgecolor='black', linewidth=2)
+                              edgecolor='#424242', linewidth=1.5)
     ax.add_patch(input_box)
-    ax.text(1.5, 5, 'Input Image\n640×640×3', fontsize=11, fontweight='bold',
-            ha='center', va='center', color='#2E2E2E')
+    ax.text(1.75, 10.3, 'Input', fontsize=12, fontweight='bold',
+            ha='center', va='center', color=colors['text'])
+    ax.text(1.75, 9.9, '640×640×3', fontsize=10,
+            ha='center', va='center', color=colors['text'])
     
-    # Backbone (MobileNet-0.25)
-    backbone_box = FancyBboxPatch((3.5, 4), 2.5, 2, 
-                                 boxstyle="round,pad=0.1", 
-                                 facecolor=colors['backbone'], 
-                                 edgecolor='black', linewidth=2)
-    ax.add_patch(backbone_box)
-    ax.text(4.75, 5.5, 'MobileNet-0.25', fontsize=12, fontweight='bold',
-            ha='center', va='center', color='#2E2E2E')
-    ax.text(4.75, 5, 'Backbone', fontsize=10,
-            ha='center', va='center', color='#2E2E2E')
-    ax.text(4.75, 4.5, '213K params', fontsize=9, fontweight='bold',
-            ha='center', va='center', color='#1976D2')
-    
-    # Multi-scale features - P3, P4, P5 (explicit parallel outputs)
-    feature_positions = [(7, 6), (7, 5), (7, 4)]
-    feature_labels = ['P3/32', 'P4/16', 'P5/8']
-    
-    for i, ((x, y), label) in enumerate(zip(feature_positions, feature_labels)):
-        feat_box = FancyBboxPatch((x, y-0.3), 1.5, 0.6, 
+    # Stage 2: MobileNet-0.25 Backbone
+    backbone_box = FancyBboxPatch((3.5, 9.5), 3, 1.2, 
                                  boxstyle="round,pad=0.05", 
+                                 facecolor=colors['backbone'], 
+                                 edgecolor='#424242', linewidth=1.5)
+    ax.add_patch(backbone_box)
+    ax.text(5, 10.3, 'MobileNet-0.25 Backbone', fontsize=12, fontweight='bold',
+            ha='center', va='center', color=colors['text'])
+    ax.text(5, 9.9, '213K params', fontsize=10,
+            ha='center', va='center', color=colors['text'])
+    
+    # Stage 3: Multi-scale Features [P3:64ch, P4:128ch, P5:256ch]
+    feature_y = 8.5
+    features = [
+        (7, feature_y + 0.6, 'P3', '64ch'),
+        (7, feature_y, 'P4', '128ch'), 
+        (7, feature_y - 0.6, 'P5', '256ch')
+    ]
+    
+    for x, y, label, channels in features:
+        feat_box = FancyBboxPatch((x, y - 0.3), 2, 0.6, 
+                                 boxstyle="round,pad=0.03", 
                                  facecolor=colors['features'], 
-                                 edgecolor='black', linewidth=1)
+                                 edgecolor='#424242', linewidth=1.5)
         ax.add_patch(feat_box)
-        ax.text(x+0.75, y, label, fontsize=10, fontweight='bold',
-                ha='center', va='center', color='#2E2E2E')
-    
-    # Attention mechanism (CBAM) - for each feature level
-    attention_positions = [(9.5, 6), (9.5, 5), (9.5, 4)]
-    
-    for i, (x, y) in enumerate(attention_positions):
-        att_box = FancyBboxPatch((x, y-0.3), 1.5, 0.6, 
-                                boxstyle="round,pad=0.05", 
-                                facecolor=colors['attention'], 
-                                edgecolor='black', linewidth=1)
-        ax.add_patch(att_box)
-        ax.text(x+0.75, y, 'Attention', fontsize=9, fontweight='bold',
+        ax.text(x + 1, y, f'{label}: {channels}', fontsize=10, fontweight='bold',
                 ha='center', va='center', color='white')
     
-    # BiFPN - bidirectional feature pyramid
-    bifpn_box = FancyBboxPatch((12, 3.5), 2, 3, 
-                              boxstyle="round,pad=0.1", 
+    # Stage 4: First Attention Mechanisms (CBAM) → Enhanced Features [A3, A4, A5]
+    cbam1_x = 9.5
+    ax.text(cbam1_x + 1, 9.2, 'First CBAM', fontsize=11, fontweight='bold',
+            ha='center', va='center', color=colors['text'])
+    
+    enhanced_features = [
+        (cbam1_x, feature_y + 0.6, 'A3', 'Enhanced'),
+        (cbam1_x, feature_y, 'A4', 'Enhanced'), 
+        (cbam1_x, feature_y - 0.6, 'A5', 'Enhanced')
+    ]
+    
+    for x, y, label, desc in enhanced_features:
+        cbam_box = FancyBboxPatch((x, y - 0.3), 2, 0.6, 
+                                 boxstyle="round,pad=0.03", 
+                                 facecolor=colors['cbam1'], 
+                                 edgecolor='#424242', linewidth=1.5)
+        ax.add_patch(cbam_box)
+        ax.text(x + 1, y, f'{label}: {desc}', fontsize=10, fontweight='bold',
+                ha='center', va='center', color='white')
+    
+    # Stage 5: BiFPN → Fused Features [F3:74ch, F4:74ch, F5:74ch]
+    bifpn_x = 12
+    bifpn_box = FancyBboxPatch((bifpn_x, 7.5), 3, 2, 
+                              boxstyle="round,pad=0.05", 
                               facecolor=colors['bifpn'], 
-                              edgecolor='black', linewidth=2)
+                              edgecolor='#424242', linewidth=2)
     ax.add_patch(bifpn_box)
-    ax.text(13, 5.5, 'BiFPN', fontsize=12, fontweight='bold',
+    ax.text(bifpn_x + 1.5, 8.8, 'BiFPN', fontsize=14, fontweight='bold',
             ha='center', va='center', color='white')
-    ax.text(13, 5, 'Bidirectional\nFeature Fusion', fontsize=9,
+    ax.text(bifpn_x + 1.5, 8.4, 'Feature Fusion', fontsize=11,
             ha='center', va='center', color='white')
-    ax.text(13, 4.2, '114K params', fontsize=9, fontweight='bold',
-            ha='center', va='center', color='#2E2E2E')
+    ax.text(bifpn_x + 1.5, 8, '114K params', fontsize=10,
+            ha='center', va='center', color='white')
     
-    # Detection heads - one per feature level
-    detection_positions = [(15, 6), (15, 5), (15, 4)]
-    detection_labels = ['P3 Head', 'P4 Head', 'P5 Head']
-    
-    for i, ((x, y), label) in enumerate(zip(detection_positions, detection_labels)):
-        det_box = FancyBboxPatch((x, y-0.3), 1.5, 0.6, 
-                                boxstyle="round,pad=0.05", 
-                                facecolor=colors['detection'], 
-                                edgecolor='black', linewidth=1)
-        ax.add_patch(det_box)
-        ax.text(x+0.75, y, label, fontsize=9, fontweight='bold',
+    # BiFPN internal structure
+    for i, (label, y_offset) in enumerate([('TD-5', 0.4), ('TD-4', 0.0), ('TD-3', -0.4)]):
+        td_box = FancyBboxPatch((bifpn_x + 0.2, 8.5 + y_offset - 0.15), 0.8, 0.3,
+                               boxstyle="round,pad=0.02",
+                               facecolor='#FFA726', edgecolor='white', linewidth=1)
+        ax.add_patch(td_box)
+        ax.text(bifpn_x + 0.6, 8.5 + y_offset, label, fontsize=8, fontweight='bold',
                 ha='center', va='center', color='white')
     
-    # Output
-    output_box = FancyBboxPatch((16.5, 4), 1.2, 2, 
-                               boxstyle="round,pad=0.1", 
+    for i, (label, y_offset) in enumerate([('BU-3', -0.4), ('BU-4', 0.0), ('BU-5', 0.4)]):
+        bu_box = FancyBboxPatch((bifpn_x + 2, 8.5 + y_offset - 0.15), 0.8, 0.3,
+                               boxstyle="round,pad=0.02",
+                               facecolor='#FF8A65', edgecolor='white', linewidth=1)
+        ax.add_patch(bu_box)
+        ax.text(bifpn_x + 2.4, 8.5 + y_offset, label, fontsize=8, fontweight='bold',
+                ha='center', va='center', color='white')
+    
+    # Stage 6: Fused Features [F3:74ch, F4:74ch, F5:74ch]
+    fused_x = 15.5
+    fused_features = [
+        (fused_x, feature_y + 0.6, 'F3', '74ch'),
+        (fused_x, feature_y, 'F4', '74ch'), 
+        (fused_x, feature_y - 0.6, 'F5', '74ch')
+    ]
+    
+    for x, y, label, channels in fused_features:
+        fused_box = FancyBboxPatch((x, y - 0.3), 2, 0.6, 
+                                  boxstyle="round,pad=0.03", 
+                                  facecolor='#FF8F00', 
+                                  edgecolor='#424242', linewidth=1.5)
+        ax.add_patch(fused_box)
+        ax.text(x + 1, y, f'{label}: {channels}', fontsize=10, fontweight='bold',
+                ha='center', va='center', color='white')
+    
+    # Stage 7: Second CBAM → Refined Features [R3, R4, R5]
+    cbam2_x = 18
+    ax.text(cbam2_x + 1, 9.2, 'Second CBAM', fontsize=11, fontweight='bold',
+            ha='center', va='center', color=colors['text'])
+    
+    refined_features = [
+        (cbam2_x, feature_y + 0.6, 'R3', 'Refined'),
+        (cbam2_x, feature_y, 'R4', 'Refined'), 
+        (cbam2_x, feature_y - 0.6, 'R5', 'Refined')
+    ]
+    
+    for x, y, label, desc in refined_features:
+        cbam2_box = FancyBboxPatch((x, y - 0.3), 2, 0.6, 
+                                  boxstyle="round,pad=0.03", 
+                                  facecolor=colors['cbam2'], 
+                                  edgecolor='#424242', linewidth=1.5)
+        ax.add_patch(cbam2_box)
+        ax.text(x + 1, y, f'{label}: {desc}', fontsize=10, fontweight='bold',
+                ha='center', va='center', color='white')
+    
+    # Stage 8: Detection Heads
+    detection_y = 6
+    detection_heads = [
+        (7, detection_y, 'Head P3'),
+        (10, detection_y, 'Head P4'),
+        (13, detection_y, 'Head P5')
+    ]
+    
+    for x, y, label in detection_heads:
+        det_box = FancyBboxPatch((x, y), 2.5, 0.8, 
+                                boxstyle="round,pad=0.03", 
+                                facecolor=colors['detection'], 
+                                edgecolor='#424242', linewidth=1.5)
+        ax.add_patch(det_box)
+        ax.text(x + 1.25, y + 0.4, label, fontsize=11, fontweight='bold',
+                ha='center', va='center', color='white')
+    
+    # Stage 9: Context Enhancement
+    context_y = 4.5
+    
+    # DCN Context
+    dcn_box = FancyBboxPatch((6, context_y), 4, 1, 
+                            boxstyle="round,pad=0.03", 
+                            facecolor=colors['context'], 
+                            edgecolor='#424242', linewidth=1.5)
+    ax.add_patch(dcn_box)
+    ax.text(8, context_y + 0.6, 'DCN Context', fontsize=12, fontweight='bold',
+            ha='center', va='center', color=colors['text'])
+    ax.text(8, context_y + 0.2, '148K params', fontsize=10,
+            ha='center', va='center', color=colors['text'])
+    
+    # Channel Shuffle
+    shuffle_box = FancyBboxPatch((11, context_y), 4, 1, 
+                                boxstyle="round,pad=0.03", 
+                                facecolor=colors['context'], 
+                                edgecolor='#424242', linewidth=1.5)
+    ax.add_patch(shuffle_box)
+    ax.text(13, context_y + 0.6, 'Channel Shuffle', fontsize=12, fontweight='bold',
+            ha='center', va='center', color=colors['text'])
+    ax.text(13, context_y + 0.2, '0 params', fontsize=10,
+            ha='center', va='center', color=colors['text'])
+    
+    # Stage 10: Final Output
+    output_box = FancyBboxPatch((8, 2.5), 6, 1.2, 
+                               boxstyle="round,pad=0.05", 
                                facecolor=colors['output'], 
-                               edgecolor='black', linewidth=2)
+                               edgecolor='#424242', linewidth=1.5)
     ax.add_patch(output_box)
-    ax.text(17.1, 5, 'Output', fontsize=10, fontweight='bold',
-            ha='center', va='center', color='#2E2E2E')
+    ax.text(11, 3.3, 'Final Output', fontsize=14, fontweight='bold',
+            ha='center', va='center', color='white')
+    ax.text(11, 2.9, 'bbox_reg • classifications • landmarks', fontsize=11,
+            ha='center', va='center', color='white')
     
-    # Explicit arrows for each parallel flow
-    arrow_props = dict(arrowstyle='->', lw=2, color='#424242')
+    # Flow arrows - correct sequence
+    arrow_style = dict(arrowstyle='->', lw=2.5, color=colors['arrow'])
     
-    # Input to backbone
-    ax.annotate('', xy=(3.5, 5), xytext=(2.5, 5), arrowprops=arrow_props)
+    # Main horizontal flow
+    main_y = 10.1
+    ax.annotate('', xy=(3.5, main_y), xytext=(3, main_y), arrowprops=arrow_style)
+    ax.annotate('', xy=(7, main_y), xytext=(6.5, main_y), arrowprops=arrow_style)
     
-    # Backbone to features (3 separate arrows)
-    ax.annotate('', xy=(7, 5.7), xytext=(6, 5.5), arrowprops=arrow_props)  # P3
-    ax.annotate('', xy=(7, 5), xytext=(6, 5), arrowprops=arrow_props)      # P4
-    ax.annotate('', xy=(7, 4.3), xytext=(6, 4.5), arrowprops=arrow_props)  # P5
+    # Features to First CBAM
+    for y_offset in [0.6, 0, -0.6]:
+        ax.annotate('', xy=(9.5, feature_y + y_offset), xytext=(9, feature_y + y_offset), 
+                   arrowprops=arrow_style)
     
-    # Features to attention (3 separate arrows)
-    ax.annotate('', xy=(9.5, 5.7), xytext=(8.5, 5.7), arrowprops=arrow_props)  # P3
-    ax.annotate('', xy=(9.5, 5), xytext=(8.5, 5), arrowprops=arrow_props)      # P4
-    ax.annotate('', xy=(9.5, 4.3), xytext=(8.5, 4.3), arrowprops=arrow_props)  # P5
+    # First CBAM to BiFPN
+    for y_offset in [0.6, 0, -0.6]:
+        ax.annotate('', xy=(12, 8.5), xytext=(11.5, feature_y + y_offset), 
+                   arrowprops=arrow_style)
     
-    # Attention to BiFPN (3 separate arrows)
-    ax.annotate('', xy=(12, 5.5), xytext=(11, 5.7), arrowprops=arrow_props)  # P3
-    ax.annotate('', xy=(12, 5), xytext=(11, 5), arrowprops=arrow_props)      # P4
-    ax.annotate('', xy=(12, 4.5), xytext=(11, 4.3), arrowprops=arrow_props)  # P5
+    # BiFPN to Fused Features
+    for y_offset in [0.6, 0, -0.6]:
+        ax.annotate('', xy=(15.5, feature_y + y_offset), xytext=(15, 8.5), 
+                   arrowprops=arrow_style)
     
-    # BiFPN bidirectional connections (top-down and bottom-up)
-    ax.annotate('', xy=(12.3, 4.8), xytext=(12.3, 5.2), 
-                arrowprops=dict(arrowstyle='<->', lw=1.5, color='#FF5722'))
-    ax.annotate('', xy=(13.7, 4.8), xytext=(13.7, 5.2), 
-                arrowprops=dict(arrowstyle='<->', lw=1.5, color='#FF5722'))
+    # Fused Features to Second CBAM
+    for y_offset in [0.6, 0, -0.6]:
+        ax.annotate('', xy=(18, feature_y + y_offset), xytext=(17.5, feature_y + y_offset), 
+                   arrowprops=arrow_style)
     
-    # BiFPN to detection heads (3 separate arrows)
-    ax.annotate('', xy=(15, 5.7), xytext=(14, 5.5), arrowprops=arrow_props)  # P3
-    ax.annotate('', xy=(15, 5), xytext=(14, 5), arrowprops=arrow_props)      # P4
-    ax.annotate('', xy=(15, 4.3), xytext=(14, 4.5), arrowprops=arrow_props)  # P5
+    # Second CBAM to Detection Heads
+    for i, (x, y, _) in enumerate(detection_heads):
+        ax.annotate('', xy=(x + 1.25, y + 0.8), xytext=(19, feature_y + (0.6 - 0.6*i)), 
+                   arrowprops=arrow_style)
     
-    # Detection heads to output (convergent arrows)
-    ax.annotate('', xy=(16.5, 5.2), xytext=(16.5, 5.7), arrowprops=arrow_props)  # P3
-    ax.annotate('', xy=(16.5, 5), xytext=(16.5, 5), arrowprops=arrow_props)      # P4
-    ax.annotate('', xy=(16.5, 4.8), xytext=(16.5, 4.3), arrowprops=arrow_props)  # P5
+    # Detection to Context
+    ax.annotate('', xy=(8, context_y + 1), xytext=(8.25, detection_y), arrowprops=arrow_style)
+    ax.annotate('', xy=(13, context_y + 1), xytext=(11.25, detection_y), arrowprops=arrow_style)
     
-    # Additional architecture details section
-    detail_y = 2.5
+    # Context to Output
+    ax.annotate('', xy=(10, 3.7), xytext=(8, context_y), arrowprops=arrow_style)
+    ax.annotate('', xy=(12, 3.7), xytext=(13, context_y), arrowprops=arrow_style)
     
-    # CBAM detail
-    cbam_detail = FancyBboxPatch((1, detail_y-0.5), 3, 1, 
-                                boxstyle="round,pad=0.1", 
-                                facecolor=colors['attention'], 
-                                edgecolor='black', linewidth=1)
-    ax.add_patch(cbam_detail)
-    ax.text(2.5, detail_y, 'CBAM: Channel + Spatial Attention\n44K params (9.2%)', 
-            fontsize=9, ha='center', va='center', color='white')
+    # Academic specification panel
+    spec_box = FancyBboxPatch((0.5, 0.5), 19, 1.5,
+                             boxstyle="round,pad=0.05",
+                             facecolor='#FAFAFA', edgecolor='#BDBDBD', linewidth=1)
+    ax.add_patch(spec_box)
     
-    # DCN detail
-    dcn_detail = FancyBboxPatch((5, detail_y-0.5), 3, 1, 
-                               boxstyle="round,pad=0.1", 
-                               facecolor='#FFCDD2', 
-                               edgecolor='black', linewidth=1)
-    ax.add_patch(dcn_detail)
-    ax.text(6.5, detail_y, 'DCN Context Module\n148K params (30.4%)', 
-            fontsize=9, ha='center', va='center', color='#2E2E2E')
-    
-    # Channel Shuffle detail
-    shuffle_detail = FancyBboxPatch((9, detail_y-0.5), 3, 1, 
-                                   boxstyle="round,pad=0.1", 
-                                   facecolor='#E1F5FE', 
-                                   edgecolor='black', linewidth=1)
-    ax.add_patch(shuffle_detail)
-    ax.text(10.5, detail_y, 'Channel Shuffle\n0 params (Zero-cost)', 
-            fontsize=9, ha='center', va='center', color='#2E2E2E')
-    
-    # Detection heads detail
-    heads_detail = FancyBboxPatch((13, detail_y-0.5), 3.5, 1, 
-                                 boxstyle="round,pad=0.1", 
-                                 facecolor=colors['detection'], 
-                                 edgecolor='black', linewidth=1)
-    ax.add_patch(heads_detail)
-    ax.text(14.75, detail_y, 'Detection Heads: Cls + BBox + Landmarks\n7K params (1.5%)', 
-            fontsize=9, ha='center', va='center', color='white')
-    
-    # Performance summary at bottom
-    ax.text(9, 0.8, '487K Parameters • 87.0% mAP on WIDERFace • 30+ FPS on Mobile', 
-            fontsize=14, fontweight='bold', ha='center', va='center', color='#2E2E2E',
-            bbox=dict(boxstyle="round,pad=0.3", facecolor='#E8F5E8', edgecolor='#4CAF50'))
+    ax.text(10, 1.6, 'Architecture Specifications', fontsize=14, fontweight='bold',
+            ha='center', va='center', color=colors['text'])
+    ax.text(10, 1.2, 'Total Parameters: 487K • Performance: 87.0% mAP on WIDERFace • Inference: 30+ FPS', 
+            fontsize=12, ha='center', va='center', color=colors['text'])
+    ax.text(10, 0.8, 'Double CBAM Pipeline: Features → CBAM₁ → BiFPN → CBAM₂ → Detection → Context → Output', 
+            fontsize=11, ha='center', va='center', color='#D32F2F')
     
     plt.tight_layout()
     plt.savefig('docs/featherface_v1_architecture.png', dpi=300, bbox_inches='tight', 
@@ -203,5 +282,5 @@ def create_v1_architecture_diagram():
     plt.close()
 
 if __name__ == "__main__":
-    create_v1_architecture_diagram()
-    print("✅ FeatherFace V1 architecture diagram generated: docs/featherface_v1_architecture.png")
+    create_v1_academic_diagram()
+    print("✅ FeatherFace V1 academic architecture diagram with CORRECT SEQUENCE generated: docs/featherface_v1_architecture.png")

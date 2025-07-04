@@ -9,7 +9,7 @@ FeatherFace V2 Ultra represents a revolutionary breakthrough in lightweight face
 ## 📊 Architecture Overview
 
 ```
-Input (640×640) → Shared MobileNet Backbone → Revolutionary V2 Ultra Pipeline → Ultra-Smart Detection
+Input (640×640x3) → Shared MobileNet Backbone → Revolutionary V2 Ultra Pipeline → Ultra-Smart Detection
                                                ↓
                    UltraLightCBAM → UltraLightBiFPN → 5 Zero-Param Innovations → SharedMultiHead
 ```
