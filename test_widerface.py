@@ -4,20 +4,20 @@ import argparse
 import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
-from data.config import cfg_mnet, cfg_mnet_v2_ultra
+from data.config import cfg_mnet, cfg_nano
 from layers.functions.prior_box import PriorBox
 from utils.nms.py_cpu_nms import py_cpu_nms
 import cv2
 from models.retinaface import RetinaFace
-from models.retinaface_v2_ultra import RetinaFaceV2Ultra
+from models.featherface_nano import FeatherFaceNano
 from utils.box_utils import decode, decode_landm
 from utils.timer import Timer
 
 
 parser = argparse.ArgumentParser(description='Retinaface')
 parser.add_argument('-m', '--trained_model', default='./weights/Resnet50_Final.pth',
-                    type=str, help='Trained state_dict file path to open. Examples: ./weights/mobilenet0.25_Final.pth (V1), ./weights/v2_ultra/v2_ultra_final.pth (V2 Ultra)')
-parser.add_argument('--network', default='resnet50', help='Backbone network: mobile0.25 (V1), v2_ultra (V2 Ultra), or resnet50')
+                    type=str, help='Trained state_dict file path to open. Examples: ./weights/mobilenet0.25_Final.pth (V1), ./weights/nano/nano_final.pth (Nano)')
+parser.add_argument('--network', default='resnet50', help='Backbone network: mobile0.25 (V1), nano (Nano Ultra-Efficient), or resnet50')
 parser.add_argument('--origin_size', default=True, type=str, help='Whether use origin image size to evaluate')
 parser.add_argument('--save_folder', default='./widerface_evaluate/widerface_txt/', type=str, help='Dir to save txt results')
 parser.add_argument('--cpu', action="store_true", default=False, help='Use cpu inference')
@@ -59,7 +59,7 @@ def load_model(model, pretrained_path, load_to_cpu):
         device = torch.cuda.current_device()
         pretrained_dict = torch.load(pretrained_path, map_location=lambda storage, loc: storage.cuda(device))
     
-    # Handle different checkpoint formats (especially for V2 Ultra)
+    # Handle different checkpoint formats (especially for Nano)
     if "model_state_dict" in pretrained_dict.keys():
         pretrained_dict = pretrained_dict['model_state_dict']
     elif "state_dict" in pretrained_dict.keys():
@@ -74,9 +74,9 @@ def load_model(model, pretrained_path, load_to_cpu):
 
 def create_model(network_type, cfg):
     """Factory function to create the appropriate model based on network type"""
-    if network_type == "v2_ultra":
-        print("Creating FeatherFace V2 Ultra model (244K parameters)")
-        return RetinaFaceV2Ultra(cfg=cfg, phase='test')
+    if network_type == "nano":
+        print("Creating FeatherFace Nano model (344K parameters)")
+        return FeatherFaceNano(cfg=cfg, phase='test')
     else:
         print(f"Creating FeatherFace V1 model ({network_type})")
         return RetinaFace(cfg=cfg, phase='test')
@@ -90,9 +90,9 @@ if __name__ == '__main__':
     if args.network == "mobile0.25":
         cfg = cfg_mnet
         print("Using FeatherFace V1 configuration (487K parameters)")
-    elif args.network == "v2_ultra":
-        cfg = cfg_mnet_v2_ultra
-        print("Using FeatherFace V2 Ultra configuration (244K parameters)")
+    elif args.network == "nano":
+        cfg = cfg_nano
+        print("Using FeatherFace Nano configuration (344K parameters)")
     elif args.network == "resnet50":
         cfg = cfg_re50
         print("Using ResNet50 configuration")
@@ -116,9 +116,9 @@ if __name__ == '__main__':
     print(f'Total parameters: {total_params:,}')
     print(f'Trainable parameters: {trainable_params:,}')
     
-    if args.network == "v2_ultra":
-        print('🚀 FeatherFace V2 Ultra: Revolutionary Intelligence > Capacity paradigm')
-        print('📊 49.8% parameter reduction with superior performance')
+    if args.network == "nano":
+        print('🚀 FeatherFace Nano: Scientifically justified ultra-efficient architecture')
+        print('📊 29.3% parameter reduction with verified research foundation')
     
     cudnn.benchmark = True
     device = torch.device("cpu" if args.cpu else "cuda")

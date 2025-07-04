@@ -20,14 +20,14 @@ def check_scripts():
     print_header("SCRIPTS DE WORKFLOW (ROOT)")
     
     scripts = [
-        ("train_v1.py", "✓ Entraînement V1 (489K params)"),
-        ("train_v2_ultra.py", "✓ Entraînement V2 Ultra (248K params)"),
+        ("train_v1.py", "✓ Entraînement V1 (487K params)"),
+        ("train_nano.py", "✓ Entraînement Nano (344K params)"),
         ("test_widerface.py", "✓ Test WIDERFace"),
-        ("test_v1_v2_ultra_comparison.py", "✓ Comparaison V1/V2 Ultra"),
+        ("test_v1_nano_comparison.py", "✓ Comparaison V1/Nano"),
         ("evaluate_widerface.py", "✓ Évaluation simplifiée"),
         ("validate_model.py", "✓ Validation modèles"),
-        ("validate_claims.py", "✓ Validation claims révolutionnaires"),
-        ("validate_v2_ultra.py", "✓ Validation V2 Ultra"),
+        ("validate_claims.py", "✓ Validation claims scientifiques"),
+        ("validate_nano.py", "✓ Validation Nano"),
         ("help.py", "✓ Script d'aide")
     ]
     
