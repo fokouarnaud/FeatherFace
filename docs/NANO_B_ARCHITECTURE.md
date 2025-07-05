@@ -15,17 +15,17 @@ FeatherFace Nano-B represents the pinnacle of ultra-lightweight face detection, 
 6. **Weighted Distillation**: 2025 Edge Computing Research on adaptive knowledge transfer
 7. **Bayesian Optimization**: Mockus, "Bayesian Methods for Seeking the Extremum", 1989
 
-## Architecture Evolution: V1 → Nano → Nano-B
+## Architecture Evolution: V1 → Nano-B
 
-| Component | **V1 Baseline** | **Nano** | **Nano-B** |
-|-----------|-----------------|----------|------------|
-| **Parameters** | 487,103 | 344,254 | **120,000-180,000** |
-| **Backbone** | MobileNet V1-0.25 | MobileNet V1-0.25 | MobileNet V1-0.25 + Pruning |
-| **CBAM** | Standard | Efficient (R=8) | **Bayesian-Pruned** |
-| **FPN** | BiFPN | Efficient BiFPN | **B-FPGM Optimized** |
-| **SSH** | Standard | Grouped (G=2) | **Pruned + Optimized** |
-| **Training** | Standard | Knowledge Distillation | **3-Phase Pipeline** |
-| **Optimization** | Manual | Research-based | **Bayesian-Automated** |
+| Component | **V1 Baseline** | **Nano-B Ultra-Lightweight** |
+|-----------|-----------------|------------------------------|
+| **Parameters** | 487,103 | **120,000-180,000** |
+| **Backbone** | MobileNet V1-0.25 | MobileNet V1-0.25 + Bayesian Pruning |
+| **CBAM** | Standard | **Bayesian-Pruned Efficient** |
+| **FPN** | BiFPN | **B-FPGM Optimized BiFPN** |
+| **SSH** | Standard | **Pruned + Optimized Grouped** |
+| **Training** | Standard | **3-Phase Pipeline** |
+| **Optimization** | Manual | **Bayesian-Automated** |
 
 ## Three-Phase Training Pipeline
 
