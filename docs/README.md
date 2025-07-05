@@ -22,8 +22,16 @@ This directory contains essential documentation for the FeatherFace project with
 
 ### 📊 Architecture Diagrams
 - **[featherface_v1_architecture.png](featherface_v1_architecture.png)** - V1 Architecture Visualization
-- **[featherface_nano_b_architecture.png](featherface_nano_b_architecture.png)** - Nano-B Architecture Visualization
+- **[featherface_nano_b_architecture_diagram.png](featherface_nano_b_architecture_diagram.png)** - Nano-B Enhanced Architecture (2024) - Landscape Mode
+- **[nano_b_architecture_diagram.svg](nano_b_architecture_diagram.svg)** - Nano-B Architecture SVG Source
+- **[literature_review_tree_diagram.png](literature_review_tree_diagram.png)** - Literature Review Hierarchical Tree
+- **[literature_review_tree.svg](literature_review_tree.svg)** - Literature Review Tree SVG Source
 - **[V1_ARCHITECTURE_DIAGRAM.md](V1_ARCHITECTURE_DIAGRAM.md)** - V1 Detailed Diagram Description
+
+### 🎯 Diagrammes Simplifiés (Mode Paysage - 2024)
+- **[🎯 Architecture Technique Simplifiée](ARCHITECTURE_PAYSAGE_SIMPLE.md)** - Diagramme mode paysage pour compréhension rapide
+- **[🏭 Architecture pour Enfants 5 ans](NANO_B_ARCHITECTURE_ENFANTS.md)** - Explications ultra-simples avec métaphores
+- **[🎭 Métaphores et Explications Visuelles](METAPHORES_ARCHITECTURE.md)** - Guide de compréhension par analogies concrètes
 
 ## 🔬 Scientific Foundation
 
@@ -81,7 +89,8 @@ This directory contains essential documentation for the FeatherFace project with
 
 ## 📚 Research References
 
-### Verified Publications
+### Verified Publications (10 Research Papers)
+**Core Architecture (2017-2025):**
 - **Kaparinos & Mezaris WACVW 2025**: "B-FPGM: Lightweight Face Detection via Bayesian-Optimized Soft FPGM Pruning"
 - **Li et al. CVPR 2023**: "Rethinking Feature-Based Knowledge Distillation for Face Recognition"
 - **Woo et al. ECCV 2018**: "CBAM: Convolutional Block Attention Module"
@@ -89,6 +98,11 @@ This directory contains essential documentation for the FeatherFace project with
 - **Howard et al. 2017**: "MobileNets: Efficient Convolutional Neural Networks"
 - **2025 Edge Computing Research**: Weighted knowledge distillation for edge deployment
 - **Mockus 1989**: "Bayesian Methods for Seeking the Extremum"
+
+**Small Face Detection Enhancements (2024):**
+- **🎯 ASSN**: "Attention-based scale sequence network for small object detection" (PMC/ScienceDirect 2024)
+- **🌉 MSE-FPN**: "Multi-scale semantic enhancement network for object detection" (Scientific Reports 2024)
+- **🧹 Scale Decoupling**: SNLA approach for P3 optimization (2024 research)
 
 ### Documentation Quality
 - **Complete**: All architectures fully documented
