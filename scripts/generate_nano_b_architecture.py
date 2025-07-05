@@ -26,244 +26,489 @@ project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
 def setup_publication_style():
-    """Setup matplotlib for publication-quality figures"""
+    """Setup matplotlib for publication-quality black and white figures with improved typography"""
     plt.style.use('default')
     plt.rcParams.update({
         'font.family': 'serif',
-        'font.serif': ['Times New Roman', 'DejaVu Serif'],
-        'font.size': 10,
-        'axes.linewidth': 1.2,
-        'axes.labelsize': 10,
-        'axes.titlesize': 12,
-        'xtick.labelsize': 9,
-        'ytick.labelsize': 9,
-        'legend.fontsize': 9,
-        'figure.titlesize': 14,
-        'text.usetex': False,  # Set to True if LaTeX is available
+        'font.serif': ['Times New Roman', 'DejaVu Serif', 'Liberation Serif'],
+        'font.size': 12,  # Increased base font size
+        'axes.linewidth': 1.5,
+        'axes.labelsize': 12,
+        'axes.titlesize': 16,  # Larger titles
+        'xtick.labelsize': 10,
+        'ytick.labelsize': 10,
+        'legend.fontsize': 11,
+        'figure.titlesize': 18,  # Much larger figure title
+        'text.usetex': False,
         'figure.dpi': 300,
         'savefig.dpi': 300,
         'savefig.bbox': 'tight',
-        'savefig.transparent': True
+        'savefig.transparent': False,
+        'savefig.facecolor': 'white',
+        'figure.facecolor': 'white'
     })
 
 def create_featherface_nano_b_diagram():
-    """Create comprehensive FeatherFace Nano-B architecture diagram"""
+    """Create FeatherFace Nano-B architecture diagram - Landscape Multi-Level Style"""
     
-    # Create figure with golden ratio dimensions
-    fig_width = 16
-    fig_height = fig_width / 1.618  # Golden ratio
+    # Create figure with landscape dimensions for multi-level representation
+    fig_width = 24
+    fig_height = 16  # Landscape layout for P3/P4/P5 parallel representation
     fig, ax = plt.subplots(1, 1, figsize=(fig_width, fig_height))
     
-    # Colors for different components (colorblind-friendly palette)
+    # Enhanced black and white styling with visual hierarchy
     colors = {
-        'input': '#2E86AB',      # Blue
-        'backbone': '#A23B72',   # Purple  
-        'efficient': '#F18F01',  # Orange
-        'detection': '#C73E1D',  # Red
-        'pruning': '#4CAF50',    # Green
-        'distillation': '#FF9800', # Amber
-        'output': '#607D8B'      # Blue Grey
+        'main_border': '#000000',  # Pure black for main elements
+        'component_fill': '#FFFFFF',  # Pure white for main components
+        'component_border': '#000000',  # Black borders
+        'secondary_fill': '#F8F8F8',  # Very light gray for secondary
+        'text_main': '#000000',  # Pure black for main text
+        'text_secondary': '#333333',  # Dark gray for secondary text
+        'text_detail': '#555555',  # Medium gray for details
+        'arrow_main': '#000000',  # Black for main data flow
+        'arrow_distill': '#666666',  # Gray for distillation
+        'background': '#FFFFFF',  # Pure white background
+        'highlight': '#E8E8E8',  # Light gray for highlights
+        'grid': '#F0F0F0'  # Very light gray for grid
     }
     
-    # Component dimensions and positions
-    comp_height = 0.8
-    comp_spacing = 1.5
-    y_center = 4
+    # Typography hierarchy
+    fonts = {
+        'title_main': {'size': 18, 'weight': 'bold'},
+        'title_section': {'size': 14, 'weight': 'bold'},
+        'title_module': {'size': 12, 'weight': 'bold'},
+        'text_normal': {'size': 11, 'weight': 'normal'},
+        'text_detail': {'size': 10, 'weight': 'normal'},
+        'text_annotation': {'size': 9, 'weight': 'normal'}
+    }
     
-    # Input layer
+    # Border hierarchy for visual importance
+    borders = {
+        'critical': 3,    # Backbone, BiFPN
+        'important': 2,   # CBAM, SSH, Heads
+        'standard': 1.5,  # Other modules
+        'auxiliary': 1    # Labels, annotations
+    }
+    
+    # Set white background
+    fig.patch.set_facecolor('white')
+    ax.set_facecolor('white')
+    
+    # Precise grid-based layout for perfect alignment
+    # Grid system: 24x16 with 0.5 unit precision
+    grid_unit = 0.5
+    
+    # Component dimensions optimized for hierarchy
+    dimensions = {
+        'input': {'w': 5.5, 'h': 1.4},
+        'backbone': {'w': 5.5, 'h': 1.6},  # Slightly larger for importance
+        'level_module': {'w': 3.8, 'h': 1.8},
+        'teacher': {'w': 6, 'h': 3.2},  # Reduced size for better balance
+        'output': {'w': 5.5, 'h': 1.4},
+        'head_box': {'w': 3.8, 'h': 0.55}
+    }
+    
+    # Grid-aligned positions for perfect layout
+    positions = {
+        # Left side - input flow (perfectly aligned)
+        'input': {'x': 0.5, 'y': 13.5, 'w': dimensions['input']['w'], 'h': dimensions['input']['h']},
+        'backbone': {'x': 0.5, 'y': 11, 'w': dimensions['backbone']['w'], 'h': dimensions['backbone']['h']},
+        
+        # Center - multi-level processing (perfectly spaced)
+        'p3_x': 8.5, 'p4_x': 13, 'p5_x': 17.5,  # Evenly spaced at 4.5 unit intervals
+        'level_spacing': 4.5,  # Consistent spacing
+        
+        # Y positions for processing layers (evenly distributed)
+        'cbam1_y': 13.2,
+        'bifpn_y': 10.8,
+        'cbam2_y': 8.4,
+        'ssh_y': 6.0,
+        'heads_y': 3.5,
+        
+        # Right side - output 
+        'output': {'x': 18, 'y': 1.2, 'w': dimensions['output']['w'], 'h': dimensions['output']['h']},
+        
+        # Bottom left - teacher model (repositioned)
+        'teacher': {'x': 0.5, 'y': 0.5, 'w': dimensions['teacher']['w'], 'h': dimensions['teacher']['h']},
+        
+        # Right side - pruning annotations
+        'pruning_x': 22.5,
+        'pruning_start_y': 12
+    }
+    
+    # Main title with improved typography
+    ax.text(12, 15.5, 'FeatherFace Nano-B: Bayesian-Optimized Ultra-Lightweight Face Detection',
+            ha='center', va='center', fontsize=fonts['title_main']['size'], 
+            fontweight=fonts['title_main']['weight'], color=colors['text_main'])
+    ax.text(12, 15, '120,000-180,000 Parameters (48-65% Reduction) | 7 Scientific Techniques',
+            ha='center', va='center', fontsize=fonts['title_section']['size'], 
+            fontweight=fonts['title_section']['weight'], color=colors['text_secondary'])
+    
+    # Level labels with consistent spacing and improved typography
+    level_positions = [positions['p3_x'], positions['p4_x'], positions['p5_x']]
+    level_labels = [
+        'P3 Level\n(32→72 channels)\n320×320→40×40',
+        'P4 Level\n(64→72 channels)\n160×160→20×20', 
+        'P5 Level\n(128→72 channels)\n80×80→10×10'
+    ]
+    
+    for x_pos, label in zip(level_positions, level_labels):
+        ax.text(x_pos + dimensions['level_module']['w']/2, 14.8, label, 
+                ha='center', va='center', fontsize=fonts['text_normal']['size'], 
+                fontweight=fonts['text_normal']['weight'], color=colors['text_main'],
+                bbox=dict(boxstyle="round,pad=0.3", facecolor=colors['secondary_fill'], 
+                         edgecolor=colors['component_border'], linewidth=borders['auxiliary']))
+    
+    # === LEFT SIDE: INPUT AND BACKBONE ===
+    
+    # 1. Input Layer with improved styling
+    input_pos = positions['input']
     input_box = FancyBboxPatch(
-        (0.5, y_center - comp_height/2), 2, comp_height,
+        (input_pos['x'], input_pos['y']), input_pos['w'], input_pos['h'],
         boxstyle="round,pad=0.1", 
-        facecolor=colors['input'], 
-        edgecolor='black', 
-        linewidth=1.5
+        facecolor=colors['component_fill'], 
+        edgecolor=colors['component_border'], 
+        linewidth=borders['important']
     )
     ax.add_patch(input_box)
-    ax.text(1.5, y_center, 'Input\n(3×H×W)', ha='center', va='center', 
-            fontweight='bold', color='white', fontsize=10)
+    ax.text(input_pos['x'] + input_pos['w']/2, input_pos['y'] + input_pos['h']/2, 
+            'INPUT IMAGE\n(640×640×3)', 
+            ha='center', va='center', fontsize=fonts['title_module']['size'], 
+            fontweight=fonts['title_module']['weight'], color=colors['text_main'])
     
-    # MobileNet Backbone
-    backbone_x = 3.5
+    # 2. MobileNet Backbone with critical importance styling
+    backbone_pos = positions['backbone']
     backbone_box = FancyBboxPatch(
-        (backbone_x, y_center - comp_height/2), 2.5, comp_height,
+        (backbone_pos['x'], backbone_pos['y']), backbone_pos['w'], backbone_pos['h'],
         boxstyle="round,pad=0.1",
-        facecolor=colors['backbone'],
-        edgecolor='black',
-        linewidth=1.5
+        facecolor=colors['component_fill'],
+        edgecolor=colors['component_border'],
+        linewidth=borders['critical']  # Thickest border for critical component
     )
     ax.add_patch(backbone_box)
-    ax.text(backbone_x + 1.25, y_center + 0.2, 'MobileNetV1 0.25×', 
-            ha='center', va='center', fontweight='bold', color='white', fontsize=10)
-    ax.text(backbone_x + 1.25, y_center - 0.2, 'Backbone\n(~85K params)', 
-            ha='center', va='center', fontsize=9, color='white')
+    ax.text(backbone_pos['x'] + backbone_pos['w']/2, backbone_pos['y'] + backbone_pos['h'] - 0.3, 
+            'MOBILENET V1-0.25 BACKBONE', 
+            ha='center', va='center', fontsize=fonts['title_module']['size'], 
+            fontweight=fonts['title_module']['weight'], color=colors['text_main'])
+    ax.text(backbone_pos['x'] + backbone_pos['w']/2, backbone_pos['y'] + backbone_pos['h']/2, 
+            '~60,000 parameters (40% of total)', 
+            ha='center', va='center', fontsize=fonts['text_detail']['size'], 
+            fontweight=fonts['text_detail']['weight'], color=colors['text_secondary'])
+    ax.text(backbone_pos['x'] + backbone_pos['w']/2, backbone_pos['y'] + 0.3, 
+            'Bayesian-Optimized Pruning Applied', 
+            ha='center', va='center', fontsize=fonts['text_annotation']['size'], 
+            style='italic', color=colors['text_detail'])
     
-    # Efficient modules stack
-    efficient_x = 7
-    efficient_components = [
-        ('Efficient CBAM\n(Reduction=8)', '~8K params'),
-        ('Efficient BiFPN\n(72 channels)', '~45K params'),
-        ('Grouped SSH\n(Groups=2)', '~25K params')
+    # Show backbone stages with connections to levels
+    stage_data = [
+        ('32ch\n320×320', positions['p3_x']),
+        ('64ch\n160×160', positions['p4_x']),
+        ('128ch\n80×80', positions['p5_x'])
     ]
     
-    for i, (name, params) in enumerate(efficient_components):
-        y_pos = y_center + 1.5 - i * 1.2
-        eff_box = FancyBboxPatch(
-            (efficient_x, y_pos - comp_height/2), 2.8, comp_height*0.8,
-            boxstyle="round,pad=0.08",
-            facecolor=colors['efficient'],
-            edgecolor='black',
-            linewidth=1.2
+    stage_y = backbone_pos['y'] - 0.5
+    for stage_text, x_pos in stage_data:
+        # Stage box
+        stage_box = FancyBboxPatch(
+            (x_pos + level_width/2 - 0.8, stage_y - 0.3), 1.6, 0.6,
+            boxstyle="round,pad=0.05",
+            facecolor=colors['highlight'],
+            edgecolor=colors['component_border'],
+            linewidth=1
         )
-        ax.add_patch(eff_box)
-        ax.text(efficient_x + 1.4, y_pos + 0.15, name, 
-                ha='center', va='center', fontweight='bold', color='white', fontsize=9)
-        ax.text(efficient_x + 1.4, y_pos - 0.15, params, 
-                ha='center', va='center', fontsize=8, color='white')
+        ax.add_patch(stage_box)
+        ax.text(x_pos + level_width/2, stage_y, stage_text, 
+                ha='center', va='center', fontsize=9, fontweight='bold', color=colors['text_main'])
+        
+        # Connection from backbone to stage
+        connection = patches.ConnectionPatch(
+            (backbone_pos['x'] + backbone_pos['w'], backbone_pos['y'] + backbone_pos['h']/2),
+            (x_pos + level_width/2, stage_y + 0.3),
+            "data", "data", arrowstyle="->", shrinkA=0, shrinkB=0,
+            color=colors['arrow'], linewidth=1.5
+        )
+        ax.add_patch(connection)
     
-    # Detection heads
-    detection_x = 11
-    detection_box = FancyBboxPatch(
-        (detection_x, y_center - comp_height/2), 2.5, comp_height,
+    # === CENTER: MULTI-LEVEL PROCESSING ===
+    
+    def create_level_module(x, y, width, height, title, details, pattern=''):
+        """Create a module box for each level"""
+        # Main box
+        box = FancyBboxPatch(
+            (x, y), width, height,
+            boxstyle="round,pad=0.1",
+            facecolor=colors['component_fill'],
+            edgecolor=colors['component_border'],
+            linewidth=1.5
+        )
+        ax.add_patch(box)
+        
+        # Title
+        ax.text(x + width/2, y + height - 0.3, title, 
+                ha='center', va='center', fontweight='bold', fontsize=10, color=colors['text_main'])
+        
+        # Details
+        ax.text(x + width/2, y + height/2 - 0.1, details, 
+                ha='center', va='center', fontsize=9, color=colors['text_main'])
+        
+        # Pattern for differentiation (using different line styles)
+        if pattern == 'dashed':
+            for i in range(3):
+                line_y = y + 0.3 + i * 0.3
+                ax.plot([x + 0.2, x + width - 0.2], [line_y, line_y], 
+                       color=colors['component_border'], linewidth=1, linestyle='--')
+        elif pattern == 'dotted':
+            for i in range(3):
+                line_y = y + 0.3 + i * 0.3
+                ax.plot([x + 0.2, x + width - 0.2], [line_y, line_y], 
+                       color=colors['component_border'], linewidth=1, linestyle=':')
+        
+        return box
+    
+    # Create modules for each level (P3, P4, P5)
+    levels_x = [positions['p3_x'], positions['p4_x'], positions['p5_x']]
+    
+    # 1. Efficient CBAM (Pre-BiFPN)
+    cbam1_y = positions['cbam1_y']
+    for i, x in enumerate(levels_x):
+        create_level_module(x, cbam1_y, level_width, 1.8, 
+                          'EFFICIENT CBAM', 
+                          'Channel + Spatial\nReduction: 8\n~2.7K params', 
+                          'dashed')
+    
+    ax.text(2, cbam1_y + 0.9, 'PRE-BIFPN\nATTENTION', ha='center', va='center', 
+            fontweight='bold', fontsize=11, color=colors['text_main'],
+            bbox=dict(boxstyle="round,pad=0.3", facecolor=colors['highlight'], edgecolor=colors['component_border']))
+    
+    # 2. Efficient BiFPN with bidirectional connections
+    bifpn_y = positions['bifpn_y']
+    for i, x in enumerate(levels_x):
+        create_level_module(x, bifpn_y, level_width, 1.8, 
+                          'EFFICIENT BIFPN', 
+                          'DWSConv\n72 channels\n~15K params', 
+                          'dotted')
+    
+    # BiFPN bidirectional arrows
+    arrow_y = bifpn_y + 0.9
+    # Top-down arrows (P5→P4→P3)
+    for i in range(len(levels_x) - 1):
+        arrow = patches.FancyArrowPatch(
+            (levels_x[i+1] + level_width/2, arrow_y + 0.2),
+            (levels_x[i] + level_width/2, arrow_y + 0.2),
+            arrowstyle='->', mutation_scale=15, color=colors['arrow'], linewidth=2
+        )
+        ax.add_patch(arrow)
+        ax.text((levels_x[i] + levels_x[i+1] + level_width)/2, arrow_y + 0.4, 'TD', 
+                ha='center', va='center', fontsize=8, color=colors['text_main'])
+    
+    # Bottom-up arrows (P3→P4→P5)
+    for i in range(len(levels_x) - 1):
+        arrow = patches.FancyArrowPatch(
+            (levels_x[i] + level_width/2, arrow_y - 0.2),
+            (levels_x[i+1] + level_width/2, arrow_y - 0.2),
+            arrowstyle='->', mutation_scale=15, color=colors['arrow'], linewidth=2
+        )
+        ax.add_patch(arrow)
+        ax.text((levels_x[i] + levels_x[i+1] + level_width)/2, arrow_y - 0.4, 'BU', 
+                ha='center', va='center', fontsize=8, color=colors['text_main'])
+    
+    ax.text(2, bifpn_y + 0.9, 'BIFPN\nFEATURE\nPYRAMID', ha='center', va='center', 
+            fontweight='bold', fontsize=11, color=colors['text_main'],
+            bbox=dict(boxstyle="round,pad=0.3", facecolor=colors['highlight'], edgecolor=colors['component_border']))
+    
+    # 3. Efficient CBAM (Post-BiFPN)
+    cbam2_y = positions['cbam2_y']
+    for i, x in enumerate(levels_x):
+        create_level_module(x, cbam2_y, level_width, 1.8, 
+                          'EFFICIENT CBAM', 
+                          'Same as Pre\n~2.7K params\nPost-processing', 
+                          'dashed')
+    
+    ax.text(2, cbam2_y + 0.9, 'POST-BIFPN\nATTENTION', ha='center', va='center', 
+            fontweight='bold', fontsize=11, color=colors['text_main'],
+            bbox=dict(boxstyle="round,pad=0.3", facecolor=colors['highlight'], edgecolor=colors['component_border']))
+    
+    # 4. Grouped SSH Context Module
+    ssh_y = positions['ssh_y']
+    for i, x in enumerate(levels_x):
+        create_level_module(x, ssh_y, level_width, 2.2, 
+                          'GROUPED SSH', 
+                          'Groups: 2\nMulti-scale\nContext Agg\n~11.7K params')
+    
+    ax.text(2, ssh_y + 1.1, 'SSH\nCONTEXT\nMODULE', ha='center', va='center', 
+            fontweight='bold', fontsize=11, color=colors['text_main'],
+            bbox=dict(boxstyle="round,pad=0.3", facecolor=colors['highlight'], edgecolor=colors['component_border']))
+    
+    # 5. Channel Shuffle (spans all levels)
+    shuffle_y = ssh_y - 1.5
+    shuffle_box = FancyBboxPatch(
+        (levels_x[0], shuffle_y), levels_x[-1] + level_width - levels_x[0], 0.8,
         boxstyle="round,pad=0.1",
-        facecolor=colors['detection'],
-        edgecolor='black',
-        linewidth=1.5
+        facecolor=colors['component_fill'],
+        edgecolor=colors['component_border'],
+        linewidth=2
     )
-    ax.add_patch(detection_box)
-    ax.text(detection_x + 1.25, y_center + 0.2, 'Detection Heads', 
-            ha='center', va='center', fontweight='bold', color='white', fontsize=10)
-    ax.text(detection_x + 1.25, y_center - 0.2, 'BBox + Cls + Landmarks\n(~25K params)', 
-            ha='center', va='center', fontsize=9, color='white')
+    ax.add_patch(shuffle_box)
+    ax.text((levels_x[0] + levels_x[-1] + level_width)/2, shuffle_y + 0.4, 
+            'CHANNEL SHUFFLE (0 params) - Groups = 2', 
+            ha='center', va='center', fontweight='bold', fontsize=11, color=colors['text_main'])
     
-    # Output
-    output_x = 14.5
+    # === RIGHT SIDE: DETECTION HEADS AND OUTPUT ===
+    
+    # Detection heads for each level
+    heads_y = 3
+    head_types = ['Classification', 'Regression', 'Landmarks']
+    head_outputs = ['72→2', '72→4', '72→10']
+    
+    for i, x in enumerate(levels_x):
+        for j, (head_type, output) in enumerate(zip(head_types, head_outputs)):
+            head_box = FancyBboxPatch(
+                (x, heads_y + j * 0.7), level_width, 0.6,
+                boxstyle="round,pad=0.05",
+                facecolor=colors['component_fill'],
+                edgecolor=colors['component_border'],
+                linewidth=1
+            )
+            ax.add_patch(head_box)
+            ax.text(x + level_width/2, heads_y + j * 0.7 + 0.3, 
+                    f'{head_type}\n{output}', 
+                    ha='center', va='center', fontsize=9, color=colors['text_main'])
+    
+    ax.text(2, heads_y + 1, 'DETECTION\nHEADS\n(~15K params)', ha='center', va='center', 
+            fontweight='bold', fontsize=11, color=colors['text_main'],
+            bbox=dict(boxstyle="round,pad=0.3", facecolor=colors['highlight'], edgecolor=colors['component_border']))
+    
+    # Final output
+    output_pos = positions['output']
     output_box = FancyBboxPatch(
-        (output_x, y_center - comp_height/2), 2, comp_height,
+        (output_pos['x'], output_pos['y']), output_pos['w'], output_pos['h'],
         boxstyle="round,pad=0.1",
-        facecolor=colors['output'],
-        edgecolor='black',
-        linewidth=1.5
+        facecolor=colors['component_fill'],
+        edgecolor=colors['component_border'],
+        linewidth=2
     )
     ax.add_patch(output_box)
-    ax.text(output_x + 1, y_center, 'Output\nDetections', ha='center', va='center', 
-            fontweight='bold', color='white', fontsize=10)
+    ax.text(output_pos['x'] + output_pos['w']/2, output_pos['y'] + output_pos['h']/2, 
+            'OUTPUT\nFace Classifications • BBox Regressions • Landmarks', 
+            ha='center', va='center', fontweight='bold', fontsize=11, color=colors['text_main'])
     
-    # B-FPGM Pruning annotations
-    pruning_y = 6.5
+    # === TEACHER MODEL AND DISTILLATION ===
     
-    # Pruning title
-    ax.text(8.5, pruning_y + 0.5, 'B-FPGM Bayesian Pruning', 
-            ha='center', va='center', fontsize=12, fontweight='bold', 
-            color=colors['pruning'])
-    
-    # Pruning connections and rates
-    pruning_targets = [
-        (backbone_x + 1.25, y_center + comp_height/2 + 0.1, '15-25%'),
-        (efficient_x + 1.4, y_center + 1.5 + comp_height/2 + 0.1, '20-30%'),
-        (efficient_x + 1.4, y_center + comp_height/2 + 0.1, '25-35%'),
-        (efficient_x + 1.4, y_center - 1.5 + comp_height/2 + 0.1, '10-20%'),
-        (detection_x + 1.25, y_center + comp_height/2 + 0.1, '5-15%')
-    ]
-    
-    for x, y, rate in pruning_targets:
-        # Pruning rate annotation
-        pruning_circle = plt.Circle((x, pruning_y), 0.3, 
-                                  facecolor=colors['pruning'], 
-                                  edgecolor='black', 
-                                  linewidth=1)
-        ax.add_patch(pruning_circle)
-        ax.text(x, pruning_y, rate, ha='center', va='center', 
-                fontsize=8, fontweight='bold', color='white')
-        
-        # Connection line
-        connection = ConnectionPatch((x, y), (x, pruning_y - 0.3), 
-                                   "data", "data",
-                                   arrowstyle="->", 
-                                   shrinkA=0, shrinkB=0,
-                                   color=colors['pruning'], 
-                                   linewidth=2)
-        ax.add_artist(connection)
-    
-    # Knowledge Distillation flow
-    kd_y = 1.5
-    
-    # Teacher model (V1) representation
+    teacher_pos = positions['teacher']
     teacher_box = FancyBboxPatch(
-        (2, kd_y - 0.4), 6, 0.8,
-        boxstyle="round,pad=0.05",
-        facecolor=colors['distillation'],
-        edgecolor='black',
-        linewidth=1,
-        alpha=0.7
+        (teacher_pos['x'], teacher_pos['y']), teacher_pos['w'], teacher_pos['h'],
+        boxstyle="round,pad=0.2",
+        facecolor=colors['component_fill'],
+        edgecolor=colors['component_border'],
+        linewidth=2
     )
     ax.add_patch(teacher_box)
-    ax.text(5, kd_y, 'Teacher Model (V1): 487K parameters → Knowledge Transfer', 
-            ha='center', va='center', fontsize=10, fontweight='bold', color='black')
+    ax.text(teacher_pos['x'] + teacher_pos['w']/2, teacher_pos['y'] + teacher_pos['h'] - 0.5, 
+            'TEACHER MODEL (V1)', 
+            ha='center', va='center', fontweight='bold', fontsize=12, color=colors['text_main'])
+    ax.text(teacher_pos['x'] + teacher_pos['w']/2, teacher_pos['y'] + teacher_pos['h']/2, 
+            '487,103 parameters\nTemperature: 4.0\nAlpha: 0.7\nWeighted Knowledge\nDistillation', 
+            ha='center', va='center', fontsize=10, color=colors['text_main'])
     
-    # Distillation arrows
-    for x_pos in [backbone_x + 1.25, efficient_x + 1.4, detection_x + 1.25]:
-        kd_arrow = ConnectionPatch((x_pos, kd_y + 0.4), (x_pos, y_center - comp_height/2 - 0.1),
-                                 "data", "data",
-                                 arrowstyle="->",
-                                 shrinkA=0, shrinkB=0,
-                                 color=colors['distillation'],
-                                 linewidth=2.5,
-                                 alpha=0.8)
-        ax.add_artist(kd_arrow)
-    
-    # Main architecture flow arrows
-    flow_positions = [
-        (2.5, y_center),      # Input to backbone
-        (6, y_center),        # Backbone to efficient
-        (9.8, y_center),      # Efficient to detection
-        (13.5, y_center)      # Detection to output
+    # Distillation arrows to key components
+    distill_targets = [
+        (backbone_pos['x'] + backbone_pos['w']/2, backbone_pos['y']),
+        (levels_x[1] + level_width/2, bifpn_y),
+        (levels_x[1] + level_width/2, heads_y + 1)
     ]
     
-    for x_pos, y_pos in flow_positions:
-        flow_arrow = patches.FancyArrowPatch(
-            (x_pos - 0.2, y_pos), (x_pos + 0.2, y_pos),
-            arrowstyle='->', 
-            mutation_scale=20,
-            color='black',
-            linewidth=2
+    for target_x, target_y in distill_targets:
+        kd_arrow = patches.ConnectionPatch(
+            (teacher_pos['x'] + teacher_pos['w'], teacher_pos['y'] + teacher_pos['h']/2),
+            (target_x, target_y),
+            "data", "data", arrowstyle="->", shrinkA=0, shrinkB=0,
+            color=colors['arrow'], linewidth=2, linestyle='dashed'
         )
-        ax.add_patch(flow_arrow)
+        ax.add_patch(kd_arrow)
     
-    # Parameter summary box
-    summary_box = FancyBboxPatch(
-        (11.5, 0.2), 5, 1,
-        boxstyle="round,pad=0.1",
-        facecolor='lightgray',
-        edgecolor='black',
-        linewidth=1.5,
-        alpha=0.9
-    )
-    ax.add_patch(summary_box)
+    # B-FPGM Pruning rates (right side)
+    pruning_x = 23
+    pruning_rates = [
+        (backbone_pos['y'] + backbone_pos['h']/2, '15-25%', 'Backbone'),
+        (cbam1_y + 0.9, '20-30%', 'CBAM'),
+        (bifpn_y + 0.9, '25-35%', 'BiFPN'), 
+        (ssh_y + 1.1, '10-20%', 'SSH'),
+        (heads_y + 1, '5-15%', 'Heads')
+    ]
     
-    summary_text = """FeatherFace Nano-B Summary:
-• Total Parameters: 120-180K (Target: 48-65% reduction)
-• B-FPGM: Bayesian-optimized pruning rates
-• Knowledge Distillation: Weighted teacher guidance
-• Architecture: Ultra-lightweight + competitive mAP"""
+    ax.text(pruning_x, 12, 'B-FPGM\nBAYESIAN\nPRUNING\nRATES', 
+            ha='center', va='center', fontweight='bold', fontsize=11, color=colors['text_main'],
+            bbox=dict(boxstyle="round,pad=0.4", facecolor=colors['highlight'], edgecolor=colors['component_border']))
     
-    ax.text(14, 0.7, summary_text, ha='center', va='center', 
-            fontsize=9, fontweight='bold')
+    for y_pos, rate, component in pruning_rates:
+        # Rate annotation
+        rate_box = FancyBboxPatch(
+            (pruning_x - 0.8, y_pos - 0.3), 1.6, 0.6,
+            boxstyle="round,pad=0.1",
+            facecolor=colors['component_fill'],
+            edgecolor=colors['component_border'],
+            linewidth=1
+        )
+        ax.add_patch(rate_box)
+        ax.text(pruning_x, y_pos, f'{rate}\n{component}', 
+                ha='center', va='center', fontsize=9, fontweight='bold', color=colors['text_main'])
     
-    # Scientific foundation annotations
-    foundation_y = 7.5
-    ax.text(8.5, foundation_y, 
-            'Scientific Foundation: Kaparinos & Mezaris (WACVW 2025) + Li et al. (CVPR 2023)', 
-            ha='center', va='center', fontsize=10, fontweight='bold', 
-            style='italic', color='darkblue')
+    # Scientific foundation
+    foundation_text = "Scientific Foundation (7 Techniques):\n1. B-FPGM: Kaparinos & Mezaris, WACVW 2025\n2. Knowledge Distillation: Li et al. CVPR 2023\n3. CBAM: Woo et al. ECCV 2018\n4. BiFPN: Tan et al. CVPR 2020\n5. MobileNet: Howard et al. 2017\n6. Bayesian Optimization: Mockus, 1989\n7. Channel Shuffle: Parameter-free optimization"
     
-    # Title and layout
-    ax.set_title('FeatherFace Nano-B: Bayesian-Optimized Ultra-Lightweight Face Detection Architecture', 
-                fontsize=16, fontweight='bold', pad=20)
+    ax.text(12, 0.5, foundation_text, ha='center', va='center', fontsize=10, 
+            color=colors['text_main'], 
+            bbox=dict(boxstyle="round,pad=0.5", facecolor=colors['highlight'], edgecolor=colors['component_border']))
     
-    # Set axis limits and remove ticks
-    ax.set_xlim(0, 17)
-    ax.set_ylim(0, 8.5)
-    ax.set_aspect('equal')
+    # Add vertical flow arrows connecting levels
+    for x in levels_x:
+        # Input to CBAM1
+        arrow1 = patches.FancyArrowPatch(
+            (x + level_width/2, stage_y - 0.3), (x + level_width/2, cbam1_y + 1.8),
+            arrowstyle='->', mutation_scale=20, color=colors['arrow'], linewidth=2
+        )
+        ax.add_patch(arrow1)
+        
+        # CBAM1 to BiFPN
+        arrow2 = patches.FancyArrowPatch(
+            (x + level_width/2, cbam1_y), (x + level_width/2, bifpn_y + 1.8),
+            arrowstyle='->', mutation_scale=20, color=colors['arrow'], linewidth=2
+        )
+        ax.add_patch(arrow2)
+        
+        # BiFPN to CBAM2
+        arrow3 = patches.FancyArrowPatch(
+            (x + level_width/2, bifpn_y), (x + level_width/2, cbam2_y + 1.8),
+            arrowstyle='->', mutation_scale=20, color=colors['arrow'], linewidth=2
+        )
+        ax.add_patch(arrow3)
+        
+        # CBAM2 to SSH
+        arrow4 = patches.FancyArrowPatch(
+            (x + level_width/2, cbam2_y), (x + level_width/2, ssh_y + 2.2),
+            arrowstyle='->', mutation_scale=20, color=colors['arrow'], linewidth=2
+        )
+        ax.add_patch(arrow4)
+        
+        # SSH to Heads
+        arrow5 = patches.FancyArrowPatch(
+            (x + level_width/2, ssh_y), (x + level_width/2, heads_y + 2.1),
+            arrowstyle='->', mutation_scale=20, color=colors['arrow'], linewidth=2
+        )
+        ax.add_patch(arrow5)
+    
+    # Heads to output (convergence)
+    for i, x in enumerate(levels_x):
+        conv_arrow = patches.FancyArrowPatch(
+            (x + level_width/2, heads_y), 
+            (output_pos['x'] + output_pos['w']/2, output_pos['y'] + output_pos['h']),
+            arrowstyle='->', mutation_scale=20, color=colors['arrow'], linewidth=2
+        )
+        ax.add_patch(conv_arrow)
+    
+    # Set axis limits for landscape layout
+    ax.set_xlim(0, 24)
+    ax.set_ylim(0, 16)
     ax.axis('off')
     
     # Tight layout
