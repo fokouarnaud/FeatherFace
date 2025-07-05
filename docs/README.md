@@ -8,14 +8,14 @@ This directory contains essential documentation for the FeatherFace project with
 - **[ARCHITECTURE_V1_OFFICIELLE.md](ARCHITECTURE_V1_OFFICIELLE.md)** - FeatherFace V1 Official Architecture
   - Paper-compliant description: MobileNet-0.25 + attention + multiscale aggregation + detection heads
   - Detailed pipeline: Backbone → CBAM → BiFPN → CBAM → DCN → Shuffle → Heads
-  - Parameters: 487K (target achieved)
+  - Parameters: 494K (SSH implementation)
   - Performance baseline: ~87% mAP WIDERFace Easy
   - Role: Teacher model for knowledge distillation
 
 ### 🔬 Architecture Documentation Nano-B (Ultra-Lightweight Model)
 - **[NANO_B_ARCHITECTURE.md](NANO_B_ARCHITECTURE.md)** - FeatherFace Nano-B Bayesian-Optimized Architecture
   - Scientific foundation: Based on 7 verified research publications
-  - Ultra-lightweight pipeline: Backbone → Efficient CBAM → Efficient BiFPN → Grouped SSH → B-FPGM → Detection
+  - Ultra-lightweight pipeline: Backbone → CBAM → BiFPN → Grouped SSH → B-FPGM → Detection
   - Parameters: 120K-180K (48-65% reduction vs V1) through Bayesian optimization
   - Performance: Competitive mAP via weighted knowledge distillation + B-FPGM pruning
   - Techniques: Bayesian-optimized structured pruning with 3-phase training
@@ -35,7 +35,7 @@ This directory contains essential documentation for the FeatherFace project with
 
 ## 🔬 Scientific Foundation
 
-### V1 Baseline (487K parameters)
+### V1 Baseline (494K parameters)
 - **Purpose**: Teacher model and research baseline
 - **Architecture**: Standard RetinaFace implementation
 - **Performance**: 87% mAP on WIDERFace Easy
@@ -67,7 +67,7 @@ This directory contains essential documentation for the FeatherFace project with
 
 | Aspect | V1 Baseline | Nano-B Ultra-Lightweight |
 |--------|-------------|---------------------------|
-| **Parameters** | 487,103 | 120,000-180,000 |
+| **Parameters** | 493,778 | 120,000-180,000 |
 | **Reduction** | - | 48-65% |
 | **Foundation** | Standard implementation | 7 verified publications |
 | **Purpose** | Teacher model | Edge/IoT deployment |

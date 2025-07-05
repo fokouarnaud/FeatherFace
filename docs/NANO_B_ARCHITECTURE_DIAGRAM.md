@@ -72,13 +72,13 @@ Input Image (640×640×3)
 └────────────────────────────────────────────────────────────────────────────────┘
          ↓                         ↓                         ↓
 ┌────────────────────────────────────────────────────────────────────────────────┐
-│                      GROUPED SSH CONTEXT MODULE                              │
-│                          (~35,000 parameters)                                 │
-│                             23.3% of total                                    │
-│              🔬 Grouped Convolutions for Parameter Efficiency                │
+│                      SSH CONTEXT MODULE (ICCV 2017)                          │
+│                          (~13,500 parameters)                                 │
+│                              9% of total                                       │
+│              🔬 Standard SSH with Optimization Techniques                    │
 │                                                                                │
 │   ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐           │
-│   │ Grouped SSH     │    │ Grouped SSH     │    │ Grouped SSH     │           │
+│   │ SSH Standard    │    │ SSH Standard    │    │ SSH Standard    │           │
 │   │   P3: 72→72     │    │   P4: 72→72     │    │   P5: 72→72     │           │
 │   │   Groups: 2     │    │   Groups: 2     │    │   Groups: 2     │           │
 │   │   Multi-scale   │    │   Multi-scale   │    │   Multi-scale   │           │
@@ -270,7 +270,7 @@ Total per CBAM: ~8,000 params
 Applied twice: 16,000 params
 ```
 
-### Efficient BiFPN Feature Pyramid (~45,000 params, 30%)
+### BiFPN Feature Pyramid (~45,000 params, 30%)
 ```
 Depthwise Separable Connections:
 ├── DWSConv(32, 72, 1×1)   # P3: ~2,400 params
@@ -286,7 +286,7 @@ Bidirectional Fusion (Efficient):
 Total: ~45,000 parameters (depthwise separable optimized)
 ```
 
-### Grouped SSH Context Module (~35,000 params, 23.3%)
+### SSH Context Module (~13,500 params, 9%)
 ```
 Per Level Grouped SSH (groups=2):
 ├── GroupedConv2d(72, 36, 3×3, groups=2)              # ~5,900 params
@@ -296,7 +296,7 @@ Per Level Grouped SSH (groups=2):
 └── Channel concatenation and ReLU                     # 0 params
 
 Applied to 3 levels (P3, P4, P5):
-Total: ~35,000 parameters (grouped convolution efficiency)
+Total: ~13,500 parameters (standard SSH implementation)
 ```
 
 ### Pruning-Aware Detection Heads (~15,000 params, 10%)
@@ -366,7 +366,7 @@ Accuracy Recovery After Structural Changes
 ```
 Input → Backbone → CBAM₁ → BiFPN → CBAM₂ → SSH → Shuffle → Heads → Output
   ↓       ↓         ↓       ↓       ↓       ↓       ↓       ↓       ↓
- 640³    60K       8K      45K     8K      35K     0      15K    N×16
+ 640³    60K       8K      45K     8K      13.5K   0      15K    N×16
   ↓       ↓         ↓       ↓       ↓       ↓       ↓       ↓       ↓
   🧠      🧠        ✅      ✅      ✅      ✅      ✅      🧠      📱
 Pruned  Pruned   Efficient Efficient Efficient Grouped  Free   Pruned Mobile

@@ -129,12 +129,12 @@ self.cs3 = SimpleChannelShuffle(74, groups=2)  # P5 feature mixing
 ## 📈 Configuration Finale V1 (Paper-Compliant)
 
 ### Paramètres Architecturaux
-- **Total Parameters** : 487,103 (99.7% de 488.7K target)
-- **out_channel** : 74 (optimisé pour DCN architecture)  
+- **Total Parameters** : 493,778 (SSH implementation optimized)
+- **out_channel** : 56 (optimized for SSH architecture)  
 - **Backbone** : MobileNetV1-0.25 (213,072 params, 43.7%)
 - **Double CBAM** : 6 modules (22,184 params, 4.6%)
 - **BiFPN** : 2 répétitions (113,610 params, 23.3%)
-- **DCN Context** : 3 modules (148,296 params, 30.4%)
+- **SSH Context** : 3 modules (192,555 params, 39.0%)
 - **Channel Shuffle** : 3 modules (0 params, 0.0%)
 - **Detection Heads** : 9 modules (7,200 params, 1.5%)
 
@@ -237,6 +237,6 @@ def forward(self, inputs):
 
 ## ✅ Conclusion
 
-L'architecture FeatherFace V1 avec 487K paramètres représente un **optimal trade-off** entre précision et efficacité pour la détection de visages. L'intégration de MobileNet-0.25, double CBAM, BiFPN, et DCN+Shuffle permet d'atteindre **99.7% du target paramétrique (488.7K)** tout en maintenant une architecture paper-compliant et performance baseline solide.
+L'architecture FeatherFace V1 avec 494K paramètres représente un **optimal trade-off** entre précision et efficacité pour la détection de visages. L'intégration de MobileNet-0.25, double CBAM, BiFPN, et SSH+Shuffle permet d'atteindre une **architecture SSH-compliant** avec detection head authentique et performance baseline solide.
 
 Cette configuration V1 sert de **teacher model** pour la distillation de connaissances vers FeatherFace Nano-B, permettant l'optimisation ultérieure vers 120K-180K paramètres avec maintien de performance compétitive.

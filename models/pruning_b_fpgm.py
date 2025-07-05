@@ -369,8 +369,8 @@ class FeatherFaceNanoBPruner:
         Groups layers based on FeatherFace Nano architecture:
         1. Backbone early layers
         2. Backbone late layers  
-        3. Efficient CBAM layers
-        4. Efficient BiFPN layers
+        3. CBAM layers (Woo et al. ECCV 2018)
+        4. BiFPN layers (Tan et al. CVPR 2020)
         5. Grouped SSH layers
         6. Detection heads
         """

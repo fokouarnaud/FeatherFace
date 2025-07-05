@@ -94,9 +94,9 @@ def print_scientific_foundation():
     print("  4. ✅ MobileNet Backbone (Howard et al. 2017)")
     print("")
     print("Key Techniques:")
-    print("  • Efficient CBAM: Higher reduction ratios")
-    print("  • Efficient BiFPN: Depthwise separable convolutions")
-    print("  • Grouped SSH: Parameter reduction via grouping")
+    print("  • CBAM: Convolutional Block Attention (Woo et al. ECCV 2018)")
+    print("  • BiFPN: Bidirectional Feature Pyramid (Tan et al. CVPR 2020)")
+    print("  • SSH: Single Stage Headless Face Detector (Najibi et al. ICCV 2017)")
     print("  • Channel Shuffle: Parameter-free information mixing")
 
 def print_files_status():

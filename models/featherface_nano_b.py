@@ -19,7 +19,7 @@ Scientific Foundation:
 
 Enhanced Architecture:
 - P3 Level: ScaleDecoupling + ASSN (optimized for small faces)
-- P4/P5 Levels: Standard EfficientCBAM (maintained efficiency)
+- P4/P5 Levels: Standard CBAM (Woo et al. ECCV 2018)
 - Feature Fusion: SemanticEnhancement modules (MSE-FPN 2024)
 - Pipeline: Scale-aware processing with research-backed optimizations
 
@@ -40,9 +40,10 @@ logger = logging.getLogger(__name__)
 
 # Import available modules and create necessary components
 try:
-    from .modules_v2 import (CBAM_Plus, BiFPN_Light, SSH_Grouped, 
-                            ChannelShuffle_Light, DepthwiseSeparableConv)
-    from .net import MobileNetV1
+    # Use scientifically validated modules from net.py
+    from .net import MobileNetV1, CBAM, BiFPN, SSH
+    # Import V2 modules for additional functionality
+    from .modules_v2 import (SSH_Grouped, ChannelShuffle_Light, DepthwiseSeparableConv)
     # Import pruning if available
     try:
         from .pruning_b_fpgm import FeatherFaceNanoBPruner, create_nano_b_config
@@ -55,19 +56,23 @@ except ImportError:
     import sys
     import os
     sys.path.append(os.path.dirname(__file__))
-    from modules_v2 import (CBAM_Plus, BiFPN_Light, SSH_Grouped, 
-                           ChannelShuffle_Light, DepthwiseSeparableConv)
-    from net import MobileNetV1
+    # Use scientifically validated modules from net.py
+    from net import MobileNetV1, CBAM, BiFPN, SSH
+    # Import V2 modules for additional functionality
+    from modules_v2 import (SSH_Grouped, ChannelShuffle_Light, DepthwiseSeparableConv)
     try:
         from pruning_b_fpgm import FeatherFaceNanoBPruner, create_nano_b_config
         PRUNING_AVAILABLE = True
     except ImportError:
         PRUNING_AVAILABLE = False
 
-# Use existing efficient modules as base for our enhanced components
-EfficientCBAM = CBAM_Plus
-EfficientBiFPN = BiFPN_Light
-GroupedSSH = SSH_Grouped
+# Use scientifically validated modules with proper research references
+# CBAM: Woo et al. "CBAM: Convolutional Block Attention Module" ECCV 2018
+# BiFPN: Tan et al. "EfficientDet: Scalable and Efficient Object Detection" CVPR 2020
+# SSH: Najibi et al. "SSH: Single Stage Headless Face Detector" ICCV 2017
+StandardCBAM = CBAM
+StandardBiFPN = BiFPN
+StandardSSH = SSH  # Use scientifically validated SSH + optimization techniques
 ChannelShuffle = ChannelShuffle_Light
 
 
@@ -571,20 +576,21 @@ class FeatherFaceNanoB(nn.Module):
         cbam_reduction = self.cfg.get('cbam_reduction', 8)
         self.cbam1 = nn.ModuleList([
             # P3: Use standard CBAM (will be enhanced with ASSN later)
-            EfficientCBAM(in_channels_list[0], reduction_ratio=cbam_reduction),
-            # P4, P5: Standard efficient CBAM
-            EfficientCBAM(in_channels_list[1], reduction_ratio=cbam_reduction),
-            EfficientCBAM(in_channels_list[2], reduction_ratio=cbam_reduction)
+            StandardCBAM(in_channels_list[0], reduction_ratio=cbam_reduction),
+            # P4, P5: Standard CBAM (Woo et al. ECCV 2018)
+            StandardCBAM(in_channels_list[1], reduction_ratio=cbam_reduction),
+            StandardCBAM(in_channels_list[2], reduction_ratio=cbam_reduction)
         ])
         
-        # Efficient BiFPN with semantic enhancement
-        # Ensure bifpn_channels is divisible by 4 for SSH_Grouped
+        # BiFPN with semantic enhancement (Tan et al. CVPR 2020)
+        # Ensure bifpn_channels is divisible by 4 for SSH standard
         bifpn_channels = self.cfg.get('bifpn_channels', 72)  # Changed from 74 to 72
-        self.bifpn = EfficientBiFPN(
+        self.bifpn = StandardBiFPN(
             num_channels=bifpn_channels,
             conv_channels=in_channels_list,
             first_time=True,
-            use_dwsep=True  # For efficiency
+            onnx_export=False,
+            attention=True
         )
         
         # Semantic enhancement modules for better feature fusion (MSE-FPN 2024)
@@ -594,9 +600,9 @@ class FeatherFaceNanoB(nn.Module):
         
         # Second attention - P3 gets Scale Sequence Attention (ASSN 2024)
         self.cbam2_p4p5 = nn.ModuleList([
-            # P4, P5: Standard efficient CBAM
-            EfficientCBAM(bifpn_channels, reduction_ratio=cbam_reduction),
-            EfficientCBAM(bifpn_channels, reduction_ratio=cbam_reduction)
+            # P4, P5: Standard CBAM (Woo et al. ECCV 2018)
+            StandardCBAM(bifpn_channels, reduction_ratio=cbam_reduction),
+            StandardCBAM(bifpn_channels, reduction_ratio=cbam_reduction)
         ])
         
         # P3: Scale Sequence Attention for small face detection (ASSN 2024)
@@ -605,13 +611,11 @@ class FeatherFaceNanoB(nn.Module):
             reduction=self.cfg.get('assn_reduction', 16)
         )
         
-        # Grouped SSH detection heads with pruning support
+        # SSH detection heads (Najibi et al. ICCV 2017) with optimization techniques
         self.ssh_heads = nn.ModuleList([
-            GroupedSSH(
+            StandardSSH(
                 in_channel=bifpn_channels,
-                out_channel=bifpn_channels,
-                groups=self.cfg.get('ssh_groups', 2),
-                reduction=2
+                out_channel=bifpn_channels
             )
             for _ in range(3)
         ])

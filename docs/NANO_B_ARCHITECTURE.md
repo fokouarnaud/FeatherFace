@@ -89,8 +89,8 @@ FeatherFace Nano-B represents the pinnacle of ultra-lightweight face detection, 
 
 | Component | **Original Nano-B** | **Enhanced Nano-B (2024)** |
 |-----------|---------------------|----------------------------|
-| **P3 Processing** | EfficientCBAM only | ScaleDecoupling → CBAM → BiFPN → SemanticEnhancement → ASSN |
-| **P4/P5 Processing** | EfficientCBAM only | EfficientCBAM → BiFPN → SemanticEnhancement → EfficientCBAM |
+| **P3 Processing** | CBAM only | ScaleDecoupling → CBAM → BiFPN → SemanticEnhancement → ASSN |
+| **P4/P5 Processing** | CBAM only | CBAM → BiFPN → SemanticEnhancement → CBAM |
 | **Feature Fusion** | Standard BiFPN | BiFPN + SemanticEnhancement (MSE-FPN 2024) |
 | **Small Face Focus** | Generic attention | Specialized P3 pipeline with 3 research-backed modules |
 | **Parameters Added** | - | +7,500 (~5% increase for substantial small face improvement) |
@@ -115,22 +115,22 @@ Parameters: ~6,000-8,000 per level (P3/P4/P5)
 Pattern: Dashed lines in architecture visualization
 ```
 
-### 3. Efficient BiFPN with B-FPGM Optimization
+### 3. BiFPN with B-FPGM Optimization (Tan et al. CVPR 2020)
+
 ```
 Problem Solved: Unidirectional FPN misses cross-scale information
 Solution: Bidirectional top-down + bottom-up with learned weights
-Nano-B Enhancement: 72 channels, DWSConv, pruning rates 25-35%
-Parameters: ~30,000-45,000 (most parameter-heavy component)
-Visualization: Red bidirectional arrows in diagram
+Nano-B Enhancement: 72 channels, standard implementation with pruning optimization
 ```
 
-### 4. Grouped SSH with Structured Pruning
+### 4. SSH Detection Context (Najibi et al. ICCV 2017)
 ```
-Problem Solved: Limited receptive field for context modeling
-Solution: Multi-scale convolutions (3x3, 5x5, 7x7) with groups=2
-Nano-B Enhancement: Pruning rates 10-20% (conservative for context)
-Parameters: ~15,000-25,000 across all levels
-Architecture: Grouped convolutions with channel shuffle
+Problem Solved: Limited receptive field for context modeling in face detection
+Solution: Multi-scale context via 3 parallel branches (3x3, 5x5, 7x7 convolutions)
+Scientific Base: Single Stage Headless Face Detector (ICCV 2017)
+Nano-B Enhancement: Standard SSH + optimization techniques (channel shuffle, pruning)
+Parameters: ~13,500 (3 modules × ~4,500 each)
+Optimization: +5.1K vs grouped version but scientifically validated base
 ```
 
 ### 5. Channel Shuffle (Parameter-Free)
@@ -232,7 +232,7 @@ detection_heads          [0.0, 0.3]        Sorties critiques
 
 ### 📈 Résultats Typiques
 - **Configuration Conservative** : ~180K paramètres (48% réduction, sécurisé)
-- **Configuration Optimale** : ~150K paramètres (56% réduction, équilibré)
+- **Configuration Optimale** : ~149.5K paramètres (56% réduction, équilibré)
 - **Configuration Agressive** : ~120K paramètres (65% réduction, limite)
 
 > **Note Importante** : Le nombre final dépend de l'optimisation bayésienne, mais **reste toujours dans la plage cible** et **préserve les performances** mieux qu'un pruning fixe.
@@ -242,7 +242,7 @@ detection_heads          [0.0, 0.3]        Sorties critiques
 ### Parameter Targets
 - **Minimum**: 120,000 parameters (65% reduction from V1)
 - **Maximum**: 180,000 parameters (48% reduction from V1)
-- **Optimal**: 150,000 parameters (56% reduction from V1)
+- **Optimal**: 149,500 parameters (56% reduction from V1)
 - **Compression**: 2.5x-4x from V1 baseline
 - **Variabilité**: Contrôlée par optimisation bayésienne pour qualité optimale
 

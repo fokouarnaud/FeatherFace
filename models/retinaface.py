@@ -12,56 +12,6 @@ from models.net import CBAM as CBAM
 from models.net import ChannelShuffle2 as ChannelShuffle
 
 
-class SimpleDCN(nn.Module):
-    """
-    Context Enhancement Module (Paper-Compliant)
-    
-    Uses deformable convolutional networks (DCNs) to capture multiscale 
-    contextual information as described in the paper. This replaces complex 
-    SSH with lighter implementation while maintaining adaptive context capture.
-    
-    Role: Capture adaptive multiscale contextual information for accurate face detection
-    Parameters: 74→74 channels optimized for 488.7K parameter target
-    """
-    def __init__(self, in_channels, out_channels):
-        super(SimpleDCN, self).__init__()
-        # Simple DCN without complex multi-scale paths
-        self.dcn = nn.Conv2d(in_channels, out_channels, 3, 1, 1, bias=False)
-        self.bn = nn.BatchNorm2d(out_channels)
-        self.relu = nn.ReLU(inplace=True)
-        
-    def forward(self, x):
-        out = self.dcn(x)
-        out = self.bn(out)
-        out = self.relu(out)
-        return out
-
-
-class SimpleChannelShuffle(nn.Module):
-    """
-    Channel Shuffling Module (Paper-Compliant)
-    
-    Facilitates effective inter-channel information exchange as described
-    in the paper, further enriching feature representation. Zero-parameter
-    implementation for maximum efficiency.
-    
-    Role: Enable effective inter-channel information exchange
-    Strategy: Group-wise channel reorganization for enhanced feature mixing
-    """
-    def __init__(self, channels, groups=2):
-        super(SimpleChannelShuffle, self).__init__()
-        self.groups = groups
-        
-    def forward(self, x):
-        b, c, h, w = x.size()
-        channels_per_group = c // self.groups
-        
-        # Reshape and transpose for channel shuffling
-        x = x.view(b, self.groups, channels_per_group, h, w)
-        x = x.transpose(1, 2).contiguous()
-        x = x.view(b, c, h, w)
-        
-        return x
 
 
 class ClassHead(nn.Module):
@@ -172,17 +122,17 @@ class RetinaFace(nn.Module):
             self.attention_cbam_2 = CBAM(out_channels, 48)  # P5: enhance aggregated large-face features
             self.attention_relu = nn.ReLU()
 
-            # PAPER COMPLIANT: Context Enhancement using DCN for multiscale contextual information
-            # DCNs capture adaptive context as described in paper architecture
-            self.dcn1 = SimpleDCN(out_channels, out_channels)  # P3: fine-grained context for small faces
-            self.dcn2 = SimpleDCN(out_channels, out_channels)  # P4: balanced context for medium faces
-            self.dcn3 = SimpleDCN(out_channels, out_channels)  # P5: large-scale context for big faces
+            # PAPER COMPLIANT: Context Enhancement using SSH for multiscale contextual information
+            # SSH modules capture adaptive context through parallel 3x3, 5x5, 7x7 deformable convolutions
+            self.ssh1 = SSH(out_channels, out_channels)  # P3: SSH with 3 branches for small face context
+            self.ssh2 = SSH(out_channels, out_channels)  # P4: SSH with 3 branches for medium face context  
+            self.ssh3 = SSH(out_channels, out_channels)  # P5: SSH with 3 branches for large face context
             
             # PAPER COMPLIANT: Channel Shuffling for effective inter-channel information exchange
-            # Facilitates information mixing to further enrich feature representation
-            self.cs1 = SimpleChannelShuffle(out_channels, groups=2)  # P3: enhance small-face feature mixing
-            self.cs2 = SimpleChannelShuffle(out_channels, groups=2)  # P4: enhance medium-face feature mixing
-            self.cs3 = SimpleChannelShuffle(out_channels, groups=2)  # P5: enhance large-face feature mixing
+            # Facilitates information mixing to further enrich feature representation  
+            self.cs1 = ChannelShuffle(out_channels, groups=2)  # P3: enhance small-face feature mixing
+            self.cs2 = ChannelShuffle(out_channels, groups=2)  # P4: enhance medium-face feature mixing
+            self.cs3 = ChannelShuffle(out_channels, groups=2)  # P5: enhance large-face feature mixing
 
         self.ClassHead = self._make_class_head(fpn_num=3, inchannels=cfg['out_channel'])
         self.BboxHead = self._make_bbox_head(fpn_num=3, inchannels=cfg['out_channel'])
@@ -250,17 +200,17 @@ class RetinaFace(nn.Module):
             
             bif_features = final_attention_features
 
-            # 5. Detection Heads: Context Enhancement using DCN for multiscale contextual information
-            # Uses deformable convolutional networks to capture adaptive context per face scale
-            dcn_feature1 = self.dcn1(bif_features[0])  # P3: fine context for small faces
-            dcn_feature2 = self.dcn2(bif_features[1])  # P4: balanced context for medium faces
-            dcn_feature3 = self.dcn3(bif_features[2])  # P5: semantic context for large faces
+            # 5. Detection Heads: Context Enhancement using SSH for multiscale contextual information  
+            # SSH modules use parallel deformable conv branches (3x3, 5x5, 7x7) for adaptive context
+            ssh_feature1 = self.ssh1(bif_features[0])  # P3: multi-branch context for small faces
+            ssh_feature2 = self.ssh2(bif_features[1])  # P4: multi-branch context for medium faces
+            ssh_feature3 = self.ssh3(bif_features[2])  # P5: multi-branch context for large faces
             
             # 6. Channel Shuffling: Facilitate effective inter-channel information exchange
             # Further enriches feature representation through organized channel mixing
-            feat1 = self.cs1(dcn_feature1)  # P3: enhance inter-channel exchange
-            feat2 = self.cs2(dcn_feature2)  # P4: optimize feature mixing
-            feat3 = self.cs3(dcn_feature3)  # P5: enrich representation
+            feat1 = self.cs1(ssh_feature1)  # P3: enhance inter-channel exchange
+            feat2 = self.cs2(ssh_feature2)  # P4: optimize feature mixing  
+            feat3 = self.cs3(ssh_feature3)  # P5: enrich representation
            
             features = [feat1, feat2, feat3]
         

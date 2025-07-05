@@ -17,7 +17,7 @@ cfg_mnet = {
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
-    'out_channel': 74,  # CALIBRATION: DCN architecture → 487,103 parameters (very close to 488.7K target)
+    'out_channel': 56,  # CALIBRATION: SSH architecture (divisible by 4) → targeting ~487K parameters
     'lr' : 1e-3,
     'optim' : 'adamw'
 }

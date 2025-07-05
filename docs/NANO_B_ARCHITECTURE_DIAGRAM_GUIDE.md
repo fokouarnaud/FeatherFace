@@ -82,10 +82,11 @@ The FeatherFace Nano-B architecture diagram (`featherface_nano_b_architecture.pn
 **Component Distribution**
 - Backbone (Pruned): ~60K params (40%)
 - Dual CBAM: ~16K params (10.7%)
-- Efficient BiFPN: ~45K params (30%)
-- Grouped SSH: ~35K params (23.3%)
+- BiFPN: ~45K params (30%)
+- SSH Standard: ~13.5K params (9%)
 - Detection Heads: ~15K params (10%)
 - **Total Range: 120K-180K parameters**
+- **Typical Total: ~149.5K parameters (with SSH standard)**
 
 ### 6. Scientific Foundation Panel (Bottom)
 

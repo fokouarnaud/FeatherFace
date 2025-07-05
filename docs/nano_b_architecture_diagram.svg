@@ -21,7 +21,7 @@
   <rect x="190" y="100" width="120" height="80" fill="#e0e0e0" stroke="black" stroke-width="2"/>
   <text x="250" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="black">MobileNet-0.25</text>
   <text x="250" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="black">Backbone</text>
-  <text x="250" y="155" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="gray">213K params</text>
+  <text x="250" y="155" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="gray">~60K params</text>
   <text x="250" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="gray">Feature Extract</text>
   
   <!-- Arrow to Multi-scale -->
@@ -121,10 +121,13 @@
   <!-- Detection Heads -->
   <text x="900" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="black">Detection</text>
   
-  <!-- SSH + Shuffle -->
-  <rect x="850" y="100" width="80" height="40" fill="#f5f5f5" stroke="black" stroke-width="2"/>
-  <text x="890" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">SSH Grouped</text>
-  <text x="890" y="128" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="black">+ Shuffle</text>
+  <!-- SSH Multi-Branch + Shuffle -->
+  <rect x="840" y="100" width="100" height="60" fill="#f5f5f5" stroke="black" stroke-width="2"/>
+  <text x="890" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="black">SSH Standard</text>
+  <text x="890" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="black">3×3 | 5×5 | 7×7</text>
+  <text x="890" y="135" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="black">ICCV 2017</text>
+  <text x="890" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="black">+ Channel Shuffle</text>
+  <text x="890" y="155" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="gray">Concat → ReLU</text>
   
   <!-- Output boxes -->
   <rect x="960" y="95" width="60" height="25" fill="#ffeeee" stroke="#cc0000" stroke-width="1"/>
@@ -137,12 +140,12 @@
   <text x="990" y="168" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#0000cc">Landmarks</text>
   
   <!-- Arrows to detection -->
-  <line x1="830" y1="107" x2="850" y2="120" stroke="#0066cc" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <line x1="750" y1="177" x2="850" y2="120" stroke="#cc0000" stroke-width="2" marker-end="url(#arrowhead)"/>
-  <line x1="750" y1="247" x2="850" y2="120" stroke="#00aa00" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="830" y1="107" x2="840" y2="130" stroke="#0066cc" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="750" y1="177" x2="840" y2="130" stroke="#cc0000" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="750" y1="247" x2="840" y2="130" stroke="#00aa00" stroke-width="2" marker-end="url(#arrowhead)"/>
   
   <!-- Arrow to output -->
-  <line x1="930" y1="120" x2="960" y2="120" stroke="black" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="940" y1="130" x2="960" y2="120" stroke="black" stroke-width="2" marker-end="url(#arrowhead)"/>
   
   <!-- Final output -->
   <text x="1050" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="black">[2]</text>
@@ -163,15 +166,15 @@
   
   <!-- Research references -->
   <text x="100" y="470" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="black">Scientific Foundation:</text>
-  <text x="100" y="490" font-family="Arial, sans-serif" font-size="10" fill="black">• ASSN: PMC/ScienceDirect 2024</text>
-  <text x="100" y="505" font-family="Arial, sans-serif" font-size="10" fill="black">• MSE-FPN: Scientific Reports 2024 (+43.4 AP)</text>
-  <text x="100" y="520" font-family="Arial, sans-serif" font-size="10" fill="black">• Scale Decoupling: SNLA approach 2024</text>
+  <text x="100" y="490" font-family="Arial, sans-serif" font-size="10" fill="black">• SSH: Najibi et al. ICCV 2017</text>
+  <text x="100" y="505" font-family="Arial, sans-serif" font-size="10" fill="black">• CBAM: Woo et al. ECCV 2018</text>
+  <text x="100" y="520" font-family="Arial, sans-serif" font-size="10" fill="black">• BiFPN: Tan et al. CVPR 2020</text>
   
   <!-- Performance info -->
   <text x="600" y="470" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="black">Performance Impact:</text>
-  <text x="600" y="490" font-family="Arial, sans-serif" font-size="10" fill="black">• Total Parameters: 527K (with enhancements)</text>
-  <text x="600" y="505" font-family="Arial, sans-serif" font-size="10" fill="black">• Small Face Enhancement: +111K params (21.1%)</text>
-  <text x="600" y="520" font-family="Arial, sans-serif" font-size="10" fill="black">• Expected Improvement: +15-20% on small faces</text>
+  <text x="600" y="490" font-family="Arial, sans-serif" font-size="10" fill="black">• Total Parameters: ~149.5K (with SSH standard)</text>
+  <text x="600" y="505" font-family="Arial, sans-serif" font-size="10" fill="black">• SSH Standard: ~13.5K params (9.0%)</text>
+  <text x="600" y="520" font-family="Arial, sans-serif" font-size="10" fill="black">• Scientific Foundation: ICCV 2017</text>
   <text x="600" y="535" font-family="Arial, sans-serif" font-size="10" fill="black">• Target Pruned: 120K-180K (Bayesian optimization)</text>
   
   <!-- Bidirectional arrows for BiFPN -->

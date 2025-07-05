@@ -29,7 +29,7 @@ Input ➡️ MobileNet ➡️ ┌─ P3 [64ch] ──🧹─➡️─ CBAM ─�
                             ↑               ↑               ↑                      ↑                       ↑             ↑
                       Scale Decoupling  Standard      Bidirectional         Semantic Gap           P3: Scale        Grouped
                       (🧹 2024)        Attention     Feature Fusion        Resolution             Sequence         Convolutions
-                      SNLA Approach    CBAM          Efficient BiFPN       (+43.4 AP)            Attention        + Shuffle
+                      SNLA Approach    CBAM          BiFPN                 (+43.4 AP)            Attention        + Shuffle
                       Small/Large       Woo 2018      Tan 2020              Scientific 2024       (PMC 2024)       Channel Mix
                       Object Sep.       ECCV          CVPR                  Reports               ScienceDirect    Parameter-Free
 ```
@@ -96,7 +96,7 @@ P5: Quality ➡️ CBAM ➡️ Standard              (Efficient attention)
 
 ### 6. **Detection** (Standard)
 ```
-[P3|P4|P5] ➡️ SSH Grouped ➡️ Channel Shuffle ➡️ [Classification|BBox|Landmarks]
+[P3|P4|P5] ➡️ SSH Standard ➡️ Channel Shuffle ➡️ [Classification|BBox|Landmarks]
               Context         Parameter-free      [2|4|10] outputs per anchor
 ```
 

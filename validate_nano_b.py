@@ -201,12 +201,12 @@ class NanoBScientificValidator:
             },
             'Woo et al. ECCV 2018': {
                 'technique': 'CBAM Attention Mechanism',
-                'implementation': 'EfficientCBAM',
+                'implementation': 'CBAM (Woo et al. ECCV 2018)',
                 'validated': False
             },
             'Tan et al. CVPR 2020': {
                 'technique': 'EfficientDet BiFPN',
-                'implementation': 'EfficientBiFPN',
+                'implementation': 'BiFPN (Tan et al. CVPR 2020)',
                 'validated': False
             },
             'Howard et al. 2017': {
@@ -244,8 +244,8 @@ class NanoBScientificValidator:
                     
                 elif 'CBAM' in technique:
                     # Validate CBAM implementation
-                    from models.modules_nano import EfficientCBAM
-                    cbam = EfficientCBAM(64, reduction=8)
+                    from models.net import CBAM
+                    cbam = CBAM(64, reduction_ratio=8)
                     test_input = torch.randn(1, 64, 32, 32)
                     output = cbam(test_input)
                     assert output.shape == test_input.shape
@@ -253,8 +253,8 @@ class NanoBScientificValidator:
                     
                 elif 'BiFPN' in technique:
                     # Validate BiFPN implementation
-                    from models.modules_nano import EfficientBiFPN
-                    bifpn = EfficientBiFPN([32, 64, 128], 74, 3)
+                    from models.net import BiFPN
+                    bifpn = BiFPN(74, [32, 64, 128], first_time=True)
                     test_inputs = [torch.randn(1, 32, 80, 80), 
                                   torch.randn(1, 64, 40, 40),
                                   torch.randn(1, 128, 20, 20)]
