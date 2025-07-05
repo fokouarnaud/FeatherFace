@@ -197,7 +197,20 @@ class BayesianOptimizer:
     """
     Bayesian optimization for automatic pruning rate determination
     
-    Uses Gaussian Process regression to optimize pruning rates across layer groups
+    Uses Gaussian Process regression to optimize pruning rates across layer groups.
+    
+    POURQUOI L'OPTIMISATION BAYÉSIENNE ?
+    ===================================
+    Au lieu de fixer manuellement les taux de pruning (qui donnerait un nombre 
+    de paramètres fixe mais suboptimal), cette approche:
+    
+    1. Teste automatiquement différentes configurations
+    2. Évalue les performances de chaque configuration  
+    3. Utilise un modèle gaussien pour prédire les meilleures zones
+    4. Converge vers la configuration optimale dans la plage cible
+    
+    RÉSULTAT: Nombre de paramètres variable (120K-180K) mais performances optimales
+    vs nombre fixe avec performances dégradées.
     """
     
     def __init__(self, num_groups: int = 6, acquisition_function: str = 'ei'):
@@ -596,11 +609,22 @@ def create_nano_b_config(target_reduction: float = 0.4) -> Dict:
     """
     Create configuration for FeatherFace Nano-B pruning
     
+    IMPORTANT: Le nombre final de paramètres sera VARIABLE (120K-180K) car:
+    - L'optimisation bayésienne trouve automatiquement les taux optimaux
+    - Chaque groupe de couches est optimisé indépendamment
+    - Le résultat dépend de l'importance calculée par FPGM
+    - Cette variabilité garantit des performances optimales vs un taux fixe
+    
     Args:
         target_reduction: Target parameter reduction (0-1)
+                         Note: Le résultat final peut varier selon BO
         
     Returns:
         Pruning configuration dictionary
+        
+    Example:
+        config = create_nano_b_config(0.5)  # Cible 50% réduction
+        # Résultat possible: 120K-180K paramètres selon optimisation
     """
     config = {
         # FPGM settings

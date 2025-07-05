@@ -24,6 +24,9 @@ cfg_mnet = {
 
 
 # Configuration for FeatherFace Nano-B (Bayesian-Optimized Ultra-Efficient)
+# IMPORTANT: Le nombre final de paramètres sera VARIABLE (120K-180K) selon
+# l'optimisation bayésienne. Cette variabilité est un AVANTAGE car elle permet
+# de trouver automatiquement la meilleure configuration vs un nombre fixe suboptimal.
 cfg_nano_b = {
     'name': 'mobilenet0.25',
     'min_sizes': [[16, 32], [64, 128], [256, 512]],
@@ -41,7 +44,7 @@ cfg_nano_b = {
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
-    'out_channel': 32,           # Nano-B optimized for 120-180K parameters
+    'out_channel': 32,           # Nano-B optimized for 120-180K parameters (variable)
     'num_classes': 2,            # Binary classification (face/no-face)
     
     # Learning configuration  
@@ -83,11 +86,12 @@ cfg_nano_b = {
         'bayesian_optimization': 'Mockus, 1989'
     },
     
-    # Performance targets
+    # Performance targets (PLAGE VARIABLE selon optimisation bayésienne)
     'target_parameters': {
         'nano_b_min': 120000,        # Minimum target (65% reduction from V1)
-        'nano_b_max': 180000,        # Maximum target (48% reduction from V1)
-        'nano_b_optimal': 150000     # Optimal target (56% reduction from V1)
+        'nano_b_max': 180000,        # Maximum target (48% reduction from V1)  
+        'nano_b_optimal': 150000,    # Optimal target (56% reduction from V1)
+        'variability_reason': 'Bayesian optimization finds best config automatically'
     }
 }
 
