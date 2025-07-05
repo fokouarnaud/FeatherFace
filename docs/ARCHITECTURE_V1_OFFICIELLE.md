@@ -9,7 +9,7 @@ D'après la description officielle du paper, **FeatherFace** integrates a Mobile
 ```
 Input (640×640×3)
      ↓
-MobileNet-0.25 Backbone → Multi-scale Features [P3:64ch, P4:128ch, P5:256ch]
+MobileNet-0.25 Backbone → Multi-scale Features [P3:32ch, P4:64ch, P5:128ch]
      ↓
 Attention Mechanisms (CBAM) → Enhanced Features [A3, A4, A5]
      ↓
@@ -31,9 +31,9 @@ Output: [bbox_reg, classifications, landmarks]
 #### Double Attention Strategy
 ```python
 # Premier CBAM sur features backbone (Paper-Compliant)
-self.backbone_cbam_0 = CBAM(64, 48)   # P3 backbone attention
-self.backbone_cbam_1 = CBAM(128, 48)  # P4 backbone attention  
-self.backbone_cbam_2 = CBAM(256, 48)  # P5 backbone attention
+self.backbone_cbam_0 = CBAM(32, 48)   # P3 backbone attention
+self.backbone_cbam_1 = CBAM(64, 48)   # P4 backbone attention  
+self.backbone_cbam_2 = CBAM(128, 48)  # P5 backbone attention
 
 # Deuxième CBAM après BiFPN (Paper-Compliant)
 self.attention_cbam_0 = CBAM(74, 48)  # P3 post-aggregation attention
@@ -54,7 +54,7 @@ self.attention_cbam_2 = CBAM(74, 48)  # P5 post-aggregation attention
 # BiFPN pour aggregation multiscale (2 répétitions)
 self.bifpn = nn.Sequential(
     *[BiFPN(num_channels=74,           # out_channels optimisé 
-            conv_channels=[64,128,256], # channels backbone
+            conv_channels=[32,64,128],  # channels backbone
             first_time=(i==0),
             attention=True)
       for i in range(2)]               # 2 répétitions pour 488.7K target
@@ -153,7 +153,7 @@ def forward(self, inputs):
     Forward pass suivant l'architecture officielle du paper
     """
     # 1. MobileNet-0.25 Backbone - Multi-scale feature extraction
-    out = self.body(inputs)  # → [P3:64ch, P4:128ch, P5:256ch]
+    out = self.body(inputs)  # → [P3:32ch, P4:64ch, P5:128ch]
     out = list(out.values())
     
     # 2. Premier CBAM - Channel & Spatial attention on backbone features
@@ -239,4 +239,4 @@ def forward(self, inputs):
 
 L'architecture FeatherFace V1 avec 487K paramètres représente un **optimal trade-off** entre précision et efficacité pour la détection de visages. L'intégration de MobileNet-0.25, double CBAM, BiFPN, et DCN+Shuffle permet d'atteindre **99.7% du target paramétrique (488.7K)** tout en maintenant une architecture paper-compliant et performance baseline solide.
 
-Cette configuration V1 sert de **teacher model** pour la distillation de connaissances vers FeatherFace V2, permettant l'optimisation ultérieure vers 256K paramètres avec amélioration de performance.
+Cette configuration V1 sert de **teacher model** pour la distillation de connaissances vers FeatherFace Nano-B, permettant l'optimisation ultérieure vers 120K-180K paramètres avec maintien de performance compétitive.
