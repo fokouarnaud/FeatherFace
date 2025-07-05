@@ -22,8 +22,9 @@ cfg_mnet = {
     'optim' : 'adamw'
 }
 
-# Configuration for FeatherFace Nano (Scientifically Justified Ultra-Efficient)
-cfg_nano = {
+
+# Configuration for FeatherFace Nano-B (Bayesian-Optimized Ultra-Efficient)
+cfg_nano_b = {
     'name': 'mobilenet0.25',
     'min_sizes': [[16, 32], [64, 128], [256, 512]],
     'steps': [8, 16, 32],
@@ -33,40 +34,64 @@ cfg_nano = {
     'gpu_train': True,
     'batch_size': 32,
     'ngpu': 1,
-    'epoch': 400,  # Extended for knowledge distillation
-    'decay1': 250,
-    'decay2': 350,
+    'epoch': 300,  # Optimized for Bayesian pruning pipeline
+    'decay1': 150,
+    'decay2': 250,
     'image_size': 640,
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
-    'out_channel_nano': 64,  # Nano optimized channels for 344K parameters
+    'out_channel': 32,           # Nano-B optimized for 120-180K parameters
+    'num_classes': 2,            # Binary classification (face/no-face)
     
-    # Learning configuration
+    # Learning configuration  
     'lr': 1e-3,
     'optim': 'adamw',
     'weight_decay': 5e-4,
     
-    # Scientifically justified efficiency techniques
-    'cbam_reduction': 32,        # Efficient CBAM (Woo et al. ECCV 2018)
-    'ssh_groups': 4,             # Grouped SSH (established technique)
+    # Nano-B specific efficiency techniques
+    'cbam_reduction': 8,         # Efficient CBAM (Woo et al. ECCV 2018)
+    'ssh_groups': 2,             # Grouped SSH (established technique)
+    'bifpn_channels': 72,        # BiFPN output channels (divisible by 4)
+    'use_pruned_conv': True,     # Enable pruning-aware convolutions
     
-    # Knowledge Distillation (Li et al. CVPR 2023)
+    # Weighted Knowledge Distillation (2025 research)
     'knowledge_distillation': True,
-    'temperature': 4.0,          # Distillation temperature
-    'alpha': 0.7,                # Distillation weight
-    'feature_weight': 0.1,       # Feature alignment weight
+    'distillation_temperature': 4.0,  # Distillation temperature
+    'distillation_alpha': 0.7,        # Distillation weight
+    'adaptive_weights': True,          # Adaptive distillation weights
     
-    # Scientific foundation
+    # Bayesian-Optimized Pruning (B-FPGM - Kaparinos & Mezaris, WACVW 2025)
+    'pruning_enabled': True,
+    'target_reduction': 0.5,           # 50% parameter reduction target
+    'pruning_start_epoch': 50,         # Start pruning after initial training
+    'pruning_epochs': 20,              # Bayesian optimization epochs
+    'fine_tune_epochs': 30,            # Fine-tuning after pruning
+    'bayesian_iterations': 25,         # BO iterations for rate optimization
+    'acquisition_function': 'ei',      # Expected Improvement
+    'distance_type': 'l2',             # FPGM distance metric
+    'sparsity_schedule': 'polynomial', # SFP schedule
+    
+    # Scientific foundation (Extended for Nano-B)
     'scientific_basis': {
         'cbam': 'Woo et al. ECCV 2018',
         'bifpn': 'Tan et al. CVPR 2020', 
         'knowledge_distillation': 'Li et al. CVPR 2023',
-        'mobilenet': 'Howard et al. 2017'
+        'mobilenet': 'Howard et al. 2017',
+        'b_fpgm': 'Kaparinos & Mezaris, WACVW 2025',
+        'weighted_distillation': '2025 Edge Computing Research',
+        'bayesian_optimization': 'Mockus, 1989'
+    },
+    
+    # Performance targets
+    'target_parameters': {
+        'nano_b_min': 120000,        # Minimum target (65% reduction from V1)
+        'nano_b_max': 180000,        # Maximum target (48% reduction from V1)
+        'nano_b_optimal': 150000     # Optimal target (56% reduction from V1)
     }
 }
 
-# Legacy V2 configuration (deprecated - use cfg_nano instead)
+# Legacy V2 configuration (deprecated)
 cfg_mnet_v2 = {
     'name': 'mobilenet0.25',
     'min_sizes': [[16, 32], [64, 128], [256, 512]],
