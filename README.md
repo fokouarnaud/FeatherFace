@@ -1,12 +1,12 @@
 # FeatherFace: Scientifically Justified Lightweight Face Detection
 
-A rigorously-grounded implementation featuring FeatherFace V1 baseline (487K parameters), ultra-efficient Nano (344K parameters), and ultra-lightweight Nano-B (120K-180K parameters) based exclusively on verified research.
+A rigorously-grounded implementation featuring FeatherFace V1 baseline (487K parameters) and ultra-lightweight Nano-B (120K-180K parameters) based exclusively on verified research.
 
 > **Paper**: Kim, D.; Jung, J.; Kim, J. FeatherFace: Robust and Lightweight Face Detection via Optimal Feature Integration. Electronics 2025 - [link](https://www.mdpi.com/2079-9292/14/3/517)
 
-## 🚀 FeatherFace Nano Ultra-Efficient Architecture
+## 🚀 FeatherFace Nano-B Ultra-Lightweight Architecture
 
-![FeatherFace Nano](docs/featherface_nano_architecture.png)
+![FeatherFace Nano-B](docs/featherface_nano_b_architecture.png)
 
 ### Scientific Foundation
 
@@ -17,32 +17,34 @@ Our approach is built on established research:
 - **CBAM Attention**: Woo et al. "Convolutional Block Attention Module" (ECCV 2018) - Proven attention mechanism
 - **MobileNet Backbone**: Howard et al. "MobileNets: Efficient Convolutional Neural Networks" (2017) - Lightweight CNN architecture
 
-### Model Comparison: V1 Baseline → Nano Ultra-Efficient
+### Model Comparison: V1 Baseline → Nano-B Ultra-Lightweight
 
-| Aspect | **FeatherFace V1 (Baseline)** | **FeatherFace Nano (Ultra-Efficient)** |
-|--------|-------------------------------|----------------------------------------|
-| **Parameters** | 487,103 | 344,254 (**29.3% reduction**) |
-| **Architecture** | MobileNet → CBAM → BiFPN → DCN → SSH | MobileNet → Efficient CBAM → Efficient BiFPN → Grouped SSH |
-| **Performance** | 87% mAP (baseline) | Competitive mAP with fewer parameters |
-| **Paradigm** | Standard implementation | **Scientifically justified efficiency** |
-| **Foundation** | Paper-compliant standard | **4 verified research publications** |
+| Aspect | **FeatherFace V1 (Baseline)** | **FeatherFace Nano-B (Ultra-Lightweight)** |
+|--------|-------------------------------|--------------------------------------------|
+| **Parameters** | 487,103 | 120,000-180,000 (**48-65% reduction**) |
+| **Architecture** | MobileNet → CBAM → BiFPN → DCN → SSH | MobileNet → Efficient CBAM → Efficient BiFPN → Grouped SSH + B-FPGM |
+| **Performance** | 87% mAP (baseline) | Competitive mAP with extreme efficiency |
+| **Paradigm** | Standard implementation | **Bayesian-optimized ultra-lightweight** |
+| **Foundation** | Paper-compliant standard | **7 verified research publications** |
 
-### FeatherFace Nano Scientifically Justified Techniques
+### FeatherFace Nano-B Bayesian-Optimized Techniques
 
 ```
-Input (640×640×3) → MobileNet → Efficient CBAM → Efficient BiFPN → Grouped SSH → Detection
+Input (640×640×3) → MobileNet → Efficient CBAM → Efficient BiFPN → Grouped SSH → B-FPGM → Detection
 ```
 
-**🔬 Research-Backed Efficiency Techniques:**
-1. **Knowledge Distillation**: Li et al. CVPR 2023 - Teacher-student training framework
-2. **Efficient CBAM**: Woo et al. ECCV 2018 - Higher reduction ratios for parameter efficiency
-3. **Efficient BiFPN**: Tan et al. CVPR 2020 - Depthwise separable convolutions
-4. **Grouped SSH**: Established technique - Grouped convolutions for context processing
-5. **Channel Shuffle**: Parameter-free information mixing
+**🔬 Research-Backed Ultra-Lightweight Techniques:**
+1. **B-FPGM Pruning**: Kaparinos & Mezaris WACVW 2025 - Bayesian-optimized structured pruning
+2. **Weighted Knowledge Distillation**: Li et al. CVPR 2023 + 2025 Edge Computing Research
+3. **Efficient CBAM**: Woo et al. ECCV 2018 - Adaptive attention with pruning
+4. **Efficient BiFPN**: Tan et al. CVPR 2020 - Bidirectional features with optimization
+5. **Grouped SSH**: Grouped convolutions with channel shuffle
+6. **Bayesian Optimization**: Automated pruning rate discovery
+7. **Three-Phase Training**: Knowledge Distillation → Bayesian Pruning → Fine-tuning
 
-**📊 Total Impact: 29.3% parameter reduction with verified scientific foundation**
+**📊 Total Impact: 48-65% parameter reduction with Bayesian-optimized efficiency**
 
-📖 **[V1 Architecture Documentation](docs/ARCHITECTURE_V1_OFFICIELLE.md)** | **[Nano Ultra-Efficient Architecture](docs/NANO_ARCHITECTURE.md)**
+📖 **[V1 Architecture Documentation](docs/ARCHITECTURE_V1_OFFICIELLE.md)** | **[Nano-B Ultra-Lightweight Architecture](docs/NANO_B_ARCHITECTURE.md)**
 
 ## 🚀 Quick Start
 
@@ -59,9 +61,6 @@ pip install -e .
 # V1 Baseline (487K parameters) - Paper-compliant teacher model
 CUDA_VISIBLE_DEVICES=0 torchrun --standalone --nproc_per_node=1 train.py --network mobile0.25
 
-# Nano Ultra-Efficient (344K parameters) - Scientifically justified efficiency
-python train_nano.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 400
-
 # Nano-B Ultra-Lightweight (120K-180K parameters) - Bayesian-optimized pruning
 python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 300
 ```
@@ -70,21 +69,15 @@ python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 
 ```python
 import torch
 from models.retinaface import RetinaFace
-from models.featherface_nano import FeatherFaceNano
-from data.config import cfg_mnet, cfg_nano
+from models.featherface_nano_b import create_featherface_nano_b
+from data.config import cfg_mnet, cfg_nano_b
 
 # Load V1 model (baseline)
 model_v1 = RetinaFace(cfg=cfg_mnet, phase='test')
 checkpoint = torch.load('weights/mobilenet0.25_Final.pth')
 model_v1.load_state_dict(checkpoint)
 
-# Load Nano model (ultra-efficient)
-model_nano = FeatherFaceNano(cfg=cfg_nano, phase='test')
-checkpoint = torch.load('weights/nano/nano_final.pth')
-model_nano.load_state_dict(checkpoint['model_state_dict'])
-
 # Load Nano-B model (ultra-lightweight)
-from models.featherface_nano_b import create_featherface_nano_b
 model_nano_b = create_featherface_nano_b(cfg=cfg_nano_b, phase='test')
 checkpoint = torch.load('weights/nano_b/nano_b_best.pth')
 model_nano_b.load_state_dict(checkpoint['model_state_dict'])
@@ -98,14 +91,13 @@ outputs = model_nano_b(input_tensor)
 | Model | Parameters | Size | mAP (WIDERFace Easy) | Scientific Foundation | Use Case |
 |-------|------------|------|---------------------|----------------------|----------|
 | **V1 Baseline** | 487K | 1.9MB | 87.0% | Paper-compliant standard implementation | Teacher model, research baseline |
-| **Nano Ultra-Efficient** | 344K | 1.4MB | **Competitive** | **4 verified research publications** | **Production deployment** |
 | **Nano-B Ultra-Lightweight** | 120K-180K | 0.6MB | **Competitive** | **7 verified research publications** | **Edge/IoT deployment** |
 
 ### Efficiency Achievements
-- **V1 → Nano**: 29.3% reduction through scientifically justified techniques
-- **V1 → Nano-B**: 65% reduction via Bayesian-optimized pruning + knowledge distillation
+- **V1 → Nano-B**: 48-65% reduction via Bayesian-optimized pruning + weighted knowledge distillation
 - **Scientific Foundation**: 7 research publications spanning 2017-2025
 - **Edge Deployment**: Nano-B optimized for IoT and mobile edge devices
+- **Bayesian Optimization**: Automated pruning rate discovery with 25 iterations
 
 ## 📁 Project Structure
 
@@ -115,11 +107,11 @@ FeatherFace/
 ├── 🚀 deployment/           # Production-ready models and configs  
 ├── 🔧 utils/               # Monitoring and validation utilities
 ├── 📋 scripts/             # Organized command-line scripts
-│   ├── training/           # Training scripts (train.py, train_nano.py)
+│   ├── training/           # Training scripts (train.py, train_nano_b.py)
 │   ├── validation/         # Validation scripts (validate_parameters.py)
 │   ├── deployment/         # Export scripts (export_dynamic_onnx.py)
 │   └── detection/          # Detection scripts (detect.py)
-├── 🗂️ models/              # Model architectures (V1, Nano)
+├── 🗂️ models/              # Model architectures (V1, Nano-B)
 ├── 📋 data/                # Dataset handling and configurations
 ├── ⚙️ layers/              # Custom layers and training utilities
 ├── 🧪 tests/               # Unit and integration tests
@@ -130,18 +122,18 @@ FeatherFace/
 ## 🎯 Key Features
 
 - **✅ Paper-compliant V1**: Exactly 487K parameters as specified in FeatherFace paper
-- **🚀 Efficient Nano**: 29.3% parameter reduction through proven scientific techniques
-- **🧠 Knowledge Distillation**: Teacher-student training for efficient models
+- **🚀 Ultra-Lightweight Nano-B**: 48-65% parameter reduction via Bayesian-optimized pruning
+- **🧠 Weighted Knowledge Distillation**: Advanced teacher-student training with adaptive weights
 - **📊 Real-time Monitoring**: Training metrics and performance tracking  
 - **🔄 Dynamic ONNX**: Multi-size export for production deployment
-- **🛡️ Scientific Foundation**: Based on established research in efficient neural networks
+- **🛡️ Scientific Foundation**: Based on 7 research publications in efficient neural networks
 
 ## 📖 Documentation
 
 - **[Technical Documentation](docs/technical/TECHNICAL_DOCUMENTATION.md)** - Complete implementation details
 - **[Enhancement Summary](docs/technical/PROJECT_ENHANCEMENT_SUMMARY.md)** - Recent improvements overview
 - **[Deployment Guide](deployment/README.md)** - Production deployment instructions
-- **[Training Guides](docs/)** - V1 and Nano training documentation
+- **[Training Guides](docs/)** - V1 and Nano-B training documentation
 
 ## 💾 Data Preparation
 
@@ -173,8 +165,8 @@ Download MobileNetV1X0.25 pretrained weights from [Google Drive](https://drive.g
 # Start with V1 baseline training
 jupyter notebook notebooks/01_train_evaluate_featherface.ipynb
 
-# Then proceed to Nano ultra-efficient training  
-jupyter notebook notebooks/03_train_evaluate_featherface_nano.ipynb
+# Then proceed to Nano-B ultra-lightweight training  
+jupyter notebook notebooks/04_train_evaluate_featherface_nano_b.ipynb
 ```
 
 ### Command Line Training
@@ -182,29 +174,26 @@ jupyter notebook notebooks/03_train_evaluate_featherface_nano.ipynb
 # V1 baseline training (teacher model)
 CUDA_VISIBLE_DEVICES=0 torchrun --standalone --nproc_per_node=1 train.py --network mobile0.25
 
-# Nano ultra-efficient training with knowledge distillation
-python train_nano.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 400
-
-# Quick Nano start (simplified wrapper)
-python start_nano_training.py
+# Nano-B ultra-lightweight training with Bayesian optimization
+python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 300
 ```
 
 ### Evaluation
 
-**🚀 Complete Nano support in test_widerface.py!**
+**🚀 Complete Nano-B support in test_widerface.py!**
 ```bash
 # Generate predictions - V1 Baseline (487K parameters)
 python test_widerface.py --trained_model weights/mobilenet0.25_Final.pth --network mobile0.25
 
-# Generate predictions - Nano Ultra-Efficient (344K parameters)
-python test_widerface.py --trained_model weights/nano/nano_final.pth --network nano
+# Generate predictions - Nano-B Ultra-Lightweight (120K-180K parameters)
+python test_widerface.py --trained_model weights/nano_b/nano_b_best.pth --network nano_b
 
 # Evaluate results (same process for both models)
 cd widerface_evaluate
 python evaluation.py -p ./widerface_txt -g ./eval_tools/ground_truth
 
 # Compare models
-python test_v1_nano_comparison.py
+python test_v1_nano_b_comparison.py
 ```
 
 ## ⚡ Performance Tips
@@ -268,5 +257,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 **Status**: ✅ Production Ready | **Version**: 2.0 | **Last Updated**: January 2025  
-**Scientific Foundation**: Based on established research in efficient neural networks and knowledge distillation  
-**Achievement**: Ultra-efficient architecture with 29.3% parameter reduction through scientifically justified techniques
+**Scientific Foundation**: Based on 7 research publications in efficient neural networks and Bayesian optimization  
+**Achievement**: Ultra-lightweight architecture with 48-65% parameter reduction through Bayesian-optimized pruning
