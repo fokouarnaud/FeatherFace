@@ -1,4 +1,4 @@
-# FeatherFace Nano-B Architecture: Ultra-Lightweight Face Detection
+# FeatherFace Nano-B Enhanced Architecture: Ultra-Lightweight Face Detection 2024
 
 ## Overview
 
@@ -26,9 +26,9 @@ FeatherFace Nano-B represents the pinnacle of ultra-lightweight face detection, 
 |-----------|-----------------|------------------------------|
 | **Parameters** | 487,103 | **120,000-180,000** |
 | **Backbone** | MobileNet V1-0.25 | MobileNet V1-0.25 + Bayesian Pruning |
-| **CBAM** | Standard | **Bayesian-Pruned Efficient** |
-| **FPN** | BiFPN | **B-FPGM Optimized BiFPN** |
-| **SSH** | Standard | **Pruned + Optimized Grouped** |
+| **CBAM** | Standard | **Standard + Enhanced P3** |
+| **FPN** | BiFPN | **BiFPN + MSE Enhancement** |
+| **SSH** | Standard | **SSH Standard (Validated)** |
 | **Training** | Standard | **3-Phase Pipeline** |
 | **Optimization** | Manual | **Bayesian-Automated** |
 
@@ -106,31 +106,31 @@ Nano-B Enhancement: Bayesian-optimized channel pruning (15-25% rates)
 Parameters: ~40,000-60,000 (varies with pruning)
 ```
 
-### 2. Efficient CBAM with Adaptive Pruning
+### 2. CBAM Standard with Enhanced P3
 ```
 Problem Solved: Loss of important spatial/channel information
 Solution: Channel attention (GAP+GMP) + Spatial attention (7x7 conv)
-Nano-B Enhancement: Reduction ratio=8, pruning rates 20-30%
-Parameters: ~6,000-8,000 per level (P3/P4/P5)
-Pattern: Dashed lines in architecture visualization
+Nano-B Enhancement: Standard implementation + P3 specialization
+Parameters: ~1,800 total (distributed across levels)
+Pattern: Standard validated attention mechanism
 ```
 
-### 3. BiFPN with B-FPGM Optimization (Tan et al. CVPR 2020)
+### 3. BiFPN with MSE Enhancement (Tan et al. CVPR 2020)
 
 ```
 Problem Solved: Unidirectional FPN misses cross-scale information
 Solution: Bidirectional top-down + bottom-up with learned weights
-Nano-B Enhancement: 72 channels, standard implementation with pruning optimization
+Nano-B Enhancement: 32 channels, standard implementation with semantic enhancement
 ```
 
-### 4. SSH Detection Context (Najibi et al. ICCV 2017)
+### 4. SSH Standard Detection Context (Najibi et al. ICCV 2017)
 ```
 Problem Solved: Limited receptive field for context modeling in face detection
-Solution: Multi-scale context via 3 parallel branches (3x3, 5x5, 7x7 convolutions)
+Solution: Multi-scale context via 4 parallel branches (standard SSH)
 Scientific Base: Single Stage Headless Face Detector (ICCV 2017)
-Nano-B Enhancement: Standard SSH + optimization techniques (channel shuffle, pruning)
-Parameters: ~13,500 (3 modules × ~4,500 each)
-Optimization: +5.1K vs grouped version but scientifically validated base
+Nano-B Enhancement: Standard SSH implementation (validated)
+Parameters: ~12,000 (3 modules × ~4,000 each)
+Optimization: Standard validated implementation
 ```
 
 ### 5. Channel Shuffle (Parameter-Free)
@@ -352,4 +352,4 @@ If you use FeatherFace Nano-B in your research, please cite:
 }
 ```
 
-**Research Foundation**: 7 publications spanning 2017-2025, representing the state-of-the-art in lightweight neural network design and optimization.
+**Research Foundation**: 10 publications spanning 2017-2025, representing the state-of-the-art in lightweight neural network design and optimization with Enhanced 2024 small face specialization.

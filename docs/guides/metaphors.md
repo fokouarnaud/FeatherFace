@@ -6,29 +6,29 @@
 
 ## 🏗️ L'Architecture comme une Ville (Métaphore Générale)
 
-### 🏙️ **FeatherFace = Une Ville Spécialisée dans la Recherche de Personnes**
+### 🏙️ **FeatherFace = Une Ville Spécialisée dans la Recherche de Personnes Enhanced 2024**
 
 ```
-                    🏙️ VILLE NANO-B ENHANCED (Vue aérienne - Mode Paysage)
+                    🏙️ VILLE NANO-B ENHANCED 2024 (Vue aérienne - Mode Paysage)
 ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 
 🚪 Entrée ➡️ 🏭 Usine ➡️ 🔍 Quartier ➡️ 👁️ Centre ➡️ 🔭 Zone ➡️ 🎯 Poste ➡️ ✅ Sortie
    Ville      Analyse    Détective     Vision     Large     Final     Résultats
-             (MobileNet)  (P3 Small)   (P4 Med)  (P5 Big)  (Detect)   Trouvés!
+             (MobileNet)  (P3 Enhanced) (P4 Std)  (P5 Std)  (SSH)     Trouvés!
 
-             📊 213K      🔍 Enhanced   👁️ Std    🔭 Std    🎯 SSH     [2|4|10]
-             workers      specialists   workers   workers   experts    outputs
+             📊 150K      🔍 Enhanced   👁️ Std    🔭 Std    🎯 SSH     [2|4|10]
+             workers      4 modules     2 modules  2 modules  experts    outputs
 ```
 
 ### 🚶‍♂️ **Les Habitants = Les Paramètres du Modèle**
 - **V1** : 487,103 habitants (ville normale)
-- **Nano-B Enhanced** : 527,138 habitants (avec spécialistes)
-- **Nano-B Pruned** : 120K-180K habitants (ville optimisée)
+- **Nano-B Enhanced** : 120K-180K habitants (ville optimisée avec spécialistes)
+- **Nano-B Typical** : ~150K habitants (configuration optimale)
 
-### 🏢 **Les Quartiers = Les Niveaux de Traitement**
-- **🔍 Quartier Détective (P3)** : Spécialisé dans les petites affaires
-- **👁️ Centre Ville (P4)** : Traite les affaires moyennes
-- **🔭 Zone Industrielle (P5)** : S'occupe des gros problèmes
+### 🏢 **Les Quartiers = Les Niveaux de Traitement Enhanced**
+- **🔍 Quartier Détective Enhanced (P3)** : Spécialisé dans les petites affaires (4 modules 2024)
+- **👁️ Centre Ville Standard (P4)** : Traite les affaires moyennes (2 modules standard)
+- **🔭 Zone Industrielle Standard (P5)** : S'occupe des gros problèmes (2 modules standard)
 
 ---
 
@@ -38,10 +38,11 @@
 
 **Mission :** Trouver les **petits indices** que personne d'autre ne voit
 
-**Outils Spéciaux (2024) :**
-- 🧹 **Balai à Indices** (ScaleDecoupling) : "Enlève les gros objets qui cachent les petits indices"
+**4 Outils Spéciaux Enhanced (2024) :**
+- 🧹 **Balai à Indices** (Scale Decoupling) : "Enlève les gros objets qui cachent les petits indices"
+- 👁️ **Œil Expert** (CBAM Standard) : "Vision précise après nettoyage"
+- 🌉 **Carnet de Notes Magique** (BiFPN+MSE Enhanced) : "Relie tous les indices intelligemment"
 - 🎯 **Loupe Laser** (ASSN) : "Zoom ultra-précis sur les détails minuscules"
-- 🌉 **Carnet de Notes Magique** (SemanticEnhancement) : "Relie tous les indices intelligemment"
 
 **Métaphore Concrète :**
 > "Holmes cherche une **pièce de monnaie** dans un **salon plein de meubles**. D'abord, il pousse les **canapés** (balai), puis utilise sa **loupe spéciale** (ASSN) pour examiner chaque recoin, et note tout dans son **carnet intelligent** (semantic enhancement)."
@@ -50,9 +51,9 @@
 
 **Mission :** Traiter les **cas normaux** efficacement
 
-**Outils :**
-- 👁️ **Œil Entraîné** (CBAM) : Vision sharp standard
-- 🌉 **Carnet Standard** (SemanticEnhancement) : Notes bien organisées
+**2 Outils Enhanced :**
+- 👁️ **Œil Entraîné** (CBAM Standard) : Vision sharp standard
+- 🌉 **Carnet Enhanced** (BiFPN+MSE Enhanced) : Notes bien organisées
 
 **Métaphore :**
 > "L'inspecteur traite les **vols de vélos** - ni trop petits, ni trop gros. Il voit bien et note correctement."
@@ -61,9 +62,9 @@
 
 **Mission :** Gérer les **affaires importantes** et visibles
 
-**Outils :**
-- 🔭 **Vision Longue Distance** (CBAM) : Voit les grands schémas
-- 🌉 **Rapport Final** (SemanticEnhancement) : Synthèse complète
+**2 Outils Enhanced :**
+- 🔭 **Vision Longue Distance** (CBAM Standard) : Voit les grands schémas
+- 🌉 **Rapport Final** (BiFPN+MSE Enhanced) : Synthèse complète
 
 **Métaphore :**
 > "Le commissaire s'occupe des **cambriolages de banques** - gros, évidents, mais importants."
@@ -77,45 +78,45 @@
 - **Input :** Photo de classe de 640×640 élèves
 - **Output :** 3 groupes d'élèves (P3: petits, P4: moyens, P5: grands)
 
-### 🎯 **CBAM = Les Lunettes Magiques**
-**Métaphore :** Des **lunettes intelligentes** qui focalisent automatiquement
+### 🎯 **CBAM Standard = Les Lunettes Magiques**
+**Métaphore :** Des **lunettes intelligentes Standard** qui focalisent automatiquement
 - **Channel Attention :** "Ces lunettes décident quelles couleurs regarder"
 - **Spatial Attention :** "Ces lunettes décident où regarder dans l'image"
 
-### 🌉 **BiFPN = Le Pont des Messages**
-**Métaphore :** Un **pont téléphonique** entre les trois détectives
+### 🌉 **BiFPN+MSE Enhanced = Le Pont des Messages Magique**
+**Métaphore :** Un **pont téléphonique Enhanced** entre les trois détectives
 - **Top-down :** "Le commissaire envoie des conseils aux autres"
 - **Bottom-up :** "Le détective Holmes partage ses découvertes"
-- **Bidirectional :** "Tout le monde se parle dans les deux sens"
+- **Semantic Enhancement :** "Le pont traduit automatiquement pour que tout le monde se comprenne"
 
 ---
 
 ## 🔧 Les Outils Magiques 2024
 
-### 🧹 **Scale Decoupling = Le Balai Anti-Encombrement**
+### 🧹 **Scale Decoupling Enhanced = Le Balai Anti-Encombrement**
 
-**Métaphore du Garage :**
-> "Tu cherches tes **clés de voiture** dans le garage. Le balai magique enlève d'abord la **tondeuse** et les **gros cartons** pour que tu puisses voir les petits objets sur l'étagère."
+**Métaphore du Garage Enhanced :**
+> "Tu cherches tes **clés de voiture** dans le garage. Le balai magique Enhanced enlève d'abord la **tondeuse** et les **gros cartons** pour que tu puisses voir les petits objets sur l'étagère."
 
 **Technique :**
 - **Small Object Enhancer :** Projecteur sur les petits objets
 - **Large Object Suppressor :** Rideau sur les gros objets
 - **Result :** Les petits visages deviennent plus visibles !
 
-### 🎯 **ASSN = Le Viseur de Sniper**
+### 🎯 **ASSN Enhanced = Le Viseur de Sniper**
 
-**Métaphore du Tir à l'Arc :**
-> "Un archer normal vise une **cible normale**. Le viseur ASSN est comme un **viseur laser** qui peut toucher une **mouche** à 100 mètres !"
+**Métaphore du Tir à l'Arc Enhanced :**
+> "Un archer normal vise une **cible normale**. Le viseur ASSN Enhanced est comme un **viseur laser** qui peut toucher une **mouche** à 100 mètres !"
 
 **Technique :**
 - **Scale Sequence :** Ajuste automatiquement le zoom selon la taille
 - **Spatial Enhancement :** Stabilise le tir pour plus de précision
 - **Result :** Précision maximale sur les petits visages !
 
-### 🌉 **Semantic Enhancement = Le Traducteur Universel**
+### 🌉 **MSE-FPN Semantic Enhancement = Le Traducteur Universel**
 
-**Métaphore de l'ONU :**
-> "Imagine une réunion à l'ONU où le délégué français parle français, l'anglais parle anglais, et le chinois parle chinois. Le traducteur sémantique fait que **tout le monde se comprend parfaitement** !"
+**Métaphore de l'ONU Enhanced :**
+> "Imagine une réunion à l'ONU où le délégué français parle français, l'anglais parle anglais, et le chinois parle chinois. Le traducteur sémantique Enhanced fait que **tout le monde se comprend parfaitement** !"
 
 **Technique :**
 - **Semantic Injection :** Ajoute du sens aux informations
@@ -129,20 +130,20 @@
 ### 🏭 **Chaîne de Montage Nano-B Enhanced**
 
 ```
-🚛 CAMION    🏭 USINE     🔧 ATELIER 1   🔧 ATELIER 2   🔧 ATELIER 3   📦 EMBALLAGE   🚚 LIVRAISON
-   Input     Backbone     P3 Enhanced    Fusion BiFPN   Attention 2    Detection      Output
-   640×640   MobileNet    🧹🎯🌉        Bidirectional   🎯👁️🔭        SSH+Shuffle    [2|4|10]
+🚛 CAMION    🏭 USINE     🔧 ATELIER 1     🔧 ATELIER 2     🔧 ATELIER 3   📦 EMBALLAGE   🚚 LIVRAISON
+   Input     Backbone     P3 Enhanced      Fusion Enhanced   Detection      SSH Standard    Output
+   640×640   MobileNet    🧹👁️🌉🎯        BiFPN+MSE        Standard       Context+Shuffle [2|4|10]
 
-   📷 Photo   🧠 Analyse   🔍 Spécialiste  🌉 Connecteur   👀 Vérificateur  🎯 Emballeur   ✅ Résultat
+   📷 Photo   🧠 Analyse   🔍 4 Spécialistes 🌉 Connecteur     👀 Finaliseur   🎯 Emballeur   ✅ Résultat
 ```
 
 **Étapes Détaillées :**
 
 1. **🚛 Livraison :** La photo arrive à l'usine
 2. **🏭 Première Transformation :** Le cerveau découpe en 3 types
-3. **🔧 Atelier Spécialisé :** P3 reçoit des outils spéciaux 2024
-4. **🌉 Connexion :** Tous les ateliers se parlent intelligemment
-5. **👀 Contrôle Qualité :** Vérification finale avec outils adaptés
+3. **🔧 Atelier Spécialisé :** P3 reçoit 4 outils spéciaux Enhanced 2024
+4. **🌉 Connexion :** Tous les ateliers se parlent intelligemment Enhanced
+5. **👀 Contrôle Qualité :** Vérification finale avec SSH Standard
 6. **📦 Emballage :** Tout est emballé proprement
 7. **🚚 Livraison :** Les visages trouvés sont livrés !
 

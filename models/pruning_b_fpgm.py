@@ -605,51 +605,8 @@ class FeatherFaceNanoBPruner:
         }
 
 
-def create_nano_b_config(target_reduction: float = 0.4) -> Dict:
-    """
-    Create configuration for FeatherFace Nano-B pruning
-    
-    IMPORTANT: Le nombre final de paramètres sera VARIABLE (120K-180K) car:
-    - L'optimisation bayésienne trouve automatiquement les taux optimaux
-    - Chaque groupe de couches est optimisé indépendamment
-    - Le résultat dépend de l'importance calculée par FPGM
-    - Cette variabilité garantit des performances optimales vs un taux fixe
-    
-    Args:
-        target_reduction: Target parameter reduction (0-1)
-                         Note: Le résultat final peut varier selon BO
-        
-    Returns:
-        Pruning configuration dictionary
-        
-    Example:
-        config = create_nano_b_config(0.5)  # Cible 50% réduction
-        # Résultat possible: 120K-180K paramètres selon optimisation
-    """
-    config = {
-        # FPGM settings
-        'distance_type': 'l2',  # or 'cosine'
-        
-        # SFP settings  
-        'sparsity_schedule': 'polynomial',  # 'polynomial', 'exponential', 'linear'
-        'soft_temperature': 1.0,
-        
-        # Bayesian optimization settings
-        'num_groups': 6,
-        'acquisition_function': 'ei',  # 'ei', 'ucb', 'pi'
-        
-        # Evaluation settings
-        'eval_batches': 50,  # Number of batches for quick evaluation
-        
-        # Target reduction
-        'target_reduction': target_reduction,
-        
-        # Training settings
-        'pruning_epochs': 10,  # Epochs for gradual pruning
-        'fine_tune_epochs': 20,  # Epochs for fine-tuning after pruning
-    }
-    
-    return config
+# Configuration moved to data/config.py to centralize all configs
+# Use cfg_nano_b from data.config for all Nano-B Enhanced settings
 
 
 # Example usage

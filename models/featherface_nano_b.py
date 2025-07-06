@@ -40,13 +40,11 @@ logger = logging.getLogger(__name__)
 
 # Import available modules and create necessary components
 try:
-    # Use scientifically validated modules from net.py
-    from .net import MobileNetV1, CBAM, BiFPN, SSH
-    # Import V2 modules for additional functionality
-    from .modules_v2 import (SSH_Grouped, ChannelShuffle_Light, DepthwiseSeparableConv)
+    # Use scientifically validated modules from net.py (Enhanced 2024)
+    from .net import MobileNetV1, CBAM, BiFPN, SSH, ChannelShuffle2
     # Import pruning if available
     try:
-        from .pruning_b_fpgm import FeatherFaceNanoBPruner, create_nano_b_config
+        from .pruning_b_fpgm import FeatherFaceNanoBPruner
         PRUNING_AVAILABLE = True
     except ImportError:
         PRUNING_AVAILABLE = False
@@ -56,24 +54,23 @@ except ImportError:
     import sys
     import os
     sys.path.append(os.path.dirname(__file__))
-    # Use scientifically validated modules from net.py
-    from net import MobileNetV1, CBAM, BiFPN, SSH
-    # Import V2 modules for additional functionality
-    from modules_v2 import (SSH_Grouped, ChannelShuffle_Light, DepthwiseSeparableConv)
+    # Use scientifically validated modules from net.py (Enhanced 2024)
+    from net import MobileNetV1, CBAM, BiFPN, SSH, ChannelShuffle2
     try:
-        from pruning_b_fpgm import FeatherFaceNanoBPruner, create_nano_b_config
+        from pruning_b_fpgm import FeatherFaceNanoBPruner
         PRUNING_AVAILABLE = True
     except ImportError:
         PRUNING_AVAILABLE = False
 
-# Use scientifically validated modules with proper research references
+# Use scientifically validated modules with proper research references (Enhanced 2024)
 # CBAM: Woo et al. "CBAM: Convolutional Block Attention Module" ECCV 2018
 # BiFPN: Tan et al. "EfficientDet: Scalable and Efficient Object Detection" CVPR 2020
 # SSH: Najibi et al. "SSH: Single Stage Headless Face Detector" ICCV 2017
+# ChannelShuffle: Zhang et al. "ShuffleNet: An Extremely Efficient CNN for Mobile Devices" 2017
 StandardCBAM = CBAM
 StandardBiFPN = BiFPN
-StandardSSH = SSH  # Use scientifically validated SSH + optimization techniques
-ChannelShuffle = ChannelShuffle_Light
+StandardSSH = SSH  # Use scientifically validated SSH (standard implementation)
+ChannelShuffle = ChannelShuffle2  # Standard implementation from net.py
 
 
 def create_nano_b_config_simple(target_reduction=0.4):
@@ -519,10 +516,15 @@ class FeatherFaceNanoB(nn.Module):
             }
         
         if pruning_config is None:
-            if PRUNING_AVAILABLE:
-                pruning_config = create_nano_b_config(target_reduction=0.4)
-            else:
-                pruning_config = create_nano_b_config_simple(target_reduction=0.4)
+            # Use centralized configuration from data.config
+            from data.config import cfg_nano_b
+            pruning_config = {
+                'target_reduction': cfg_nano_b.get('target_reduction', 0.5),
+                'bayesian_iterations': cfg_nano_b.get('bayesian_iterations', 25),
+                'acquisition_function': cfg_nano_b.get('acquisition_function', 'ei'),
+                'distance_type': cfg_nano_b.get('distance_type', 'l2'),
+                'sparsity_schedule': cfg_nano_b.get('sparsity_schedule', 'polynomial')
+            }
         
         self.cfg = cfg
         self.pruning_config = pruning_config
@@ -620,8 +622,8 @@ class FeatherFaceNanoB(nn.Module):
             for _ in range(3)
         ])
         
-        # Channel shuffle for parameter-free mixing
-        self.channel_shuffle = ChannelShuffle(channels=bifpn_channels, groups=2)
+        # Channel shuffle for parameter-free mixing (standard implementation)
+        self.channel_shuffle = ChannelShuffle(channels=bifpn_channels, groups=4)
         
         # Final detection heads
         self._make_detection_heads(bifpn_channels)
@@ -871,15 +873,18 @@ def create_featherface_nano_b(cfg=None, phase='train', pruning_config=None, use_
 # Example usage and testing
 if __name__ == "__main__":
     # Test model creation
-    print("Creating FeatherFace Nano-B model...")
+    print("Creating FeatherFace Nano-B Enhanced model...")
     
-    # Create configuration
-    from data.config import cfg_nano
-    pruning_config = create_nano_b_config(target_reduction=0.4)
+    # Create configuration (use centralized config)
+    from data.config import cfg_nano_b
+    pruning_config = {
+        'target_reduction': cfg_nano_b.get('target_reduction', 0.5),
+        'bayesian_iterations': cfg_nano_b.get('bayesian_iterations', 25)
+    }
     
     # Create model
     model = create_featherface_nano_b(
-        cfg=cfg_nano,
+        cfg=cfg_nano_b,
         phase='train',
         pruning_config=pruning_config
     )
