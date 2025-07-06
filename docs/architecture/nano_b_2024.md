@@ -54,41 +54,29 @@ All techniques implemented in Nano-B are based on peer-reviewed research from 20
 - **Focus**: Performance recovery after structural changes
 - **Goal**: Maintain accuracy with ultra-lightweight architecture
 
-## Nano-B Architecture Components
+## Nano-B Standard Architecture
 
-### Core Architecture Pipeline
+FeatherFace Nano-B utilise l'architecture standard avec les optimisations suivantes :
 
-**Core Components:**
+### Composants Principaux
+- **MobileNet V1-0.25**: Backbone léger pour efficacité
+- **CBAM**: Attention standard pour features importantes  
+- **BiFPN**: Feature pyramid bidirectionnel
+- **SSH**: Détection multi-échelles standard
 
-#### 1. **Efficient CBAM Implementation**
-- **Problem Solved**: Loss of important spatial and channel information
-- **Solution**: Channel attention (GAP+GMP) + Spatial attention (7x7 conv)
-- **Nano-B Optimization**: Reduction ratio=8 for parameter efficiency
-- **Implementation**: Applied consistently across all feature levels
-- **Parameters**: ~1,800 total (distributed across levels)
-
-#### 2. **Efficient BiFPN Architecture**
-- **Problem Solved**: Unidirectional FPN misses cross-scale information
-- **Solution**: Bidirectional top-down + bottom-up with learned weights
-- **Nano-B Optimization**: 32 channels with depthwise separable convolutions
-- **Implementation**: 3-layer structure (P3/P4/P5) with efficient connections
-- **Parameters**: ~15,000 with optimizations
-
-#### 3. **Grouped SSH Detection**
-- **Problem Solved**: Limited receptive field for context modeling
-- **Solution**: Multi-scale convolutions (3x3, 5x5, 7x7) with groups=2
-- **Nano-B Optimization**: Grouped convolutions for 2x parameter reduction
-- **Implementation**: Standard SSH with channel shuffle optimization
-- **Parameters**: ~12,000 per level with grouping
+### Optimisations Nano-B
+- **Bayesian Pruning**: Réduction automatique des paramètres (120K-180K)
+- **Knowledge Distillation**: Apprentissage depuis le modèle V1
+- **Training 3-phases**: Distillation → Pruning → Fine-tuning
 
 ### Architecture Optimization Results
 
-| Component | **V1 Baseline** | **Nano-B Optimized** |
-|-----------|-----------------|----------------------|
+| Component | **V1 Baseline** | **Nano-B Standard** |
+|-----------|-----------------|---------------------|
 | **Parameters** | 494K | **120K-180K (variable)** |
 | **Backbone** | Standard MobileNet | **Bayesian-pruned MobileNet** |
-| **Attention** | Standard CBAM | **Efficient CBAM** |
-| **Feature Fusion** | Standard BiFPN | **Efficient BiFPN** |
+| **Attention** | Standard CBAM | **Standard CBAM** |
+| **Feature Fusion** | Standard BiFPN | **Standard BiFPN** |
 | **Training** | Standard | **3-phase with Knowledge Distillation** |
 | **Optimization** | Manual | **Automated Bayesian Pruning** |
 
@@ -103,21 +91,21 @@ Nano-B Enhancement: Bayesian-optimized channel pruning (15-25% rates)
 Parameters: ~40,000-60,000 (varies with pruning)
 ```
 
-### 2. CBAM Standard with Enhanced P3
+### 2. CBAM Standard
 ```
 Problem Solved: Loss of important spatial/channel information
 Solution: Channel attention (GAP+GMP) + Spatial attention (7x7 conv)
-Nano-B Enhancement: Standard implementation + P3 specialization
+Nano-B Implementation: Standard CBAM attention mechanism
 Parameters: ~1,800 total (distributed across levels)
 Pattern: Standard validated attention mechanism
 ```
 
-### 3. BiFPN with MSE Enhancement (Tan et al. CVPR 2020)
+### 3. BiFPN Standard (Tan et al. CVPR 2020)
 
 ```
 Problem Solved: Unidirectional FPN misses cross-scale information
 Solution: Bidirectional top-down + bottom-up with learned weights
-Nano-B Enhancement: 32 channels, standard implementation with semantic enhancement
+Nano-B Implementation: 32 channels, standard implementation
 ```
 
 ### 4. SSH Standard Detection Context (Najibi et al. ICCV 2017)
@@ -125,9 +113,9 @@ Nano-B Enhancement: 32 channels, standard implementation with semantic enhanceme
 Problem Solved: Limited receptive field for context modeling in face detection
 Solution: Multi-scale context via 4 parallel branches (standard SSH)
 Scientific Base: Single Stage Headless Face Detector (ICCV 2017)
-Nano-B Enhancement: Standard SSH implementation (validated)
+Nano-B Implementation: Standard SSH implementation
 Parameters: ~12,000 (3 modules × ~4,000 each)
-Optimization: Standard validated implementation
+Implementation: Standard validated approach
 ```
 
 ### 5. Channel Shuffle (Parameter-Free)

@@ -1,10 +1,10 @@
-# 🏭 L'Usine à Détection de Visages Nano-B 2024 : Architecture pour Enfants de 5 ans
+# 🏭 L'Usine à Détection de Visages Nano-B : Architecture pour Enfants de 5 ans
 
 > **Mode Paysage** - Diagramme simple et amusant pour comprendre comment la machine Nano-B trouve les visages !
 
 ## 🎯 Qu'est-ce que ça fait ?
 
-Imagine une **usine magique Nano-B 2024** qui regarde des photos et trouve tous les visages dedans ! Elle est très **intelligente** et utilise des techniques spéciales pour être ultra-rapide !
+Imagine une **usine magique Nano-B** qui regarde des photos et trouve tous les visages dedans ! Elle est très **intelligente** et utilise des techniques standard pour être ultra-rapide !
 
 ---
 
@@ -13,7 +13,7 @@ Imagine une **usine magique Nano-B 2024** qui regarde des photos et trouve tous 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
 ║                                🏭 USINE À DÉTECTION DE VISAGES NANO-B                                        ║
-║                                      (Version 2024 - Ultra-légère et intelligente !)                               ║
+║                                      (Version standard - Ultra-légère et intelligente !)                               ║
 ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
 📷 PHOTO ➡️ 🧠 CERVEAU ➡️ 👀 TROIS YEUX SPÉCIAUX ➡️ 🎯 TROUVEUR DE VISAGES ➡️ ✅ VISAGES TROUVÉS !

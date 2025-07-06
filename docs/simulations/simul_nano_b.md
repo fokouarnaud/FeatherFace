@@ -1,8 +1,8 @@
-# Simulation FeatherFace Nano-B - Architecture 2024 Optimized
+# Simulation FeatherFace Nano-B - Architecture 2024 Standard
 
 ## 🎯 Objectif de la Simulation
 
-Cette simulation détaille le processus complet de forward pass de **FeatherFace Nano-B (2024)** avec des exemples numériques concrets sur une image **640x640x3**. Nano-B utilise **des optimisations spécialisées pour la détection de petits visages** et un **pruning bayésien optimisé** pour atteindre **120K-180K paramètres** (48-65% de réduction vs V1) avec des performances compétitives sur les petits visages.
+Cette simulation détaille le processus complet de forward pass de **FeatherFace Nano-B (2024)** avec des exemples numériques concrets sur une image **640x640x3**. Nano-B utilise **des techniques standard pour la détection de petits visages** et un **pruning bayésien** pour atteindre **120K-180K paramètres** (48-65% de réduction vs V1) avec des performances compétitives.
 
 ## 📊 Configuration Nano-B 2024
 
@@ -29,14 +29,14 @@ cfg_nano_b = {
 
 ## 🔬 Techniques Scientifiques Nano-B 2024
 
-### Architecture Optimisée : V1 → Nano-B
+### Architecture Standard : V1 → Nano-B
 
-| Composant | **V1 Baseline** | **Nano-B Optimisé** |
-|-----------|-------------------|-------------------|
-| **P3 (Petits Visages)** | CBAM standard | **Efficient CBAM + Efficient BiFPN** |
-| **P4/P5 (Moyens/Gros)** | CBAM + BiFPN standard | **Efficient CBAM + Efficient BiFPN** |
-| **Fusion Features** | BiFPN standard | **Efficient BiFPN avec optimisations** |
-| **Optimisation** | Training standard | **Bayesian Pruning + Knowledge Distillation** |
+| Composant | **V1 Baseline** | **Nano-B Standard** |
+|-----------|-------------------|--------------------|
+| **P3 (Petits Visages)** | CBAM standard | **CBAM + BiFPN standard** |
+| **P4/P5 (Moyens/Gros)** | CBAM + BiFPN standard | **CBAM + BiFPN standard** |
+| **Fusion Features** | BiFPN standard | **BiFPN standard** |
+| **Techniques** | Training standard | **Bayesian Pruning + Knowledge Distillation** |
 | **Paramètres** | 494K | **120K-180K (48-65% réduction)** |
 
 ### Techniques Implémentées

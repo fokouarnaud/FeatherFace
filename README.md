@@ -4,7 +4,7 @@ A rigorously-grounded implementation featuring FeatherFace V1 baseline (494K par
 
 > **Paper**: Kim, D.; Jung, J.; Kim, J. FeatherFace: Robust and Lightweight Face Detection via Optimal Feature Integration. Electronics 2025 - [link](https://www.mdpi.com/2079-9292/14/3/517)
 
-## 🚀 FeatherFace Nano-B Ultra-Lightweight Architecture
+## 🚀 FeatherFace Nano-B Standard Architecture
 
 ![FeatherFace Nano-B Architecture](docs/featherface_nano_b_architecture_diagram.png)
 
@@ -39,7 +39,7 @@ A rigorously-grounded implementation featuring FeatherFace V1 baseline (494K par
 
 ### FeatherFace Nano-B Architecture (2024)
 
-**🎯 Specialized Pipeline for Small Face Detection:**
+**🎯 Standard Pipeline for Small Face Detection:**
 
 ```
 Input (640×640×3) → MobileNet → [P3🔍 P4👁️ P5🔭] → Optimized Processing → Detection
@@ -49,7 +49,7 @@ P4 (Medium):       CBAM → BiFPN → SemanticEnhancement → CBAM → 🎯
 P5 (Large):        CBAM → BiFPN → SemanticEnhancement → CBAM → 🎯
 ```
 
-**🔬 Research-Backed Optimization Techniques (2024):**
+**🔬 Research-Backed Standard Techniques:**
 1. **🎯 ASSN (P3 Specialized)**: Scale sequence attention for small objects (PMC/ScienceDirect 2024)
 2. **🌉 MSE-FPN**: Semantic enhancement for feature fusion (+43.4 AP validated, Scientific Reports 2024)
 3. **🧹 Scale Decoupling**: Small/large object separation in P3 (SNLA approach 2024)
@@ -58,9 +58,9 @@ P5 (Large):        CBAM → BiFPN → SemanticEnhancement → CBAM → 🎯
 6. **Efficient CBAM**: Woo et al. ECCV 2018 - Adaptive attention with pruning
 7. **Efficient BiFPN**: Tan et al. CVPR 2020 - Bidirectional features with optimization
 
-**📊 Total Impact: Small face specialized + 48-65% parameter reduction via Bayesian pruning**
+**📊 Total Impact: Small face standard + 48-65% parameter reduction via Bayesian pruning**
 
-## 🔬 Nano-B 2024 Scientific Architecture
+## 🔬 Nano-B Standard Scientific Architecture
 
 ### 🎯 ASSN: Attention-based Scale Sequence Network (2024)
 
