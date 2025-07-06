@@ -325,13 +325,13 @@ Key Innovations:
 Total Enhanced Parameters: 120K-180K (variable optimization)
 ```
 
-📖 **Documentation Enhanced 2024 :**
-- **[Enhanced Architecture 2024](docs/architecture/nano_b_enhanced_2024.md)** - Architecture principale Enhanced
-- **[Enhanced Diagrams](docs/architecture/enhanced_diagram.md)** - Diagrammes visuels Enhanced
-- **[Enhanced Guide](docs/architecture/enhanced_diagram_guide.md)** - Guide détaillé
-- **[Pour Enfants](docs/architecture/enhanced_for_kids.md)** - Explications simples
+📖 **Documentation Nano-B 2024 :**
+- **[Nano-B Architecture 2024](docs/architecture/nano_b_2024.md)** - Architecture principale Nano-B
+- **[Nano-B Diagrams](docs/architecture/nano_b_diagram.md)** - Diagrammes visuels Nano-B
+- **[Nano-B Guide](docs/architecture/nano_b_diagram_guide.md)** - Guide détaillé
+- **[Pour Enfants](docs/architecture/nano_b_for_kids.md)** - Explications simples
 - **[Métaphores](docs/guides/metaphors.md)** - Compréhension par analogies
-- **[Simulations](docs/simulations/)** - Validations numériques Enhanced
+- **[Simulations](docs/simulations/)** - Validations numériques Nano-B
 
 ## 🚀 Quick Start
 
