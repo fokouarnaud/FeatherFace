@@ -4,7 +4,7 @@ import argparse
 import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
-from data import cfg_mnet, cfg_re50
+from data.config import cfg_mnet
 from layers.functions.prior_box import PriorBox
 from utils.nms.py_cpu_nms import py_cpu_nms
 import cv2
@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(description='Retinaface')
 
 parser.add_argument('-m', '--trained_model', default='./weights/Resnet50_Final.pth',
                     type=str, help='Trained state_dict file path to open')
-parser.add_argument('--network', default='resnet50', help='Backbone network mobile0.25 or resnet50')
+parser.add_argument('--network', default='mobile0.25', help='Backbone network: mobile0.25 (V1 baseline) or nano_b (Enhanced 2024)')
 parser.add_argument('--cpu', action="store_true", default=False, help='Use cpu inference')
 parser.add_argument('--confidence_threshold', default=0.02, type=float, help='confidence_threshold')
 parser.add_argument('--top_k', default=5000, type=int, help='top_k')
@@ -54,28 +54,63 @@ def load_model(model, pretrained_path, load_to_cpu):
     else:
         device = torch.cuda.current_device()
         pretrained_dict = torch.load(pretrained_path, map_location=lambda storage, loc: storage.cuda(device))
-    if "state_dict" in pretrained_dict.keys():
+    
+    # Handle different checkpoint formats (especially for Nano-B Enhanced)
+    if "model_state_dict" in pretrained_dict.keys():
+        pretrained_dict = pretrained_dict['model_state_dict']
+    elif "state_dict" in pretrained_dict.keys():
         pretrained_dict = remove_prefix(pretrained_dict['state_dict'], 'module.')
     else:
         pretrained_dict = remove_prefix(pretrained_dict, 'module.')
+    
     check_keys(model, pretrained_dict)
     model.load_state_dict(pretrained_dict, strict=False)
     return model
 
 
+def create_model(network_type, cfg):
+    """Factory function to create the appropriate model based on network type"""
+    if network_type == "nano_b":
+        from models.featherface_nano_b import create_featherface_nano_b
+        print("Creating FeatherFace Nano-B Enhanced 2024 model (120K-180K parameters)")
+        return create_featherface_nano_b(cfg=cfg, phase='test')
+    else:
+        print(f"Creating FeatherFace V1 model ({network_type})")
+        return RetinaFace(cfg=cfg, phase='test')
+
+
 if __name__ == '__main__':
     torch.set_grad_enabled(False)
+    
+    # Select configuration and model based on network type
     cfg = None
     if args.network == "mobile0.25":
         cfg = cfg_mnet
-    elif args.network == "resnet50":
-        cfg = cfg_re50
-    # net and model
-    net = RetinaFace(cfg=cfg, phase = 'test')
+        print("Using FeatherFace V1 configuration (494K parameters)")
+    elif args.network == "nano_b":
+        from data.config import cfg_nano_b
+        cfg = cfg_nano_b
+        print("Using FeatherFace Nano-B Enhanced 2024 configuration (120K-180K parameters)")
+    else:
+        raise ValueError(f"Unsupported network type: {args.network}. Supported networks: mobile0.25 (V1), nano_b (Enhanced 2024)")
+
+    # Create appropriate model using factory function
+    net = create_model(args.network, cfg)
     net = load_model(net, args.trained_model, args.cpu)
     net.eval()
+    
+    # Count and display model parameters
+    total_params = sum(p.numel() for p in net.parameters())
+    trainable_params = sum(p.numel() for p in net.parameters() if p.requires_grad)
+    
     print('Finished loading model!')
-    print(net)
+    print(f'Model: {args.network.upper()}')
+    print(f'Total parameters: {total_params:,}')
+    print(f'Trainable parameters: {trainable_params:,}')
+    
+    if args.network == "nano_b":
+        print('🚀 FeatherFace Nano-B Enhanced 2024: Ultra-lightweight with specialized small face detection')
+        print('📊 48-65% parameter reduction with differential pipeline')
     cudnn.benchmark = True
     device = torch.device("cpu" if args.cpu else "cuda")
     net = net.to(device)

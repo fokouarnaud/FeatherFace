@@ -17,7 +17,7 @@ cfg_mnet = {
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
-    'out_channel': 56,  # CALIBRATION: SSH architecture (divisible by 4) → targeting ~487K parameters
+    'out_channel': 56,  # CALIBRATION: SSH architecture (divisible by 4) → targeting ~494K parameters
     'lr' : 1e-3,
     'optim' : 'adamw'
 }
@@ -95,28 +95,5 @@ cfg_nano_b = {
     }
 }
 
-# Legacy V2 configuration (deprecated)
-cfg_mnet_v2 = {
-    'name': 'mobilenet0.25',
-    'min_sizes': [[16, 32], [64, 128], [256, 512]],
-    'steps': [8, 16, 32],
-    'variance': [0.1, 0.2],
-    'clip': False,
-    'loc_weight': 2.0,
-    'gpu_train': True,
-    'batch_size': 32,
-    'ngpu': 1,
-    'epoch': 400,
-    'decay1': 250,
-    'decay2': 350,
-    'image_size': 640,
-    'pretrain': True,
-    'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
-    'in_channel': 32,
-    'out_channel': 64,
-    'lr': 1e-3,
-    'optim': 'adamw',
-    'cbam_reduction': 32,
-    'ssh_groups': 4,
-}
+# Note: Legacy V2 configuration removed - only cfg_mnet (V1) and cfg_nano_b (Enhanced 2024) supported
 
