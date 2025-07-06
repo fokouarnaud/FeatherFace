@@ -1,10 +1,10 @@
-# 🏭 L'Usine à Détection de Visages : Architecture pour Enfants de 5 ans
+# 🏭 L'Usine à Détection de Visages Enhanced 2024 : Architecture pour Enfants de 5 ans
 
-> **Mode Paysage** - Diagramme simple et amusant pour comprendre comment la machine trouve les visages !
+> **Mode Paysage** - Diagramme simple et amusant pour comprendre comment la machine Enhanced trouve les visages !
 
 ## 🎯 Qu'est-ce que ça fait ?
 
-Imagine une **usine magique** qui regarde des photos et trouve tous les visages dedans ! Elle est **super douée** pour trouver même les plus petits visages qu'on peut à peine voir !
+Imagine une **usine magique Enhanced 2024** qui regarde des photos et trouve tous les visages dedans ! Elle est **super douée** pour trouver même les plus petits visages qu'on peut à peine voir grâce à ses nouveaux **super-pouvoirs** !
 
 ---
 
@@ -12,8 +12,8 @@ Imagine une **usine magique** qui regarde des photos et trouve tous les visages 
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║                                    🏭 USINE À DÉTECTION DE VISAGES NANO-B                                         ║
-║                                        (Version 2024 - Super Améliorée !)                                        ║
+║                                🏭 USINE À DÉTECTION DE VISAGES NANO-B ENHANCED                                  ║
+║                                      (Version 2024 - Spécialiste Petits Visages !)                              ║
 ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
 📷 PHOTO ➡️ 🧠 CERVEAU ➡️ 👀 TROIS YEUX SPÉCIAUX ➡️ 🎯 TROUVEUR DE VISAGES ➡️ ✅ VISAGES TROUVÉS !
@@ -29,9 +29,9 @@ Imagine une **usine magique** qui regarde des photos et trouve tous les visages 
 │  ═══════════════════              ═══════════════════              ═══════════════════                          │
 │  Pour PETITS visages              Pour visages MOYENS              Pour GRANDS visages                          │
 │                                                                                                                   │
-│  🧹 Balai anti-gros-objets   ➡️   🧠 Cerveau normal          ➡️   🧠 Cerveau normal                             │
-│  🎯 Viseur laser spécial          👁️ Œil standard                🔭 Vision longue distance                      │
-│  🌉 Pont connecteur                🌉 Pont connecteur               🌉 Pont connecteur                            │
+│  🧹 Scale Decoupling 2024    ➡️   🧠 CBAM Standard         ➡️   🧠 CBAM Standard                              │
+│  🎯 ASSN Attention 2024           🌉 BiFPN+MSE Enhanced            🌉 BiFPN+MSE Enhanced                         │
+│  🌉 Semantic Enhancement          🔭 Vision finale                 🔭 Vision finale                              │
 │       ↓                                ↓                               ↓                                       │
 │  🎯 Trouve les minuscules         🎯 Trouve les moyens           🎯 Trouve les gros                             │
 │                                                                                                                   │
@@ -52,20 +52,21 @@ Imagine une **usine magique** qui regarde des photos et trouve tous les visages 
 
 ### 3. 👀 **Les Trois Yeux Spéciaux**
 
-#### 🔍 **L'Œil Détective (P3) - NOUVEAU 2024 !**
+#### 🔍 **L'Œil Détective Enhanced (P3) - NOUVEAU 2024 !**
 - **Mission** : Trouver les **PETITS** visages (comme des fourmis !)
-- **Outils spéciaux** :
-  - 🧹 **Balai magique** qui enlève les gros objets gênants
-  - 🎯 **Viseur laser** ultra-précis pour viser les petites cibles
-  - 🌉 **Pont intelligent** qui connecte les informations
+- **4 Outils spéciaux Enhanced** :
+  - 🧹 **Scale Decoupling** qui enlève les gros objets gênants
+  - 👁️ **CBAM Standard** qui regarde bien partout
+  - 🌉 **BiFPN+MSE Enhanced** qui connecte intelligemment
+  - 🎯 **ASSN Attention** viseur laser ultra-précis
 
-#### 👁️ **L'Œil Normal (P4)**
+#### 👁️ **L'Œil Normal Enhanced (P4)**
 - **Mission** : Trouver les visages **MOYENS** (comme nous !)
-- **Outils** : Œil standard + pont connecteur
+- **2 Outils Enhanced** : CBAM Standard + BiFPN+MSE Enhanced
 
-#### 🔭 **L'Œil Télescope (P5)**
+#### 🔭 **L'Œil Télescope Enhanced (P5)**
 - **Mission** : Trouver les **GROS** visages (comme des géants !)
-- **Outils** : Vision longue distance + pont connecteur
+- **2 Outils Enhanced** : CBAM Standard + BiFPN+MSE Enhanced
 
 ### 4. 🎯 **Le Trouveur Final**
 - Les trois yeux envoient leurs découvertes
@@ -76,14 +77,14 @@ Imagine une **usine magique** qui regarde des photos et trouve tous les visages 
 
 ## 🌟 Pourquoi c'est SUPER (Version 2024) ?
 
-### 🎯 **Spécialiste des Petits Visages**
+### 🎯 **Spécialiste des Petits Visages Enhanced**
 - Avant 2024 : La machine avait du mal à voir les petits visages
-- **Maintenant** : L'œil détective 🔍 est un **expert** !
-- Il a 3 nouveaux outils magiques pour les petits visages
+- **Maintenant Enhanced** : L'œil détective 🔍 est un **super-expert** !
+- Il a 4 outils Enhanced magiques pour les petits visages
 
-### 🧠 **Plus Intelligent**
-- **10 cerveaux** différents (au lieu de 4) travaillent ensemble
-- Chaque cerveau a une spécialité différente
+### 🧠 **Plus Intelligent Enhanced**
+- **10 cerveaux Enhanced** différents (au lieu de 7) travaillent ensemble
+- Chaque cerveau a une spécialité différente Enhanced
 
 ### ⚡ **Plus Rapide**
 - Même avec tous ces outils, ça marche **super vite** !
@@ -98,9 +99,9 @@ Imagine une **usine magique** qui regarde des photos et trouve tous les visages 
 | 🔍 | Œil détective (petits visages) | Jaune - Précision |
 | 👁️ | Œil normal (visages moyens) | Bleu - Standard |
 | 🔭 | Œil télescope (gros visages) | Rouge - Puissance |
-| 🧹 | Balai anti-gros-objets | Vert - Nettoyage |
-| 🎯 | Viseur laser précis | Orange - Précision |
-| 🌉 | Pont connecteur | Violet - Connexion |
+| 🧹 | Scale Decoupling Enhanced | Vert - Nettoyage |
+| 🎯 | ASSN Attention Enhanced | Orange - Précision |
+| 🌉 | BiFPN+MSE Enhanced | Violet - Connexion |
 
 ---
 
@@ -109,12 +110,12 @@ Imagine une **usine magique** qui regarde des photos et trouve tous les visages 
 **Q : Pourquoi trois yeux ?**
 **R :** Comme toi, tu fermes un œil pour voir de près et ouvres les deux pour voir loin ! La machine a trois yeux pour voir **petit**, **moyen** et **gros** en même temps !
 
-**Q : C'est quoi le balai magique ?**
-**R :** Imagine que tu cherches une petite pièce de monnaie dans ta chambre. Le balai enlève d'abord les gros jouets pour que tu puisses mieux chercher la petite pièce !
+**Q : C'est quoi Scale Decoupling ?**
+**R :** Imagine que tu cherches une petite pièce de monnaie dans ta chambre. Scale Decoupling enlève d'abord les gros jouets pour que tu puisses mieux chercher la petite pièce !
 
 **Q : Pourquoi c'est mieux qu'avant ?**
-**R :** Avant, la machine avait juste des yeux normaux. Maintenant, l'œil détective 🔍 a des **super-pouvoirs** pour les petits visages ! C'est comme avoir des lunettes magiques !
+**R :** Avant, la machine avait juste des yeux normaux. Maintenant Enhanced, l'œil détective 🔍 a des **super-pouvoirs Enhanced** pour les petits visages ! C'est comme avoir des lunettes magiques Enhanced !
 
 ---
 
-**🎉 Résultat : Une machine super douée qui trouve TOUS les visages, même les plus petits ! 🎉**
+**🎉 Résultat Enhanced : Une machine super douée Enhanced qui trouve TOUS les visages, même les plus petits ! 🎉**
