@@ -20,12 +20,12 @@ All techniques implemented in Nano-B are based on peer-reviewed research from 20
 
 ## Architecture Evolution: V1 → Nano-B
 
-| Component | **V1 Baseline** | **Nano-B Ultra-Lightweight** |
-|-----------|-----------------|------------------------------|
+| Component | **V1 Baseline** | **Nano-B Standard** |
+|-----------|-----------------|--------------------|
 | **Parameters** | 487,103 | **120,000-180,000** |
 | **Backbone** | MobileNet V1-0.25 | MobileNet V1-0.25 + Bayesian Pruning |
-| **CBAM** | Standard | **Efficient Implementation** |
-| **FPN** | BiFPN | **Efficient BiFPN** |
+| **CBAM** | Standard | **Standard Implementation** |
+| **FPN** | BiFPN | **Standard BiFPN** |
 | **SSH** | Standard | **SSH Standard (Validated)** |
 | **Training** | Standard | **3-Phase Pipeline** |
 | **Optimization** | Manual | **Bayesian-Automated** |

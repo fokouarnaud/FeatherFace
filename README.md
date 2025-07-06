@@ -55,8 +55,8 @@ P5 (Large):        CBAM → BiFPN → SemanticEnhancement → CBAM → 🎯
 3. **🧹 Scale Decoupling**: Small/large object separation in P3 (SNLA approach 2024)
 4. **B-FPGM Pruning**: Kaparinos & Mezaris WACVW 2025 - Bayesian-optimized structured pruning
 5. **Weighted Knowledge Distillation**: Li et al. CVPR 2023 + 2025 Edge Computing Research
-6. **Efficient CBAM**: Woo et al. ECCV 2018 - Adaptive attention with pruning
-7. **Efficient BiFPN**: Tan et al. CVPR 2020 - Bidirectional features with optimization
+6. **Standard CBAM**: Woo et al. ECCV 2018 - Standard attention with pruning
+7. **Standard BiFPN**: Tan et al. CVPR 2020 - Bidirectional features with standard implementation
 
 **📊 Total Impact: Small face standard + 48-65% parameter reduction via Bayesian pruning**
 
@@ -348,7 +348,7 @@ pip install -e .
 # V1 Baseline (494K parameters) - Teacher model
 python train_v1.py --training_dataset ./data/widerface/train/label.txt --network mobile0.25
 
-# Nano-B Enhanced 2024 (120K-180K parameters) - Specialized small face detection
+# Nano-B Standard (120K-180K parameters) - Standard small face detection
 python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 400
 ```
 
@@ -364,7 +364,7 @@ model_v1 = RetinaFace(cfg=cfg_mnet, phase='test')
 checkpoint = torch.load('weights/mobilenet0.25_Final.pth')
 model_v1.load_state_dict(checkpoint)
 
-# Load Nano-B model (ultra-lightweight)
+# Load Nano-B model (standard lightweight)
 model_nano_b = create_featherface_nano_b(cfg=cfg_nano_b, phase='test')
 checkpoint = torch.load('weights/nano_b/nano_b_best.pth')
 model_nano_b.load_state_dict(checkpoint['model_state_dict'])
@@ -378,10 +378,10 @@ outputs = model_nano_b(input_tensor)
 | Model | Parameters | Size | mAP (WIDERFace Easy) | Scientific Foundation | Use Case |
 |-------|------------|------|---------------------|----------------------|----------|
 | **V1 Baseline** | 494K | 1.9MB | 87.0% | 4 research papers | Teacher model, baseline |
-| **Nano-B Enhanced 2024** | 120K-180K | 0.6-0.9MB | **Competitive + 15-20% small faces** | **10 research publications (2017-2025)** | **Edge deployment with specialization** |
+| **Nano-B Standard** | 120K-180K | 0.6-0.9MB | **Competitive + standard small faces** | **10 research publications (2017-2025)** | **Edge deployment with standard techniques** |
 
-### Enhanced 2024 Achievements  
-- **V1 → Enhanced**: 48-65% reduction via Bayesian pruning + differential pipeline
+### Standard Achievements  
+- **V1 → Standard**: 48-65% reduction via Bayesian pruning + differential pipeline
 - **Scientific Foundation**: 10 research publications spanning 2017-2025
 - **Small Face Specialization**: +15-20% improvement on small face detection
 - **Differential Processing**: P3 specialized vs P4/P5 standard pipeline
@@ -409,7 +409,7 @@ FeatherFace/
 ## 🎯 Key Features
 
 - **✅ V1 Baseline**: 494K parameters with SSH detection heads
-- **🚀 Enhanced 2024**: 120K-180K parameters with specialized small face pipeline
+- **🚀 Standard**: 120K-180K parameters with standard small face pipeline
 - **🧠 Differential Processing**: P3 specialized vs P4/P5 standard
 - **📊 Bayesian Optimization**: Automated parameter reduction (25 iterations)
 - **🔄 Multi-format Export**: PyTorch, ONNX, TorchScript deployment
@@ -417,7 +417,7 @@ FeatherFace/
 
 ## 📖 Documentation
 
-- **[Enhanced Architecture](docs/architecture/nano_b_enhanced_2024.md)** - Complete Enhanced 2024 architecture
+- **[Standard Architecture](docs/architecture/nano_b_2024.md)** - Complete standard architecture
 - **[Project Coherence Report](PROJECT_COHERENCE_REPORT.md)** - Complete validation status
 - **[Deployment Guide](deployment/README.md)** - Production deployment instructions
 - **[Simulations](docs/simulations/)** - Numerical validations and examples
@@ -452,7 +452,7 @@ Download MobileNetV1X0.25 pretrained weights from [Google Drive](https://drive.g
 # Start with V1 baseline training
 jupyter notebook notebooks/01_train_evaluate_featherface.ipynb
 
-# Then proceed to Nano-B ultra-lightweight training  
+# Then proceed to Nano-B standard training  
 jupyter notebook notebooks/04_train_evaluate_featherface_nano_b.ipynb
 ```
 
@@ -461,7 +461,7 @@ jupyter notebook notebooks/04_train_evaluate_featherface_nano_b.ipynb
 # V1 baseline training (teacher model)
 CUDA_VISIBLE_DEVICES=0 torchrun --standalone --nproc_per_node=1 train.py --network mobile0.25
 
-# Nano-B ultra-lightweight training with Bayesian optimization
+# Nano-B standard training with Bayesian optimization
 python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 300
 ```
 
@@ -472,7 +472,7 @@ python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 
 # Generate predictions - V1 Baseline (494K parameters)
 python test_widerface.py --trained_model weights/mobilenet0.25_Final.pth --network mobile0.25
 
-# Generate predictions - Nano-B Enhanced 2024 (120K-180K parameters)
+# Generate predictions - Nano-B Standard (120K-180K parameters)
 python test_widerface.py --trained_model weights/nano_b/nano_b_best.pth --network nano_b
 
 # Evaluate results (same process for both models)
@@ -552,37 +552,37 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 [10] Research contributions in Scale Normalized Linear Attention (SNLA) for P3 optimization, 2024. [Implementation-specific research for small object detection enhancement]
 
-## 🎯 Enhanced 2024 Integration Summary
+## 🎯 Standard Integration Summary
 
 ### Complete Scientific Validation
-The FeatherFace Nano-B Enhanced 2024 architecture represents a **scientifically rigorous integration** of 10 peer-reviewed research publications spanning 2017-2025:
+The FeatherFace Nano-B Standard architecture represents a **scientifically rigorous integration** of 10 peer-reviewed research publications spanning 2017-2025:
 
 **🔬 Core Scientific Principles Applied**:
 1. **Bayesian Optimization** (Mockus, 1989) → Automated pruning rate discovery
 2. **Knowledge Distillation** (Li et al., CVPR 2023) → V1→Nano-B knowledge transfer  
-3. **Attention Mechanisms** (Woo et al., ECCV 2018) → Enhanced feature focusing
+3. **Attention Mechanisms** (Woo et al., ECCV 2018) → Standard feature focusing
 4. **Feature Pyramid Networks** (Tan et al., CVPR 2020) → Multi-scale processing
 5. **Lightweight CNNs** (Howard et al., 2017) → Efficient backbone architecture
 
 **🎯 2024 Small Face Detection Innovations**:
 6. **ASSN Integration** (PMC/ScienceDirect 2024) → P3-specialized attention (+1.9% AP)
-7. **MSE-FPN Enhancement** (Scientific Reports 2024) → Semantic gap bridging (+43.4 AP)
+7. **MSE-FPN Standard** (Scientific Reports 2024) → Semantic gap bridging (+43.4 AP)
 8. **Scale Decoupling** (2024 research) → Small/large object separation
 9. **B-FPGM Pruning** (WACVW 2025) → Automated Bayesian-optimized reduction
-10. **Differential Pipeline** (Enhanced 2024) → P3 specialized vs P4/P5 standard
+10. **Differential Pipeline** (Standard) → P3 specialized vs P4/P5 standard
 
 **📊 Quantified Scientific Achievements**:
 - **Parameter Reduction**: 48-65% (from 494K to 120K-180K)
-- **Small Face Improvement**: +15-20% specialized detection
+- **Small Face Improvement**: Standard detection techniques
 - **Pruning Automation**: 25 Bayesian iterations for optimal configuration
 - **Research Foundation**: 10 verified peer-reviewed publications
-- **Implementation**: 3 specialized modules (7,500 additional parameters for substantial gains)
+- **Implementation**: 3 standard modules (7,500 additional parameters for standard gains)
 
 **🎓 Educational Value**:
 Each component includes student-friendly explanations with real-world analogies, making complex research accessible while maintaining scientific rigor.
 
 ---
 
-**Status**: ✅ Enhanced 2024 Ready | **Version**: Enhanced | **Last Updated**: July 2025  
-**Scientific Foundation**: 10 research publications (2017-2025) with specialized small face detection  
-**Achievement**: Enhanced 2024 architecture with differential pipeline and 48-65% parameter reduction
+**Status**: ✅ Standard Ready | **Version**: Standard | **Last Updated**: July 2025  
+**Scientific Foundation**: 10 research publications (2017-2025) with standard small face detection  
+**Achievement**: Standard architecture with differential pipeline and 48-65% parameter reduction
