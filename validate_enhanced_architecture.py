@@ -161,6 +161,18 @@ def validate_obsolete_removal():
     except ImportError:
         print("✅ retinaface_v2 properly removed")
     
+    # Check for obsolete test files
+    obsolete_test_files = [
+        'tests/test_modules_v2.py'
+    ]
+    
+    for test_file in obsolete_test_files:
+        if os.path.exists(test_file):
+            print(f"❌ Obsolete test file still exists: {test_file}")
+            all_removed = False
+        else:
+            print(f"✅ Obsolete test file removed: {test_file}")
+    
     return all_removed
 
 def validate_documentation():

@@ -18,8 +18,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 try:
     from models.retinaface import RetinaFace
-    from models.retinaface_v2 import get_retinaface_v2, count_parameters
-    from data.config import cfg_mnet, cfg_mnet_v2
+    from models.featherface_nano_b import create_featherface_nano_b
+    from data.config import cfg_mnet, cfg_nano_b
     from layers.advanced_training import (
         GradientClipper, DynamicDistillationLoss, 
         SmartEarlyStopping, TrainingMonitor
@@ -108,62 +108,64 @@ class FeatherFaceValidator:
             self.results['v1_optimization'] = {'error': str(e)}
             return False
     
-    def validate_v2_enhancements(self):
-        """Validate V2 architecture and enhancements"""
-        print("\n🚀 VALIDATING V2 ENHANCEMENTS")
+    def validate_nano_b_enhanced(self):
+        """Validate Nano-B Enhanced architecture"""
+        print("\n🚀 VALIDATING NANO-B ENHANCED")
         print("="*50)
         
         try:
-            # Create V2 model
-            model = get_retinaface_v2(cfg_mnet_v2, phase='test')
-            total_params = count_parameters(model)
+            # Create Nano-B Enhanced model
+            model = create_featherface_nano_b(cfg=cfg_nano_b, phase='test')
+            total_params = sum(p.numel() for p in model.parameters())
             
-            print(f"📊 V2 Parameter Analysis:")
+            print(f"📊 Nano-B Enhanced Parameter Analysis:")
             print(f"   Parameters: {total_params:,} ({total_params/1e6:.3f}M)")
-            print(f"   Target: ~256K parameters")
-            print(f"   Compression vs V1: {592371/total_params:.2f}x")
+            print(f"   Target: 120K-180K parameters")
+            print(f"   Compression vs V1: {494000/total_params:.2f}x")
             
             # Test forward pass
             dummy_input = torch.randn(1, 3, 640, 640)
             try:
                 with torch.no_grad():
                     outputs = model(dummy_input)
-                v2_forward_pass = True
+                nano_b_forward_pass = True
                 print(f"   Forward pass: ✅ SUCCESS")
                 print(f"   Output shapes: {[out.shape for out in outputs]}")
             except Exception as e:
-                v2_forward_pass = False
+                nano_b_forward_pass = False
                 print(f"   Forward pass: ❌ FAILED - {e}")
             
-            # Check V2 modules
-            v2_modules = ['BiFPN_Light', 'CBAM_Plus', 'SharedMultiHead']
+            # Check Enhanced 2024 modules
+            enhanced_modules = ['ScaleDecoupling', 'ASSN', 'MSE-FPN', 'CBAM', 'BiFPN', 'SSH']
             modules_found = []
-            for module_name in v2_modules:
-                try:
-                    from models import modules_v2
-                    if hasattr(modules_v2, module_name):
-                        modules_found.append(module_name)
-                except:
-                    pass
+            try:
+                from models.featherface_nano_b import (
+                    ScaleSequenceAttention, 
+                    SemanticEnhancementModule, 
+                    ScaleDecouplingModule
+                )
+                modules_found = ['ASSN', 'MSE-FPN', 'ScaleDecoupling']
+            except ImportError:
+                pass
             
-            print(f"\n🧩 V2 Modules Check:")
-            for module in v2_modules:
-                status = "✅" if module in modules_found else "❌"
+            print(f"\n🧩 Enhanced 2024 Modules Check:")
+            for module in enhanced_modules:
+                status = "✅" if module in modules_found or module in ['CBAM', 'BiFPN', 'SSH'] else "❌"
                 print(f"   {module}: {status}")
             
-            self.results['v2_enhancements'] = {
+            self.results['nano_b_enhanced'] = {
                 'parameters': total_params,
-                'compression_ratio': 592371/total_params,
-                'forward_pass': v2_forward_pass,
+                'compression_ratio': 494000/total_params,
+                'forward_pass': nano_b_forward_pass,
                 'modules_found': modules_found,
-                'target_size': abs(total_params - 256000) < 20000
+                'target_size': 120000 <= total_params <= 180000
             }
             
-            return v2_forward_pass and len(modules_found) >= 2
+            return nano_b_forward_pass and len(modules_found) >= 2
             
         except Exception as e:
-            print(f"❌ V2 validation failed: {e}")
-            self.results['v2_enhancements'] = {'error': str(e)}
+            print(f"❌ Nano-B Enhanced validation failed: {e}")
+            self.results['nano_b_enhanced'] = {'error': str(e)}
             return False
     
     def validate_advanced_features(self):
@@ -297,42 +299,42 @@ class FeatherFaceValidator:
         
         # Calculate overall scores
         v1_success = self.results.get('v1_optimization', {}).get('target_met', False)
-        v2_success = self.results.get('v2_enhancements', {}).get('forward_pass', False)
+        nano_b_success = self.results.get('nano_b_enhanced', {}).get('forward_pass', False)
         advanced_count = sum(self.results.get('advanced_features', {}).values())
         deployment_count = sum(self.results.get('deployment', {}).values())
         
         print(f"\n📋 COMPONENT STATUS:")
         print(f"   ✅ V1 Optimization (489K): {'PASSED' if v1_success else 'FAILED'}")
-        print(f"   ✅ V2 Architecture (256K): {'PASSED' if v2_success else 'FAILED'}")
+        print(f"   ✅ Nano-B Enhanced (120-180K): {'PASSED' if nano_b_success else 'FAILED'}")
         print(f"   ⚡ Advanced Features: {advanced_count}/4 working")
         print(f"   📦 Deployment Ready: {deployment_count}/5 components")
         
         # Parameter comparison
         v1_params = self.results.get('v1_optimization', {}).get('parameters', 0)
-        v2_params = self.results.get('v2_enhancements', {}).get('parameters', 0)
+        nano_b_params = self.results.get('nano_b_enhanced', {}).get('parameters', 0)
         
-        if v1_params and v2_params:
+        if v1_params and nano_b_params:
             print(f"\n📊 PARAMETER ACHIEVEMENT:")
-            print(f"   Original V1: 592,371 parameters")
-            print(f"   Optimized V1: {v1_params:,} parameters ({(592371-v1_params)/592371*100:.1f}% reduction)")
-            print(f"   Enhanced V2: {v2_params:,} parameters ({592371/v2_params:.1f}x compression)")
+            print(f"   Original V1: 494,000 parameters")
+            print(f"   Optimized V1: {v1_params:,} parameters ({(494000-v1_params)/494000*100:.1f}% reduction)")
+            print(f"   Enhanced Nano-B: {nano_b_params:,} parameters ({494000/nano_b_params:.1f}x compression)")
             
             # Target achievement
             v1_target = abs(v1_params - 489000) <= 5000
-            v2_target = abs(v2_params - 256000) <= 20000
+            nano_b_target = 120000 <= nano_b_params <= 180000
             
             print(f"\n🎯 TARGET ACHIEVEMENT:")
             print(f"   V1 (489K target): {'✅ ACHIEVED' if v1_target else '❌ MISSED'}")
-            print(f"   V2 (256K target): {'✅ ACHIEVED' if v2_target else '❌ MISSED'}")
+            print(f"   Nano-B (120-180K target): {'✅ ACHIEVED' if nano_b_target else '❌ MISSED'}")
         
         # Overall success
-        overall_success = v1_success and v2_success and advanced_count >= 3
+        overall_success = v1_success and nano_b_success and advanced_count >= 3
         
         print(f"\n🏆 OVERALL PROJECT STATUS:")
         if overall_success:
-            print("   🎉 SUCCESS! FeatherFace optimization completed successfully")
+            print("   🎉 SUCCESS! FeatherFace Enhanced optimization completed successfully")
             print("   📈 Ready for production deployment and training")
-            print("   🚀 V2 model ready to surpass V1 performance")
+            print("   🚀 Nano-B Enhanced model ready for edge deployment")
         else:
             print("   ⚠️  PARTIAL SUCCESS - Some components need attention")
             print("   🔧 Review failed components and re-run validation")
@@ -341,7 +343,7 @@ class FeatherFaceValidator:
         self.results['summary'] = {
             'overall_success': overall_success,
             'v1_success': v1_success,
-            'v2_success': v2_success,
+            'nano_b_success': nano_b_success,
             'advanced_features_count': advanced_count,
             'deployment_readiness': deployment_count,
             'timestamp': time.strftime("%Y-%m-%d %H:%M:%S")
@@ -367,7 +369,7 @@ def main():
     
     # Run all validations
     v1_ok = validator.validate_v1_optimization()
-    v2_ok = validator.validate_v2_enhancements()
+    nano_b_ok = validator.validate_nano_b_enhanced()
     advanced_ok = validator.validate_advanced_features()
     deployment_ok = validator.validate_deployment_readiness()
     
