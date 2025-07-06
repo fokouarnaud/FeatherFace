@@ -316,14 +316,14 @@ def create_featherface_nano_b_diagram():
             bbox=dict(boxstyle="round,pad=0.2", facecolor=colors['highlight'], 
                      edgecolor=colors['component_border'], linewidth=1))
     
-    # 2. Simplified BiFPN
+    # 2. BiFPN + MSE Standard
     bifpn_y = positions['bifpn_y']
     bifpn_params = ['16.8K', '20.4K', '27.6K']
     
     for i, x in enumerate(levels_x):
         create_level_module(x, bifpn_y, dimensions['level_module']['w'], dimensions['level_module']['h'], 
-                          'BIFPN', 
-                          'DWSConv\n72ch', 
+                          'BiFPN+MSE', 
+                          'MSE-FPN\n72ch', 
                           module_type='bifpn',
                           params=bifpn_params[i])
     

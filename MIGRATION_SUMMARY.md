@@ -57,7 +57,7 @@ Complete removal of unverified "revolutionary" V2 Ultra claims and replacement w
 ### Nano Efficiency Techniques
 1. **Efficient CBAM**: Higher reduction ratios (Woo et al. ECCV 2018)
 2. **Efficient BiFPN**: Depthwise separable convolutions (Tan et al. CVPR 2020)
-3. **Grouped SSH**: Parameter reduction via grouped convolutions
+3. **SSH Standard**: Multi-scale context via 4 parallel branches
 4. **Channel Shuffle**: Parameter-free information mixing
 5. **Knowledge Distillation**: Teacher-student training (Li et al. CVPR 2023)
 

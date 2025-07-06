@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 """
-FeatherFace Nano-B: Ultra-Lightweight Face Detection with Bayesian-Optimized Pruning
+FeatherFace Nano-B: Standard Face Detection with Bayesian-Optimized Pruning
 
 This module implements FeatherFace Nano-B, combining:
-1. FeatherFace Nano efficient architecture (344K -> ~120-180K parameters)
+1. FeatherFace Nano architecture (344K -> ~120-180K parameters)
 2. B-FPGM Bayesian-optimized structured pruning
 3. Weighted Knowledge Distillation for edge deployment
-4. Small face detection enhancements (2024 research)
+4. Small face detection improvements (2024 research)
 
 Scientific Foundation:
 1. FeatherFace Nano: Research-backed efficiency (Li et al. CVPR 2023, Woo et al. ECCV 2018, etc.)
 2. B-FPGM: Kaparinos & Mezaris, WACVW 2025
 3. Weighted Knowledge Distillation: Various 2025 research
-4. Small Face Detection Enhancements (2024):
+4. Small Face Detection Modules (2024):
    - ASSN: "Attention-based scale sequence network for small object detection" (PMC/ScienceDirect)
    - MSE-FPN: "Multi-scale semantic enhancement network for object detection" (Scientific Reports)
    - Scale Decoupling: SNLA approach for P3 optimization
 
-Enhanced Architecture:
+Standard Architecture:
 - P3 Level: ScaleDecoupling + ASSN (optimized for small faces)
 - P4/P5 Levels: Standard CBAM (Woo et al. ECCV 2018)
 - Feature Fusion: SemanticEnhancement modules (MSE-FPN 2024)
@@ -40,8 +40,10 @@ logger = logging.getLogger(__name__)
 
 # Import available modules and create necessary components
 try:
-    # Use scientifically validated modules from net.py (Enhanced 2024)
+    # Use scientifically validated modules from net.py (Standard 2024)
     from .net import MobileNetV1, CBAM, BiFPN, SSH, ChannelShuffle2
+    # Import specialized modules
+    from .modules_nano import ScaleDecoupling, ASSN, MSE_FPN
     # Import pruning if available
     try:
         from .pruning_b_fpgm import FeatherFaceNanoBPruner
@@ -54,15 +56,16 @@ except ImportError:
     import sys
     import os
     sys.path.append(os.path.dirname(__file__))
-    # Use scientifically validated modules from net.py (Enhanced 2024)
+    # Use scientifically validated modules from net.py (Standard 2024)
     from net import MobileNetV1, CBAM, BiFPN, SSH, ChannelShuffle2
+    from modules_nano import ScaleDecoupling, ASSN, MSE_FPN
     try:
         from pruning_b_fpgm import FeatherFaceNanoBPruner
         PRUNING_AVAILABLE = True
     except ImportError:
         PRUNING_AVAILABLE = False
 
-# Use scientifically validated modules with proper research references (Enhanced 2024)
+# Use scientifically validated modules with proper research references (Standard 2024)
 # CBAM: Woo et al. "CBAM: Convolutional Block Attention Module" ECCV 2018
 # BiFPN: Tan et al. "EfficientDet: Scalable and Efficient Object Detection" CVPR 2020
 # SSH: Najibi et al. "SSH: Single Stage Headless Face Detector" ICCV 2017
@@ -190,198 +193,6 @@ class WeightedKnowledgeDistillation(nn.Module):
         return losses
 
 
-class ScaleSequenceAttention(nn.Module):
-    """
-    Scale Sequence Attention for small object detection
-    
-    Based on "Attention-based scale sequence network for small object detection" (2024)
-    PMC/ScienceDirect research - optimized for P3 level small face detection
-    """
-    
-    def __init__(self, in_channels: int, reduction: int = 16):
-        """
-        Initialize Scale Sequence Attention
-        
-        Args:
-            in_channels: Number of input channels
-            reduction: Channel reduction ratio for efficiency
-        """
-        super(ScaleSequenceAttention, self).__init__()
-        self.in_channels = in_channels
-        self.reduction = reduction
-        
-        # Scale sequence generation optimized for small objects
-        reduced_channels = max(in_channels // reduction, 4)
-        
-        self.scale_sequence = nn.Sequential(
-            nn.AdaptiveAvgPool2d(1),  # Global context for scale awareness
-            nn.Conv2d(in_channels, reduced_channels, 1, bias=False),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(reduced_channels, in_channels, 1, bias=False),
-            nn.Sigmoid()
-        )
-        
-        # Spatial enhancement for small object details
-        self.spatial_enhance = nn.Sequential(
-            nn.Conv2d(2, 1, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(1),
-            nn.Sigmoid()
-        )
-    
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Forward pass with scale sequence attention
-        
-        Args:
-            x: Input features [B, C, H, W]
-            
-        Returns:
-            Enhanced features for small object detection
-        """
-        # Scale sequence attention (channel-wise)
-        scale_attention = self.scale_sequence(x)
-        x_scale = x * scale_attention
-        
-        # Spatial attention for small object details
-        avg_out = torch.mean(x_scale, dim=1, keepdim=True)
-        max_out, _ = torch.max(x_scale, dim=1, keepdim=True)
-        spatial_input = torch.cat([avg_out, max_out], dim=1)
-        spatial_attention = self.spatial_enhance(spatial_input)
-        
-        # Combined enhancement
-        x_enhanced = x_scale * spatial_attention
-        
-        return x_enhanced
-
-
-class SemanticEnhancementModule(nn.Module):
-    """
-    Semantic Enhancement Module for multi-scale feature fusion
-    
-    Based on "Multi-scale semantic enhancement network for object detection" (2024)
-    Scientific Reports - resolves semantic gap between features of various sizes
-    """
-    
-    def __init__(self, channels: int, reduction: int = 4):
-        """
-        Initialize Semantic Enhancement Module
-        
-        Args:
-            channels: Number of input channels
-            reduction: Channel reduction ratio
-        """
-        super(SemanticEnhancementModule, self).__init__()
-        self.channels = channels
-        reduced_channels = max(channels // reduction, 16)
-        
-        # Semantic injection module
-        self.semantic_injection = nn.Sequential(
-            nn.Conv2d(channels, reduced_channels, 1, bias=False),
-            nn.BatchNorm2d(reduced_channels),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(reduced_channels, channels, 3, padding=1, bias=False),
-            nn.BatchNorm2d(channels)
-        )
-        
-        # Gated channel guidance module
-        self.gated_channel_guidance = nn.Sequential(
-            nn.AdaptiveAvgPool2d(1),
-            nn.Conv2d(channels, reduced_channels, 1, bias=False),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(reduced_channels, channels, 1, bias=False),
-            nn.Sigmoid()
-        )
-        
-        # Feature refinement
-        self.feature_refine = nn.Sequential(
-            nn.Conv2d(channels, channels, 1, bias=False),
-            nn.BatchNorm2d(channels),
-            nn.ReLU(inplace=True)
-        )
-    
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Forward pass with semantic enhancement
-        
-        Args:
-            x: Input features [B, C, H, W]
-            
-        Returns:
-            Semantically enhanced features
-        """
-        # Semantic injection for feature quality
-        semantic_features = self.semantic_injection(x)
-        
-        # Gated channel guidance for importance weighting
-        channel_gate = self.gated_channel_guidance(x)
-        gated_features = semantic_features * channel_gate
-        
-        # Residual connection with refinement
-        refined_features = self.feature_refine(gated_features + x)
-        
-        return refined_features
-
-
-class ScaleDecouplingModule(nn.Module):
-    """
-    Scale Decoupling Module for P3 level small face enhancement
-    
-    Based on SNLA approach - eliminates large object features in shallow layers
-    Specifically designed for small face detection optimization
-    """
-    
-    def __init__(self, channels: int, kernel_size: int = 3):
-        """
-        Initialize Scale Decoupling Module
-        
-        Args:
-            channels: Number of input channels
-            kernel_size: Convolution kernel size
-        """
-        super(ScaleDecouplingModule, self).__init__()
-        self.channels = channels
-        
-        # Small object feature enhancer
-        self.small_object_enhancer = nn.Sequential(
-            nn.Conv2d(channels, channels, kernel_size, padding=kernel_size//2, bias=False),
-            nn.BatchNorm2d(channels),
-            nn.ReLU(inplace=True)
-        )
-        
-        # Large object feature suppressor
-        self.large_object_suppressor = nn.Sequential(
-            nn.Conv2d(channels, channels//4, 1, bias=False),
-            nn.BatchNorm2d(channels//4),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(channels//4, channels, kernel_size, padding=kernel_size//2, bias=False),
-            nn.BatchNorm2d(channels),
-            nn.Sigmoid()
-        )
-        
-        # Feature balance
-        self.feature_balance = nn.Parameter(torch.tensor(0.8))  # Learnable balance
-    
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Forward pass with scale decoupling for small faces
-        
-        Args:
-            x: Input features [B, C, H, W] - P3 level features
-            
-        Returns:
-            Decoupled features optimized for small face detection
-        """
-        # Enhance small object features
-        enhanced_small = self.small_object_enhancer(x)
-        
-        # Generate large object suppression mask
-        suppress_mask = self.large_object_suppressor(x)
-        
-        # Apply scale decoupling: enhance small, suppress large
-        # Balance factor learned during training
-        decoupled_features = enhanced_small * (1 - suppress_mask * self.feature_balance)
-        
-        return decoupled_features
 
 
 class PrunedConv2d(nn.Module):
@@ -569,8 +380,8 @@ class FeatherFaceNanoB(nn.Module):
         
         # Small face detection enhancement (2024 research-based)
         # P3 level optimization for small face detection
-        self.scale_decoupling_p3 = ScaleDecouplingModule(
-            channels=in_channels_list[0],  # P3: 32 channels
+        self.scale_decoupling_p3 = ScaleDecoupling(
+            channels=in_channels_list[0],  # P3: 64 channels
             kernel_size=3
         )
         
@@ -597,7 +408,7 @@ class FeatherFaceNanoB(nn.Module):
         
         # Semantic enhancement modules for better feature fusion (MSE-FPN 2024)
         self.semantic_enhancement = nn.ModuleList([
-            SemanticEnhancementModule(bifpn_channels, reduction=4) for _ in range(3)
+            MSE_FPN(bifpn_channels, reduction=4) for _ in range(3)
         ])
         
         # Second attention - P3 gets Scale Sequence Attention (ASSN 2024)
@@ -608,7 +419,7 @@ class FeatherFaceNanoB(nn.Module):
         ])
         
         # P3: Scale Sequence Attention for small face detection (ASSN 2024)
-        self.assn_p3 = ScaleSequenceAttention(
+        self.assn_p3 = ASSN(
             in_channels=bifpn_channels,
             reduction=self.cfg.get('assn_reduction', 16)
         )
@@ -873,7 +684,7 @@ def create_featherface_nano_b(cfg=None, phase='train', pruning_config=None, use_
 # Example usage and testing
 if __name__ == "__main__":
     # Test model creation
-    print("Creating FeatherFace Nano-B Enhanced model...")
+    print("Creating FeatherFace Nano-B Standard model...")
     
     # Create configuration (use centralized config)
     from data.config import cfg_nano_b

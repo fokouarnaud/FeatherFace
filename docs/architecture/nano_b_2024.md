@@ -111,18 +111,18 @@ Nano-B Implementation: 32 channels, standard implementation
 ### 4. SSH Standard Detection Context (Najibi et al. ICCV 2017)
 ```
 Problem Solved: Limited receptive field for context modeling in face detection
-Solution: Multi-scale context via 4 parallel branches (standard SSH)
+Solution: Multi-scale context via 4 parallel branches (SSH standard)
 Scientific Base: Single Stage Headless Face Detector (ICCV 2017)
-Nano-B Implementation: Standard SSH implementation
+Nano-B Implementation: SSH standard implementation from net.py
 Parameters: ~12,000 (3 modules × ~4,000 each)
-Implementation: Standard validated approach
+Implementation: Standard validated approach (no grouping)
 ```
 
 ### 5. Channel Shuffle (Parameter-Free)
 ```
 Problem Solved: Information isolation in grouped convolutions
 Solution: Parameter-free channel permutation between groups
-Nano-B Enhancement: Applied after grouped operations
+Nano-B Implementation: Applied after standard operations
 Parameters: 0 (pure permutation operation)
 Benefit: Cross-group information exchange at zero cost
 ```

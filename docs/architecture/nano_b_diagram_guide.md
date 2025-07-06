@@ -239,7 +239,7 @@ V1 Baseline (2023)     →    Nano-B Original (2023)    →    Nano-B Standard (
 494K paramètres             Variantes "efficaces"         Standard + 3 modules 2024
 4 techniques                7 techniques                  10 techniques  
 Traitement générique          Optimisation générique        P3 spécialisé
-SSH standard               SSH groupé                    SSH standard (validé)
+SSH standard               SSH standard                  SSH standard (validé)
 ```
 
 ### Évolution de la Fondation de Recherche
