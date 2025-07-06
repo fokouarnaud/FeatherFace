@@ -15,10 +15,8 @@ FeatherFace Nano-B represents the pinnacle of ultra-lightweight face detection, 
 6. **Weighted Distillation**: 2025 Edge Computing Research on adaptive knowledge transfer
 7. **Bayesian Optimization**: Mockus, "Bayesian Methods for Seeking the Extremum", 1989
 
-### Small Face Detection Optimizations (2024)
-8. **Scale Sequence Attention**: "Attention-based scale sequence network for small object detection", PMC/ScienceDirect, 2024
-9. **Semantic Enhancement**: "Multi-scale semantic enhancement network for object detection", Scientific Reports, 2024
-10. **Scale Decoupling**: SNLA approach - "Scale-decoupling module to emphasize small object features", 2023-2024 research
+## Complete Scientific Foundation (7 Publications)
+All techniques implemented in Nano-B are based on peer-reviewed research from 2017-2025.
 
 ## Architecture Evolution: V1 → Nano-B
 
@@ -26,8 +24,8 @@ FeatherFace Nano-B represents the pinnacle of ultra-lightweight face detection, 
 |-----------|-----------------|------------------------------|
 | **Parameters** | 487,103 | **120,000-180,000** |
 | **Backbone** | MobileNet V1-0.25 | MobileNet V1-0.25 + Bayesian Pruning |
-| **CBAM** | Standard | **Standard + Enhanced P3** |
-| **FPN** | BiFPN | **BiFPN + MSE Enhancement** |
+| **CBAM** | Standard | **Efficient Implementation** |
+| **FPN** | BiFPN | **Efficient BiFPN** |
 | **SSH** | Standard | **SSH Standard (Validated)** |
 | **Training** | Standard | **3-Phase Pipeline** |
 | **Optimization** | Manual | **Bayesian-Automated** |
@@ -56,44 +54,43 @@ FeatherFace Nano-B represents the pinnacle of ultra-lightweight face detection, 
 - **Focus**: Performance recovery after structural changes
 - **Goal**: Maintain accuracy with ultra-lightweight architecture
 
-## Small Face Detection Enhancements (2024 Research Integration)
+## Nano-B Architecture Components
 
-### Enhanced Architecture Pipeline
+### Core Architecture Pipeline
 
-**New Research-Based Components (2024):**
+**Core Components:**
 
-#### 1. **Scale Decoupling Module (P3 Optimization)**
-- **Problem Solved**: Confusion between small/large objects in shallow layers
-- **Solution**: Suppresses large object features, enhances small face detection
-- **Scientific Base**: SNLA approach + custom optimization for face detection
-- **Implementation**: Applied to P3 level before any other processing
-- **Parameters**: ~1,500 additional parameters
+#### 1. **Efficient CBAM Implementation**
+- **Problem Solved**: Loss of important spatial and channel information
+- **Solution**: Channel attention (GAP+GMP) + Spatial attention (7x7 conv)
+- **Nano-B Optimization**: Reduction ratio=8 for parameter efficiency
+- **Implementation**: Applied consistently across all feature levels
+- **Parameters**: ~1,800 total (distributed across levels)
 
-#### 2. **Scale Sequence Attention - ASSN (P3 Specialized)**
-- **Research Paper**: "Attention-based scale sequence network for small object detection" (2024) - PMC/ScienceDirect
-- **Problem Solved**: Information disappearing as spatial scale diminue for small objects
-- **Solution**: Scale-aware attention mechanism optimized for small face detection
-- **Implementation**: Replaces standard CBAM on P3 level post-BiFPN
-- **Parameters**: ~2,000 additional parameters
-- **Advantage**: Specifically designed for small object preservation vs generic attention
+#### 2. **Efficient BiFPN Architecture**
+- **Problem Solved**: Unidirectional FPN misses cross-scale information
+- **Solution**: Bidirectional top-down + bottom-up with learned weights
+- **Nano-B Optimization**: 32 channels with depthwise separable convolutions
+- **Implementation**: 3-layer structure (P3/P4/P5) with efficient connections
+- **Parameters**: ~15,000 with optimizations
 
-#### 3. **Semantic Enhancement Modules (MSE-FPN Integration)**
-- **Research Paper**: "Multi-scale semantic enhancement network for object detection" (2024) - Scientific Reports
-- **Problem Solved**: Semantic gap between features of various sizes causing aliasing
-- **Solution**: Semantic injection + gated channel guidance for improved feature fusion
-- **Performance**: +43.4 AP validated in original research
-- **Implementation**: Applied to all BiFPN outputs before final attention
-- **Parameters**: ~4,000 additional parameters (distributed across 3 levels)
+#### 3. **Grouped SSH Detection**
+- **Problem Solved**: Limited receptive field for context modeling
+- **Solution**: Multi-scale convolutions (3x3, 5x5, 7x7) with groups=2
+- **Nano-B Optimization**: Grouped convolutions for 2x parameter reduction
+- **Implementation**: Standard SSH with channel shuffle optimization
+- **Parameters**: ~12,000 per level with grouping
 
-### Enhanced vs Original Architecture Comparison
+### Architecture Optimization Results
 
-| Component | **Original Nano-B** | **Enhanced Nano-B (2024)** |
-|-----------|---------------------|----------------------------|
-| **P3 Processing** | CBAM only | ScaleDecoupling → CBAM → BiFPN → SemanticEnhancement → ASSN |
-| **P4/P5 Processing** | CBAM only | CBAM → BiFPN → SemanticEnhancement → CBAM |
-| **Feature Fusion** | Standard BiFPN | BiFPN + SemanticEnhancement (MSE-FPN 2024) |
-| **Small Face Focus** | Generic attention | Specialized P3 pipeline with 3 research-backed modules |
-| **Parameters Added** | - | +7,500 (~5% increase for substantial small face improvement) |
+| Component | **V1 Baseline** | **Nano-B Optimized** |
+|-----------|-----------------|----------------------|
+| **Parameters** | 494K | **120K-180K (variable)** |
+| **Backbone** | Standard MobileNet | **Bayesian-pruned MobileNet** |
+| **Attention** | Standard CBAM | **Efficient CBAM** |
+| **Feature Fusion** | Standard BiFPN | **Efficient BiFPN** |
+| **Training** | Standard | **3-phase with Knowledge Distillation** |
+| **Optimization** | Manual | **Automated Bayesian Pruning** |
 
 ## Component Architecture Details
 
@@ -352,4 +349,4 @@ If you use FeatherFace Nano-B in your research, please cite:
 }
 ```
 
-**Research Foundation**: 10 publications spanning 2017-2025, representing the state-of-the-art in lightweight neural network design and optimization with Enhanced 2024 small face specialization.
+**Research Foundation**: 7 publications spanning 2017-2025, representing the state-of-the-art in lightweight neural network design and optimization with Bayesian-optimized pruning.

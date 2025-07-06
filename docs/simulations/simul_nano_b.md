@@ -15,15 +15,10 @@ cfg_nano_b = {
     'steps': [8, 16, 32],
     'variance': [0.1, 0.2],
     
-    # Nano-B 2024: Optimisations pour petits visages
-    'small_face_optimization': True,
-    'p3_specialized_pipeline': True,
-    'semantic_enhancement': True,
-    
-    # Modules de recherche 2024
-    'assn_enabled': True,           # ASSN P3 spécialisé
-    'mse_fpn_enabled': True,        # MSE-FPN fusion sémantique
-    'scale_decoupling_enabled': True, # Découplage échelles P3
+    # Nano-B 2024: Core optimizations
+    'efficient_modules': True,
+    'bayesian_pruning': True,
+    'knowledge_distillation': True
     
     # Pruning Bayésien B-FPGM (inchangé)
     'target_reduction': 0.5,
@@ -32,22 +27,22 @@ cfg_nano_b = {
 }
 ```
 
-## 🔬 Techniques Scientifiques Enhanced 2024
+## 🔬 Techniques Scientifiques Nano-B 2024
 
-### Architecture Évoluée : Ancien → Enhanced
+### Architecture Optimisée : V1 → Nano-B
 
-| Composant | **Ancien Nano-B** | **Enhanced 2024** |
+| Composant | **V1 Baseline** | **Nano-B Optimisé** |
 |-----------|-------------------|-------------------|
-| **P3 (Petits Visages)** | Efficient CBAM générique | **ScaleDecoupling + CBAM + BiFPN + SemanticEnhancement + ASSN** |
-| **P4/P5 (Moyens/Gros)** | Efficient techniques | **CBAM + BiFPN + SemanticEnhancement + CBAM** |
-| **Fusion Features** | BiFPN standard | **MSE-FPN avec amélioration sémantique** |
-| **Spécialisation** | Optimisations génériques | **3 modules recherche 2024 pour petits objets** |
-| **Performance** | Efficacité générale | **+15-20% petits visages + efficacité** |
+| **P3 (Petits Visages)** | CBAM standard | **Efficient CBAM + Efficient BiFPN** |
+| **P4/P5 (Moyens/Gros)** | CBAM + BiFPN standard | **Efficient CBAM + Efficient BiFPN** |
+| **Fusion Features** | BiFPN standard | **Efficient BiFPN avec optimisations** |
+| **Optimisation** | Training standard | **Bayesian Pruning + Knowledge Distillation** |
+| **Paramètres** | 494K | **120K-180K (48-65% réduction)** |
 
-### Nouvelles Techniques 2024
+### Techniques Implémentées
 
-#### 1. **Scale Decoupling (P3 Optimization)** - SNLA 2024
-- **Problème**: Confusion entre petits/gros objets dans couches superficielles
+#### 1. **Bayesian-Optimized Pruning (B-FPGM)**
+- **Problème**: Détermination manuelle des taux de pruning suboptimale
 - **Solution**: Supprime features gros objets, améliore détection petits visages
 - **Application**: P3 uniquement, avant tout autre traitement
 
