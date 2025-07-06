@@ -1,261 +1,261 @@
-# FeatherFace Nano-B Enhanced Architecture Diagram Guide 2024
+# Guide du Diagramme d'Architecture FeatherFace Nano-B Standard 2024
 
-## 📊 Overview
+## 📊 Présentation Générale
 
-The FeatherFace Nano-B Enhanced architecture diagram (`featherface_nano_b_enhanced_architecture.png`) provides a comprehensive visual representation of the **specialized small face detection model**, showcasing the integration of **3 research modules 2024** with Bayesian-optimized pruning and weighted knowledge distillation.
+Le diagramme d'architecture FeatherFace Nano-B Standard (`featherface_nano_b_standard_architecture.png`) fournit une représentation visuelle complète du **modèle de détection de visages standard**, présentant l'intégration de **3 modules de recherche** avec le pruning bayésien optimisé et la distillation de connaissances pondérée.
 
-## 🎨 Enhanced Diagram Components 2024
+## 🎨 Composants du Diagramme Standard 2024
 
-### 1. Knowledge Distillation Flow (Top Section) - Unchanged
+### 1. Flux de Distillation de Connaissances (Section Supérieure)
 
-**Teacher Model (Green Box)**
-- FeatherFace V1 with 494K parameters
-- Serves as the knowledge source
-- Provides soft targets for student training
+**Modèle Enseignant (Boîte Verte)**
+- FeatherFace V1 avec 494K paramètres
+- Sert de source de connaissances
+- Fournit des cibles souples pour l'entraînement de l'étudiant
 
-**Weighted Knowledge Distillation (Center Box)**
-- Temperature: 4.0 for optimal knowledge transfer
-- Alpha: 0.7 (70% distillation weight)
-- Adaptive learnable weights: w_cls, w_bbox, w_landmark
-- **Enhanced**: Optimized for small face specialization
+**Distillation de Connaissances Pondérée (Boîte Centrale)**
+- Température : 4.0 pour un transfert optimal de connaissances
+- Alpha : 0.7 (70% de poids de distillation)
+- Poids adaptatifs apprenables : w_cls, w_bbox, w_landmark
+- **Standard** : Optimisé pour la détection de petits visages
 
-**Student Model (Blue Box)**
-- FeatherFace Nano-B Enhanced with 120K-180K parameters
-- Receives knowledge from teacher with P3 specialization
-- Achieves 48-65% parameter reduction + small face improvements
+**Modèle Étudiant (Boîte Bleue)**
+- FeatherFace Nano-B Standard avec 120K-180K paramètres
+- Reçoit les connaissances de l'enseignant avec spécialisation P3
+- Atteint 48-65% de réduction de paramètres + améliorations sur petits visages
 
-### 2. Enhanced Main Architecture Pipeline (Middle Section)
+### 2. Pipeline d'Architecture Principale Standard (Section Médiane)
 
-**Input Layer**
-- 640×640×3 RGB input images (production size)
-- Standard face detection input format
+**Couche d'Entrée**
+- Images d'entrée RGB 640×640×3 (taille de production)
+- Format d'entrée standard pour la détection de visages
 
-**Pruned MobileNet-0.25 Backbone**
-- ~58K parameters (38.9% of total)
-- Bayesian-optimized pruning applied
-- **Enhanced**: Optimized channels (27, 50, 87) vs original
+**Backbone MobileNet-0.25 Élagué**
+- ~58K paramètres (38.9% du total)
+- Pruning bayésien optimisé appliqué
+- **Standard** : Canaux optimisés (27, 50, 87) par rapport à l'original
 
-### 3. 🎯 **Differential Pipeline Enhanced 2024** (Key Innovation)
+### 3. 🎯 **Pipeline Différentié Standard 2024** (Innovation Clé)
 
-#### **P3 Specialized Branch (Small Faces)**
+#### **Branche P3 Spécialisée (Petits Visages)**
 ```
-🔍 P3 SPÉCIALISÉ → 4 Research Modules 2024
-├── 🧹 Scale Decoupling (SNLA 2024)
+🔍 P3 SPÉCIALISÉ → 4 Modules de Recherche 2024
+├── 🧹 Découplage d'Échelle (SNLA 2024)
 ├── ✅ CBAM Standard (Woo et al. 2018)  
-├── 🌉 BiFPN + MSE Enhancement (Scientific Reports 2024)
-└── 🎯 ASSN Attention (PMC/ScienceDirect 2024)
+├── 🌉 BiFPN + Amélioration MSE (Scientific Reports 2024)
+└── 🎯 Attention ASSN (PMC/ScienceDirect 2024)
 ```
 
-#### **P4/P5 Standard Branches (Medium/Large Faces)**
+#### **Branches P4/P5 Standard (Visages Moyens/Grands)**
 ```
-👁️ P4/P5 STANDARD → 2 Standard Modules
+👁️ P4/P5 STANDARD → 2 Modules Standard
 ├── ✅ CBAM Standard (Woo et al. 2018)
-├── 🌉 BiFPN + MSE Enhancement (Scientific Reports 2024)
-└── ✅ CBAM Final (Refinement)
+├── 🌉 BiFPN + Amélioration MSE (Scientific Reports 2024)
+└── ✅ CBAM Final (Raffinement)
 ```
 
-### 4. Enhanced Research Modules Panel (New 2024)
+### 4. Panneau des Modules de Recherche Standard (Nouveaux 2024)
 
-**🧹 Scale Decoupling Module (P3 Only)**
-- **Research Base**: SNLA approach 2024
-- **Problem Solved**: Large object interference with small face detection
-- **Solution**: Selective suppression of large object features
-- **Implementation**: P3 level only, before other processing
-- **Parameters**: ~1,500 additional parameters
+**🧹 Module de Découplage d'Échelle (P3 Seulement)**
+- **Base de Recherche** : Approche SNLA 2024
+- **Problème Résolu** : Interférence des gros objets avec la détection de petits visages
+- **Solution** : Suppression sélective des caractéristiques de gros objets
+- **Implémentation** : Niveau P3 uniquement, avant tout autre traitement
+- **Paramètres** : ~1,500 paramètres supplémentaires
 
-**🎯 ASSN Module (P3 Only)**
-- **Research Paper**: PMC/ScienceDirect 2024
-- **Problem Solved**: Information loss during spatial scale reduction
-- **Solution**: Scale-aware attention mechanism for small objects
-- **Implementation**: Replaces standard CBAM on P3 post-BiFPN
-- **Parameters**: ~2,000 additional parameters
+**🎯 Module ASSN (P3 Seulement)**
+- **Article de Recherche** : PMC/ScienceDirect 2024
+- **Problème Résolu** : Perte d'information lors de la réduction d'échelle spatiale
+- **Solution** : Mécanisme d'attention conscient de l'échelle pour petits objets
+- **Implémentation** : Remplace CBAM standard sur P3 post-BiFPN
+- **Paramètres** : ~2,000 paramètres supplémentaires
 
-**🌉 MSE-FPN Enhancement (All Levels)**
-- **Research Paper**: Scientific Reports 2024
-- **Problem Solved**: Semantic gap between features of different sizes
-- **Solution**: Semantic injection + gated channel guidance
-- **Performance**: +43.4 AP validated in original research
-- **Parameters**: ~4,000 parameters distributed
+**🌉 Amélioration MSE-FPN (Tous Niveaux)**
+- **Article de Recherche** : Scientific Reports 2024
+- **Problème Résolu** : Écart sémantique entre caractéristiques de tailles différentes
+- **Solution** : Injection sémantique + guidage de canaux à portes
+- **Performance** : +43.4 AP validé dans la recherche originale
+- **Paramètres** : ~4,000 paramètres distribués
 
-### 5. Standard Components (Scientifically Validated)
+### 5. Composants Standard (Validés Scientifiquement)
 
-**✅ CBAM Standard Attention**
-- Based on Woo et al. ECCV 2018 (original paper)
-- Applied multiple times in pipeline
-- **Enhanced**: No "Efficient" variants, pure standard implementation
+**✅ Attention CBAM Standard**
+- Basé sur Woo et al. ECCV 2018 (article original)
+- Appliqué plusieurs fois dans le pipeline
+- **Standard** : Aucune variante "efficace", implémentation standard pure
 
 **✅ BiFPN Standard + MSE**
-- Based on Tan et al. CVPR 2020 (original paper)
-- **Enhanced**: Integrated with Semantic Enhancement modules
-- Standard bidirectional feature fusion
+- Basé sur Tan et al. CVPR 2020 (article original)
+- **Standard** : Intégré avec les modules d'amélioration sémantique
+- Fusion de caractéristiques bidirectionnelle standard
 
-**✅ SSH Standard Detection**
-- Based on Najibi et al. ICCV 2017 (original paper)
-- **Enhanced**: Pure standard implementation, no grouping
-- 4-branch context aggregation per level
+**✅ Détection SSH Standard**
+- Basé sur Najibi et al. ICCV 2017 (article original)
+- **Standard** : Implémentation standard pure, pas de regroupement
+- Agrégation de contexte à 4 branches par niveau
 
-### 6. Parameter Breakdown Table Enhanced (Bottom Right)
+### 6. Tableau de Répartition des Paramètres Standard (En Bas à Droite)
 
-**Enhanced Component Distribution**
-- Backbone (Pruned): ~58K params (38.9%)
-- **🆕 Enhanced Modules 2024**: ~7.5K params (5.0%)
-  - Scale Decoupling: ~1.5K
-  - ASSN P3: ~2.0K  
-  - MSE-FPN: ~4.0K
-- Standard CBAM: ~1.8K params (1.2%)
-- BiFPN + MSE: ~8.2K params (5.5%)
-- SSH Standard: ~12K params (8.0%)
-- Detection Heads: ~1.6K params (1.1%)
-- **Total Range: 120K-180K parameters**
-- **Typical Total: ~150K parameters (Enhanced configuration)**
+**Distribution des Composants Standard**
+- Backbone (Élagué) : ~58K params (38.9%)
+- **🆕 Modules Standard 2024** : ~7.5K params (5.0%)
+  - Découplage d'Échelle : ~1.5K
+  - ASSN P3 : ~2.0K  
+  - MSE-FPN : ~4.0K
+- CBAM Standard : ~1.8K params (1.2%)
+- BiFPN + MSE : ~8.2K params (5.5%)
+- SSH Standard : ~12K params (8.0%)
+- Têtes de Détection : ~1.6K params (1.1%)
+- **Plage Totale : 120K-180K paramètres**
+- **Total Typique : ~150K paramètres (configuration standard)**
 
-### 7. Scientific Foundation Panel Enhanced (Bottom)
+### 7. Panneau de Fondation Scientifique Standard (En Bas)
 
-**Ten Research Papers (2017-2025)**
-- B-FPGM: Kaparinos & Mezaris, WACVW 2025
-- Knowledge Distillation: Li et al. CVPR 2023
-- CBAM: Woo et al. ECCV 2018 (**Standard**)
-- BiFPN: Tan et al. CVPR 2020 (**Standard**)
-- SSH: Najibi et al. ICCV 2017 (**Standard**)
-- Bayesian Optimization: Mockus, 1989
-- MobileNet: Howard et al. 2017
-- **🆕 ASSN**: PMC/ScienceDirect 2024
-- **🆕 MSE-FPN**: Scientific Reports 2024
-- **🆕 Scale Decoupling**: SNLA 2024
+**Dix Articles de Recherche (2017-2025)**
+- B-FPGM : Kaparinos & Mezaris, WACVW 2025
+- Distillation de Connaissances : Li et al. CVPR 2023
+- CBAM : Woo et al. ECCV 2018 (**Standard**)
+- BiFPN : Tan et al. CVPR 2020 (**Standard**)
+- SSH : Najibi et al. ICCV 2017 (**Standard**)
+- Optimisation Bayésienne : Mockus, 1989
+- MobileNet : Howard et al. 2017
+- **🆕 ASSN** : PMC/ScienceDirect 2024
+- **🆕 MSE-FPN** : Scientific Reports 2024
+- **🆕 Découplage d'Échelle** : SNLA 2024
 
-## 🔬 Enhanced Scientific Innovations Highlighted
+## 🔬 Innovations Scientifiques Standard Mises en Évidence
 
-### 1. **Differential Pipeline Architecture (2024)**
-- **Innovation**: P3 specialized vs P4/P5 standard processing
-- **Benefit**: Optimized performance per object size
-- **Implementation**: 4 modules for small faces vs 2 for medium/large
+### 1. **Architecture de Pipeline Différentié (2024)**
+- **Innovation** : Traitement spécialisé P3 vs traitement standard P4/P5
+- **Avantage** : Performance optimisée par taille d'objet
+- **Implémentation** : 4 modules pour petits visages vs 2 pour moyens/grands
 
-### 2. **Small Face Specialization Modules (2024)**
-- **Scale Decoupling**: Removes large object interference in P3
-- **ASSN Attention**: Scale-sequence attention optimized for small objects
-- **MSE-FPN Integration**: Semantic enhancement for better feature fusion
-- **Performance**: +15-20% improvement on small face detection
+### 2. **Modules de Spécialisation pour Petits Visages (2024)**
+- **Découplage d'Échelle** : Supprime l'interférence des gros objets en P3
+- **Attention ASSN** : Attention de séquence d'échelle optimisée pour petits objets
+- **Intégration MSE-FPN** : Amélioration sémantique pour une meilleure fusion des caractéristiques
+- **Performance** : Amélioration de 15-20% sur la détection de petits visages
 
-### 3. **Standard Module Integration**
-- **CBAM Standard**: Original Woo et al. implementation
-- **BiFPN Standard**: Original Tan et al. implementation  
-- **SSH Standard**: Original Najibi et al. implementation
-- **Advantage**: Scientifically validated base vs experimental variants
+### 3. **Intégration de Modules Standard**
+- **CBAM Standard** : Implémentation originale de Woo et al.
+- **BiFPN Standard** : Implémentation originale de Tan et al.
+- **SSH Standard** : Implémentation originale de Najibi et al.
+- **Avantage** : Base scientifiquement validée vs variantes expérimentales
 
-### 4. **Enhanced vs Original Comparison**
+### 4. **Comparaison Standard vs Original**
 ```
-Component           Original Nano-B        Enhanced Nano-B 2024
-=================================================================
-P3 Processing:      CBAM only             4 modules (specialized)
-P4/P5 Processing:   CBAM only             2 modules (standard)
-Research Modules:   "Efficient" variants  Standard + 3 new (2024)
-Publications:       7 papers              10 papers (2017-2025)
-Small Face Focus:   Generic               Specialized (+15-20%)
+Composant           Nano-B Original        Nano-B Standard 2024
+==================================================================
+Traitement P3:      CBAM seulement        4 modules (spécialisés)
+Traitement P4/P5:   CBAM seulement        2 modules (standard)
+Modules Recherche:  Variantes "efficaces" Standard + 3 nouveaux (2024)
+Publications:       7 articles            10 articles (2017-2025)
+Focus Petits Visages: Générique          Spécialisé (+15-20%)
 ```
 
-## 🎯 Enhanced Visual Design Elements
+## 🎯 Éléments de Conception Visuelle Standard
 
-### Color Coding Enhanced
-- **🔍 Light Yellow**: P3 specialized modules (small faces)
-- **👁️ Light Blue**: P4 standard modules (medium faces)
-- **🔭 Light Red**: P5 standard modules (large faces)
-- **🧹 Light Green**: Scale Decoupling (P3 only)
-- **🎯 Light Orange**: ASSN attention (P3 only)
-- **🌉 Light Purple**: MSE-FPN enhancement (all levels)
-- **✅ Light Gray**: Standard validated modules
+### Codage Couleur Standard
+- **🔍 Jaune Clair** : Modules spécialisés P3 (petits visages)
+- **👁️ Bleu Clair** : Modules standard P4 (visages moyens)
+- **🔭 Rouge Clair** : Modules standard P5 (gros visages)
+- **🧹 Vert Clair** : Découplage d'Échelle (P3 seulement)
+- **🎯 Orange Clair** : Attention ASSN (P3 seulement)
+- **🌉 Violet Clair** : Amélioration MSE-FPN (tous niveaux)
+- **✅ Gris Clair** : Modules standard validés
 
-### Enhanced Symbols and Indicators
-- **🔍 Yellow circles**: P3 specialized processing
-- **🆕 Blue stars**: New research modules 2024
-- **✅ Green checks**: Standard scientifically validated
-- **📊 Red arrows**: Differential pipeline flow
-- **🎯 Target icons**: Small face optimization
+### Symboles et Indicateurs Standard
+- **🔍 Cercles jaunes** : Traitement spécialisé P3
+- **🆕 Étoiles bleues** : Nouveaux modules de recherche 2024
+- **✅ Coches vertes** : Standard scientifiquement validé
+- **📊 Flèches rouges** : Flux de pipeline différentié
+- **🎯 Icônes cible** : Optimisation pour petits visages
 
-### Enhanced Typography
-- **Title**: "Enhanced 2024" prominently displayed
-- **Module Labels**: Research year indicators (2024)
-- **Specialization**: Clear P3 vs P4/P5 distinction
-- **Performance**: "+15-20%" small face gains highlighted
+### Typographie Standard
+- **Titre** : "Standard 2024" affiché de manière proeminente
+- **Étiquettes de Modules** : Indicateurs d'année de recherche (2024)
+- **Spécialisation** : Distinction claire P3 vs P4/P5
+- **Performance** : Gains sur petits visages "15-20%" mis en évidence
 
-## 📱 Enhanced Publication Quality
+## 📱 Qualité de Publication Standard
 
-### Resolution and Format Enhanced
-- **PNG**: 300 DPI with Enhanced 2024 branding
-- **SVG**: Vector format with differential pipeline clarity
-- **Size**: 24×16 inches optimized for Enhanced architecture
+### Résolution et Format Standard
+- **PNG** : 300 DPI avec marque Standard 2024
+- **SVG** : Format vectoriel avec clarté du pipeline différentié
+- **Taille** : 24×16 pouces optimisé pour l'architecture standard
 
-### Academic Standards Enhanced
-- **Research Integration**: 10 publications clearly cited
-- **Differential Architecture**: P3 vs P4/P5 distinction
-- **Performance Metrics**: Small face improvements quantified
-- **Standard Validation**: No "Efficient" experimental variants
+### Standards Académiques Standard
+- **Intégration de Recherche** : 10 publications clairement citées
+- **Architecture Différentiée** : Distinction P3 vs P4/P5
+- **Métriques de Performance** : Améliorations sur petits visages quantifiées
+- **Validation Standard** : Aucune variante expérimentale "efficace"
 
-## 🚀 Enhanced Usage Guidelines
+## 🚀 Directives d'Utilisation Standard
 
-### For Research Publications Enhanced
-- **Focus**: Differential pipeline innovation (P3 vs P4/P5)
-- **Highlight**: 3 new research modules integration (2024)
-- **Emphasize**: Small face specialization achievements
-- **Standard Base**: SSH/CBAM/BiFPN scientific validation
+### Pour les Publications de Recherche Standard
+- **Focus** : Innovation du pipeline différentié (P3 vs P4/P5)
+- **Mise en Valeur** : Intégration de 3 nouveaux modules de recherche (2024)
+- **Accent** : Réalisations de spécialisation pour petits visages
+- **Base Standard** : Validation scientifique SSH/CBAM/BiFPN
 
-### For Presentations Enhanced
-- **Key Points**: 
-  1. Differential processing architecture
-  2. Small face specialized modules
-  3. +15-20% performance improvement
-  4. 10 research publications foundation
+### Pour les Présentations Standard
+- **Points Clés** :
+  1. Architecture de traitement différentié
+  2. Modules spécialisés pour petits visages
+  3. Amélioration de performance +15-20%
+  4. Fondation de 10 publications de recherche
 
-### For Documentation Enhanced
-- **Integration**: Links to Enhanced simulation documents
-- **Consistency**: Terminology aligned with Enhanced 2024
-- **Performance**: Small face metrics prominently featured
-- **Evolution**: Clear progression from Original → Enhanced
+### Pour la Documentation Standard
+- **Intégration** : Liens vers les documents de simulation standard
+- **Cohérence** : Terminologie alignée avec Standard 2024
+- **Performance** : Métriques de petits visages mises en avant
+- **Évolution** : Progression claire de Original → Standard
 
-## 📊 Enhanced Diagram Statistics
+## 📊 Statistiques du Diagramme Standard
 
-- **Total Components**: 20+ architectural elements (vs 15+ original)
-- **Research Modules**: 3 new modules 2024 + 7 standard
-- **Differential Branches**: P3 specialized + P4/P5 standard  
-- **Performance Gains**: +15-20% small face detection
-- **Parameter Range**: 120K-180K (variable Bayesian optimization)
+- **Composants Totaux** : 20+ éléments architecturaux (vs 15+ original)
+- **Modules de Recherche** : 3 nouveaux modules 2024 + 7 standard
+- **Branches Différentiées** : P3 spécialisé + P4/P5 standard
+- **Gains de Performance** : +15-20% détection de petits visages
+- **Plage de Paramètres** : 120K-180K (optimisation bayésienne variable)
 
-## 🔧 Enhanced Generation Details
+## 🔧 Détails de Génération Standard
 
-**Script**: `scripts/generate_nano_b_enhanced_architecture.py`
-**Features**: Differential pipeline visualization
-**Output**: `docs/featherface_nano_b_enhanced_architecture.png`
-**Enhanced Elements**: 
-- P3 specialized branch highlighting
-- Research 2024 modules integration
-- Performance improvement annotations
-- Standard module validation indicators
+**Script** : `scripts/generate_nano_b_standard_architecture.py`
+**Fonctionnalités** : Visualisation du pipeline différentié
+**Sortie** : `docs/featherface_nano_b_standard_architecture.png`
+**Éléments Standard** :
+- Mise en évidence de la branche spécialisée P3
+- Intégration des modules de recherche 2024
+- Annotations d'amélioration de performance
+- Indicateurs de validation de modules standard
 
-## 📈 Enhanced Evolution Timeline
+## 📈 Chronologie d'Évolution Standard
 
-### Architecture Evolution Path
+### Chemin d'Évolution de l'Architecture
 ```
-V1 Baseline (2023)     →    Original Nano-B (2023)    →    Enhanced Nano-B (2024)
+V1 Baseline (2023)     →    Nano-B Original (2023)    →    Nano-B Standard (2024)
 ==================          ===================          =====================
-494K parameters             "Efficient" variants          Standard + 3 modules 2024
+494K paramètres             Variantes "efficaces"         Standard + 3 modules 2024
 4 techniques                7 techniques                  10 techniques  
-Generic processing          Generic optimization          P3 specialized
-SSH standard               SSH grouped                   SSH standard (validated)
+Traitement générique          Optimisation générique        P3 spécialisé
+SSH standard               SSH groupé                    SSH standard (validé)
 ```
 
-### Research Foundation Evolution
+### Évolution de la Fondation de Recherche
 ```
-2017: MobileNet, SSH             Base architectures
-2018: CBAM                       Attention mechanism
-2020: BiFPN                      Feature fusion
-2023: Knowledge Distillation     Teacher-student learning
-2025: B-FPGM                     Bayesian pruning
-2024: ASSN + MSE-FPN + ScaleD    🆕 Small face specialization
+2017: MobileNet, SSH             Architectures de base
+2018: CBAM                       Mécanisme d'attention
+2020: BiFPN                      Fusion de caractéristiques
+2023: Distillation Connaissances Apprentissage enseignant-étudiant
+2025: B-FPGM                     Pruning bayésien
+2024: ASSN + MSE-FPN + ScaleD    🆕 Spécialisation petits visages
 ```
 
 ---
 
-**Status**: ✅ Enhanced 2024 architecture guide  
-**Innovation**: Differential P3 vs P4/P5 pipeline  
-**Research Foundation**: 10 verified publications (2017-2025)  
-**Performance**: +15-20% small face detection improvement  
-**Target**: Small face specialized ultra-lightweight deployment
+**Statut** : ✅ Guide d'architecture Standard 2024
+**Innovation** : Pipeline différentié P3 vs P4/P5
+**Fondation de Recherche** : 10 publications vérifiées (2017-2025)
+**Performance** : Amélioration de 15-20% de la détection de petits visages
+**Cible** : Déploiement léger standard spécialisé pour petits visages
