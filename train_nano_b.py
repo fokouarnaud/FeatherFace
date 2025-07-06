@@ -42,7 +42,7 @@ sys.path.append(str(PROJECT_ROOT))
 from models.retinaface import RetinaFace
 from models.featherface_nano_b import FeatherFaceNanoB, create_featherface_nano_b
 from models.pruning_b_fpgm import create_nano_b_config
-from data.config import cfg_mnet, cfg_nano
+from data.config import cfg_mnet, cfg_nano_b
 from data.wider_face import WiderFaceDetection, detection_collate
 from layers.modules_distill import DistillationLoss
 from utils.augmentations import SSDAugmentation
@@ -182,7 +182,7 @@ class NanoBTrainer:
         })
         
         self.student = create_featherface_nano_b(
-            cfg=cfg_nano,
+            cfg=cfg_nano_b,
             phase='train',
             pruning_config=pruning_config
         )
@@ -210,7 +210,7 @@ class NanoBTrainer:
         
         # Training dataset
         rgb_mean = (104, 117, 123)
-        img_dim = cfg_nano['image_size']
+        img_dim = cfg_nano_b['image_size']
         
         train_dataset = WiderFaceDetection(
             txt_path=self.args.training_dataset,

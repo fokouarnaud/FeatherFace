@@ -1,4 +1,4 @@
-# FeatherFace Nano-B Enhanced Architecture: Ultra-Lightweight Face Detection 2024
+# FeatherFace Nano-B Architecture: Ultra-Lightweight Face Detection 2024
 
 ## Overview
 
@@ -15,7 +15,7 @@ FeatherFace Nano-B represents the pinnacle of ultra-lightweight face detection, 
 6. **Weighted Distillation**: 2025 Edge Computing Research on adaptive knowledge transfer
 7. **Bayesian Optimization**: Mockus, "Bayesian Methods for Seeking the Extremum", 1989
 
-### Small Face Detection Enhancements (2024)
+### Small Face Detection Optimizations (2024)
 8. **Scale Sequence Attention**: "Attention-based scale sequence network for small object detection", PMC/ScienceDirect, 2024
 9. **Semantic Enhancement**: "Multi-scale semantic enhancement network for object detection", Scientific Reports, 2024
 10. **Scale Decoupling**: SNLA approach - "Scale-decoupling module to emphasize small object features", 2023-2024 research

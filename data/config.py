@@ -95,5 +95,5 @@ cfg_nano_b = {
     }
 }
 
-# Note: Legacy V2 configuration removed - only cfg_mnet (V1) and cfg_nano_b (Enhanced 2024) supported
+# Note: Legacy V2 configuration removed - only cfg_mnet (V1) and cfg_nano_b (Nano-B 2024) supported
 

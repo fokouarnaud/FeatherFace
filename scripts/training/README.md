@@ -5,7 +5,7 @@ Command-line training scripts for FeatherFace models.
 ## 📋 Scripts Overview
 
 ### `train.py` - V1 Baseline Training
-Training script for FeatherFace V1 baseline (494K parameters) - serves as teacher model for Nano-B Enhanced.
+Training script for FeatherFace V1 baseline (494K parameters) - serves as teacher model for Nano-B.
 
 ```bash
 # Basic usage
@@ -17,13 +17,13 @@ python train.py --network mobile0.25 --batch_size 32 --epochs 350 --lr 1e-3
 
 **Features**:
 - V1 baseline architecture (494K parameters)
-- Teacher model for Nano-B Enhanced knowledge distillation
+- Teacher model for Nano-B knowledge distillation
 - Standard training pipeline
 - Supports resume from checkpoint
 - Automatic weight saving
 
-### `../../train_nano_b.py` - Nano-B Enhanced 2024 Training
-Training script for FeatherFace Nano-B Enhanced 2024 (120K-180K parameters) with specialized small face detection.
+### `../../train_nano_b.py` - Nano-B 2024 Training
+Training script for FeatherFace Nano-B 2024 (120K-180K parameters) with optimized small face detection.
 
 ```bash
 # Basic usage

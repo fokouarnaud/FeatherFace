@@ -1,12 +1,12 @@
-# FeatherFace Nano-B Enhanced Architecture Diagram: Spécialisé Petits Visages 2024
+# FeatherFace Nano-B Architecture Diagram: Optimized for Small Faces 2024
 
-## 📊 Complete Enhanced Architecture Overview
+## 📊 Complete Nano-B Architecture Overview
 
 ```
 Input Image (640×640×3)
          ↓
 ╔════════════════════════════════════════════════════════════════════════════════╗
-║                     FEATHERFACE NANO-B ENHANCED 2024                          ║
+║                     FEATHERFACE NANO-B 2024                                   ║
 ║                      (120,000-180,000 Parameters Total)                       ║
 ║              🎯 Spécialisé Petits Visages + Bayesian Pruning                 ║
 ╚════════════════════════════════════════════════════════════════════════════════╝

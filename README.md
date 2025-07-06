@@ -1,12 +1,12 @@
 # FeatherFace: Scientifically Justified Lightweight Face Detection
 
-A rigorously-grounded implementation featuring FeatherFace V1 baseline (494K parameters) and ultra-lightweight Nano-B Enhanced 2024 (120K-180K parameters) with specialized small face detection pipeline.
+A rigorously-grounded implementation featuring FeatherFace V1 baseline (494K parameters) and ultra-lightweight Nano-B 2024 (120K-180K parameters) with optimized small face detection pipeline.
 
 > **Paper**: Kim, D.; Jung, J.; Kim, J. FeatherFace: Robust and Lightweight Face Detection via Optimal Feature Integration. Electronics 2025 - [link](https://www.mdpi.com/2079-9292/14/3/517)
 
 ## 🚀 FeatherFace Nano-B Ultra-Lightweight Architecture
 
-![FeatherFace Nano-B Enhanced Architecture](docs/featherface_nano_b_architecture_diagram.png)
+![FeatherFace Nano-B Architecture](docs/featherface_nano_b_architecture_diagram.png)
 
 ### Scientific Foundation (10 Research Publications)
 
@@ -18,7 +18,7 @@ A rigorously-grounded implementation featuring FeatherFace V1 baseline (494K par
 - **MobileNet Backbone**: Howard et al. "MobileNets: Efficient Convolutional Neural Networks" (2017) - Lightweight CNN architecture
 - **B-FPGM Pruning**: Kaparinos & Mezaris "B-FPGM: Lightweight Face Detection via Bayesian-Optimized Soft FPGM Pruning" (WACVW 2025)
 
-**Small Face Detection Enhancements (2024):**
+**Small Face Detection Optimizations (2024):**
 
 - **🎯 ASSN**: "Attention-based scale sequence network for small object detection" (PMC/ScienceDirect 2024) - P3 specialized attention
 - **🌉 MSE-FPN**: "Multi-scale semantic enhancement network for object detection" (Scientific Reports 2024) - Feature fusion quality (+43.4 AP validated)
@@ -26,30 +26,30 @@ A rigorously-grounded implementation featuring FeatherFace V1 baseline (494K par
 - **Bayesian Optimization**: Mockus "Bayesian Methods for Seeking the Extremum" (1989) - Automated pruning
 - **Weighted Distillation**: 2025 Edge Computing Research - Adaptive knowledge transfer
 
-### Model Comparison: V1 Baseline → Nano-B Enhanced (2024)
+### Model Comparison: V1 Baseline → Nano-B (2024)
 
-| Aspect | **FeatherFace V1 (Baseline)** | **FeatherFace Nano-B Enhanced (2024)** |
+| Aspect | **FeatherFace V1 (Baseline)** | **FeatherFace Nano-B (2024)** |
 |--------|-------------------------------|-----------------------------------------|
 | **Parameters** | 494,000 | 120,000-180,000 **(variable Bayesian optimization)** |
-| **Reduction** | - | **48-65% reduction via Enhanced 2024 techniques** |
+| **Reduction** | - | **48-65% reduction via Nano-B 2024 techniques** |
 | **Small Faces** | Generic attention | **3 specialized modules (ASSN + MSE-FPN + ScaleDecoupling)** |
 | **Architecture** | Standard pipeline | **P3 specialized + P4/P5 efficient pipeline** |
 | **Foundation** | 4 research papers | **10 verified research publications (2017-2025)** |
 | **Performance** | 87% mAP (baseline) | Competitive mAP + **15-20% small face improvement** |
 
-### FeatherFace Nano-B Enhanced Architecture (2024)
+### FeatherFace Nano-B Architecture (2024)
 
 **🎯 Specialized Pipeline for Small Face Detection:**
 
 ```
-Input (640×640×3) → MobileNet → [P3🔍 P4👁️ P5🔭] → Enhanced Processing → Detection
+Input (640×640×3) → MobileNet → [P3🔍 P4👁️ P5🔭] → Optimized Processing → Detection
 
 P3 (Small Faces):  ScaleDecoupling → CBAM → BiFPN → SemanticEnhancement → ASSN → 🎯
 P4 (Medium):       CBAM → BiFPN → SemanticEnhancement → CBAM → 🎯
 P5 (Large):        CBAM → BiFPN → SemanticEnhancement → CBAM → 🎯
 ```
 
-**🔬 Research-Backed Enhancement Techniques (2024):**
+**🔬 Research-Backed Optimization Techniques (2024):**
 1. **🎯 ASSN (P3 Specialized)**: Scale sequence attention for small objects (PMC/ScienceDirect 2024)
 2. **🌉 MSE-FPN**: Semantic enhancement for feature fusion (+43.4 AP validated, Scientific Reports 2024)
 3. **🧹 Scale Decoupling**: Small/large object separation in P3 (SNLA approach 2024)
@@ -60,7 +60,7 @@ P5 (Large):        CBAM → BiFPN → SemanticEnhancement → CBAM → 🎯
 
 **📊 Total Impact: Small face specialized + 48-65% parameter reduction via Bayesian pruning**
 
-## 🔬 Enhanced 2024 Scientific Architecture
+## 🔬 Nano-B 2024 Scientific Architecture
 
 ### 🎯 ASSN: Attention-based Scale Sequence Network (2024)
 

@@ -1,13 +1,13 @@
-# Simulation FeatherFace Nano-B Enhanced - Architecture 2024 Spécialisée
+# Simulation FeatherFace Nano-B - Architecture 2024 Optimized
 
 ## 🎯 Objectif de la Simulation
 
-Cette simulation détaille le processus complet de forward pass de **FeatherFace Nano-B Enhanced (2024)** avec des exemples numériques concrets sur une image **640x640x3**. Nano-B Enhanced utilise **3 modules de recherche 2024 spécialisés pour la détection de petits visages** et un **pruning bayésien optimisé** pour atteindre **120K-180K paramètres** (48-65% de réduction vs V1) avec **+15-20% d'amélioration** sur les petits visages.
+Cette simulation détaille le processus complet de forward pass de **FeatherFace Nano-B (2024)** avec des exemples numériques concrets sur une image **640x640x3**. Nano-B utilise **des optimisations spécialisées pour la détection de petits visages** et un **pruning bayésien optimisé** pour atteindre **120K-180K paramètres** (48-65% de réduction vs V1) avec des performances compétitives sur les petits visages.
 
-## 📊 Configuration Nano-B Enhanced 2024
+## 📊 Configuration Nano-B 2024
 
 ```python
-cfg_nano_b_enhanced = {
+cfg_nano_b = {
     'image_size': 640,
     'in_channel': 32,
     'out_channel': 32,  # Optimisé pour 120-180K paramètres (variable)
@@ -15,7 +15,7 @@ cfg_nano_b_enhanced = {
     'steps': [8, 16, 32],
     'variance': [0.1, 0.2],
     
-    # Enhanced 2024: Spécialisations pour petits visages
+    # Nano-B 2024: Optimisations pour petits visages
     'small_face_optimization': True,
     'p3_specialized_pipeline': True,
     'semantic_enhancement': True,

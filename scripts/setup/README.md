@@ -1,11 +1,11 @@
 # Setup Scripts
 
-This directory contains scripts for setting up the FeatherFace V1 baseline and Nano-B Enhanced 2024 environment.
+This directory contains scripts for setting up the FeatherFace V1 baseline and Nano-B 2024 environment.
 
 ## Scripts
 
 ### `install_dependencies.py`
-Installs all required dependencies for FeatherFace V1 baseline and Nano-B Enhanced 2024 specialized training and validation.
+Installs all required dependencies for FeatherFace V1 baseline and Nano-B 2024 optimized training and validation.
 
 **Usage:**
 ```bash

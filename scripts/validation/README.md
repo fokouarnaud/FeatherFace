@@ -11,7 +11,7 @@ Validates model parameter counts against paper specifications.
 # Validate V1 model
 python validate_parameters.py
 
-# Validate Nano-B Enhanced model
+# Validate Nano-B model
 python validate_parameters.py --model nano_b --config cfg_nano_b
 
 # Verbose output
@@ -20,8 +20,8 @@ python validate_parameters.py --verbose
 
 **Features**:
 - Validates V1 baseline target of 494K parameters
-- Validates Nano-B Enhanced target of 120K-180K parameters
-- Compares against Enhanced 2024 specifications
+- Validates Nano-B target of 120K-180K parameters
+- Compares against Nano-B 2024 specifications
 - Detailed parameter breakdown by module
 - Architecture compatibility checks
 

@@ -1,6 +1,6 @@
 # Scripts Directory
 
-This directory contains organized scripts for FeatherFace V1 baseline and Nano-B Enhanced 2024 operations.
+This directory contains organized scripts for FeatherFace V1 baseline and Nano-B 2024 operations.
 
 ## 📁 Directory Structure
 
