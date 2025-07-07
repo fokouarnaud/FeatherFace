@@ -43,7 +43,7 @@ Input → MobileNet-0.25 → BiFPN → CBAM → SSH → Detection
 ### Nano-B (Student with Bayesian Optimization)
 ```
 Input → MobileNet-0.25 → Feature Pyramid Network
-                          ├── P3 🔍: ScaleDecoupling → CBAM → BiFPN → ASSN → Detection
+                          ├── P3 🔍: ScaleDecoupling → CBAM → BiFPN → MSE-FPN → ASSN → Detection
                           ├── P4 👁️: CBAM → BiFPN → MSE-FPN → CBAM → Detection  
                           └── P5 🔭: CBAM → BiFPN → MSE-FPN → CBAM → Detection
 ```
