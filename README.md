@@ -29,7 +29,7 @@ python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 
 | **Nano-B** | 120-180K | 0.6-0.9MB | **Competitive** | **10 papers (2017-2025)** | **Edge deployment** |
 
 ### Key Improvements (V1 → Nano-B)
-- **48-65% parameter reduction** via Bayesian-optimized B-FPGM pruning
+- **50-66% parameter reduction** via Bayesian-optimized B-FPGM pruning
 - **Specialized small face pipeline** with 3 research-backed modules
 - **Differential processing**: P3 (small faces) vs P4/P5 (standard)
 

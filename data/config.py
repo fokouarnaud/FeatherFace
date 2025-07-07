@@ -44,7 +44,7 @@ cfg_nano_b = {
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
     'in_channel': 32,
-    'out_channel': 32,           # Nano-B optimized for 120-180K parameters (variable)
+    'out_channel': 24,           # Nano-B base ~250-300K params before B-FPGM pruning to 120-180K
     'num_classes': 2,            # Binary classification (face/no-face)
     
     # Learning configuration  
@@ -55,7 +55,7 @@ cfg_nano_b = {
     # Nano-B specific efficiency techniques
     'cbam_reduction': 8,         # Efficient CBAM (Woo et al. ECCV 2018)
     'ssh_groups': 2,             # Grouped SSH (established technique)
-    'bifpn_channels': 72,        # BiFPN output channels (divisible by 4)
+    'bifpn_channels': 20,        # BiFPN output channels (ultra-lightweight for 250-300K base)
     'use_pruned_conv': True,     # Enable pruning-aware convolutions
     
     # Weighted Knowledge Distillation (2025 research)
@@ -66,7 +66,7 @@ cfg_nano_b = {
     
     # Bayesian-Optimized Pruning (B-FPGM - Kaparinos & Mezaris, WACVW 2025)
     'pruning_enabled': True,
-    'target_reduction': 0.5,           # 50% parameter reduction target
+    'target_reduction': 0.5,           # 50% parameter reduction target (250-300K → 120-180K)
     'pruning_start_epoch': 50,         # Start pruning after initial training
     'pruning_epochs': 20,              # Bayesian optimization epochs
     'fine_tune_epochs': 30,            # Fine-tuning after pruning
@@ -74,6 +74,8 @@ cfg_nano_b = {
     'acquisition_function': 'ei',      # Expected Improvement
     'distance_type': 'l2',             # FPGM distance metric
     'sparsity_schedule': 'polynomial', # SFP schedule
+    'num_groups': 5,                   # Layer groups for standard architecture + 2024 modules
+    'eval_batches': 100,               # Evaluation batches for BO
     
     # Scientific foundation (Extended for Nano-B)
     'scientific_basis': {

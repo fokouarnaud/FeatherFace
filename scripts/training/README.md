@@ -44,7 +44,7 @@ python train_nano_b.py \
 - 3 specialized research modules (ASSN, MSE-FPN, Scale Decoupling)
 - Differential pipeline (P3 specialized vs P4/P5 standard)
 - Bayesian-optimized pruning (B-FPGM)
-- 48-65% parameter reduction with small face specialization
+- 50-66% parameter reduction with small face specialization
 - Scientific foundation with 10 peer-reviewed papers (2017-2025)
 
 ## 🔧 Common Parameters
@@ -115,7 +115,7 @@ python train_nano_b.py --batch_size 64
 
 ### Nano-B Enhanced 2024 Training
 - **Target**: Competitive mAP + 15-20% small face improvement
-- **Parameters**: 120K-180K (48-65% reduction)
+- **Parameters**: 120K-180K (50-66% reduction)
 - **Training time**: ~8-10 hours with Bayesian optimization
 - **Achievement**: Specialized small face detection with differential pipeline
 

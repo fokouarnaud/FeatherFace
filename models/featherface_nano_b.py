@@ -76,12 +76,15 @@ StandardSSH = SSH  # Use scientifically validated SSH (standard implementation)
 ChannelShuffle = ChannelShuffle2  # Standard implementation from net.py
 
 
-def create_nano_b_config_simple(target_reduction=0.4):
-    """Simple config creation when full pruning not available"""
+def create_nano_b_config_simple(target_reduction=0.5):
+    """Simple config creation when full pruning not available - uses centralized config values"""
+    from data.config import cfg_nano_b
     return {
-        'target_reduction': target_reduction,
-        'layer_groups': ['backbone', 'attention', 'detection'],
-        'search_space': [(0.0, 0.6) for _ in range(3)]
+        'target_reduction': cfg_nano_b.get('target_reduction', target_reduction),
+        'bayesian_iterations': cfg_nano_b.get('bayesian_iterations', 25),
+        'acquisition_function': cfg_nano_b.get('acquisition_function', 'ei'),
+        'num_groups': cfg_nano_b.get('num_groups', 5),
+        'eval_batches': cfg_nano_b.get('eval_batches', 100)
     }
 
 
@@ -334,7 +337,9 @@ class FeatherFaceNanoB(nn.Module):
                 'bayesian_iterations': cfg_nano_b.get('bayesian_iterations', 25),
                 'acquisition_function': cfg_nano_b.get('acquisition_function', 'ei'),
                 'distance_type': cfg_nano_b.get('distance_type', 'l2'),
-                'sparsity_schedule': cfg_nano_b.get('sparsity_schedule', 'polynomial')
+                'sparsity_schedule': cfg_nano_b.get('sparsity_schedule', 'polynomial'),
+                'num_groups': cfg_nano_b.get('num_groups', 5),
+                'eval_batches': cfg_nano_b.get('eval_batches', 100)
             }
         
         self.cfg = cfg
@@ -396,8 +401,8 @@ class FeatherFaceNanoB(nn.Module):
         ])
         
         # BiFPN with semantic enhancement (Tan et al. CVPR 2020)
-        # Ensure bifpn_channels is divisible by 4 for SSH standard
-        bifpn_channels = self.cfg.get('bifpn_channels', 72)  # Changed from 74 to 72
+        # Use centralized configuration for ultra-lightweight design
+        bifpn_channels = self.cfg.get('bifpn_channels', 20)  # Ultra-lightweight: 20 channels
         self.bifpn = StandardBiFPN(
             num_channels=bifpn_channels,
             conv_channels=in_channels_list,

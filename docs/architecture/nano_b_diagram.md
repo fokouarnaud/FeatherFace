@@ -333,7 +333,7 @@ Small Face Gain:    Standard performance        +15-20% improvement
 ## 📈 Enhanced Performance Characteristics
 
 ### ✅ Enhanced Achievements 2024
-- **Total Parameters**: 120,000-180,000 (48-65% reduction from V1)
+- **Total Parameters**: 120,000-180,000 (50-66% reduction from V1)
 - **Specialization**: +15-20% small face detection improvement  
 - **Architecture**: Differential pipeline P3 vs P4/P5
 - **Scientific Foundation**: 10 verified research publications

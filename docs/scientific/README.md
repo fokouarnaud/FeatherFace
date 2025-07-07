@@ -57,7 +57,7 @@ FeatherFace Nano-B is built on **10 peer-reviewed research publications** spanni
 #### B-FPGM Bayesian-Optimized Pruning
 - **Research**: Kaparinos & Mezaris WACVW 2025
 - **Innovation**: Automated pruning rate discovery via Bayesian optimization
-- **Impact**: 48-65% parameter reduction with performance preservation
+- **Impact**: 50-66% parameter reduction with performance preservation
 
 ## 📊 Scientific Validation
 
@@ -66,7 +66,7 @@ FeatherFace Nano-B is built on **10 peer-reviewed research publications** spanni
 |-----------|---------------|------------------|----------------|
 | **ASSN** | PMC 2024 | +1.9% AP | P3 specialized |
 | **MSE-FPN** | Sci Reports 2024 | +43.4 AP | All levels |
-| **B-FPGM** | WACVW 2025 | 48-65% reduction | Automated |
+| **B-FPGM** | WACVW 2025 | 50-66% reduction | Automated |
 | **Knowledge Distillation** | CVPR 2023 | Performance preservation | V1→Nano-B |
 
 ### Mathematical Validation

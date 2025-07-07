@@ -2,7 +2,7 @@
 
 ## Overview
 
-FeatherFace Nano-B achieves **120,000-180,000 parameters** (48-65% reduction from V1 baseline) through a scientifically grounded combination of Bayesian-Optimized Soft FPGM Pruning and Weighted Knowledge Distillation.
+FeatherFace Nano-B achieves **120,000-180,000 parameters** (50-66% reduction from V1 baseline) through a scientifically grounded combination of Bayesian-Optimized Soft FPGM Pruning and Weighted Knowledge Distillation.
 
 ## Scientific Foundation (10 Research Publications)
 

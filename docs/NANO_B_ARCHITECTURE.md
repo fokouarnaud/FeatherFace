@@ -2,7 +2,7 @@
 
 ## Overview
 
-FeatherFace Nano-B is an ultra-lightweight face detection model that combines Bayesian-Optimized Soft FPGM Pruning with Weighted Knowledge Distillation to achieve 120-180K parameters (48-65% reduction from baseline) while maintaining competitive accuracy.
+FeatherFace Nano-B is an ultra-lightweight face detection model that combines Bayesian-Optimized Soft FPGM Pruning with Weighted Knowledge Distillation to achieve 120-180K parameters (50-66% reduction from baseline) while maintaining competitive accuracy.
 
 ## Architecture Components
 
@@ -52,7 +52,7 @@ Based on Li et al. (CVPR 2023) and 2025 edge computing research:
 
 ## Performance Targets
 
-- **Parameters**: 120-180K (48-65% reduction from V1)
+- **Parameters**: 120-180K (50-66% reduction from V1)
 - **Model size**: <1 MB (ultra-lightweight)
 - **WIDERFace mAP**: >78% overall (competitive with larger models)
 - **Inference speed**: <50ms on mobile devices

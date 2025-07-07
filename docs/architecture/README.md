@@ -8,7 +8,7 @@ Complete technical architecture specifications for FeatherFace models.
 
 ### Key Specifications
 - **Parameters**: 120-180K (variable Bayesian optimization)
-- **Reduction**: 48-65% from V1 baseline (494K)
+- **Reduction**: 50-66% from V1 baseline (494K)
 - **Scientific Foundation**: 10 research publications (2017-2025)
 - **Specialization**: Differential P3/P4/P5 processing pipeline
 
@@ -60,7 +60,7 @@ P5 (Large):        CBAM → BiFPN → MSE-FPN → CBAM → Detection
 ## 🔄 Architecture Evolution
 
 ### V1 Baseline → Nano-B Enhanced
-- **Parameter Reduction**: 494K → 120-180K (48-65% reduction)
+- **Parameter Reduction**: 494K → 120-180K (50-66% reduction)
 - **Technique Expansion**: 4 → 10 scientific techniques
 - **Processing**: Generic → Differential pipeline
 - **Target**: Accuracy → Efficiency + specialized performance

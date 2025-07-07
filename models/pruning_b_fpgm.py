@@ -213,7 +213,7 @@ class BayesianOptimizer:
     vs nombre fixe avec performances dégradées.
     """
     
-    def __init__(self, num_groups: int = 6, acquisition_function: str = 'ei'):
+    def __init__(self, num_groups: int = 5, acquisition_function: str = 'ei'):
         """
         Initialize Bayesian optimizer
         
@@ -348,7 +348,7 @@ class FeatherFaceNanoBPruner:
             sparsity_schedule=config.get('sparsity_schedule', 'polynomial')
         )
         self.bayesian_optimizer = BayesianOptimizer(
-            num_groups=config.get('num_groups', 6),
+            num_groups=config.get('num_groups', 5),
             acquisition_function=config.get('acquisition_function', 'ei')
         )
         
@@ -366,36 +366,39 @@ class FeatherFaceNanoBPruner:
         """
         Create layer groups for Bayesian optimization
         
-        Groups layers based on FeatherFace Nano architecture:
-        1. Backbone early layers
-        2. Backbone late layers  
-        3. CBAM layers (Woo et al. ECCV 2018)
-        4. BiFPN layers (Tan et al. CVPR 2020)
-        5. Grouped SSH layers
-        6. Detection heads
+        Groups layers based on FeatherFace Nano-B standard architecture + 2024 modules:
+        1. Backbone: MobileNet-0.25 layers
+        2. Standard CBAM: Attention layers (Woo et al. ECCV 2018)
+        3. Standard BiFPN: Feature pyramid layers (Tan et al. CVPR 2020)
+        4. Modules 2024: ScaleDecoupling, ASSN, MSE-FPN
+        5. Detection heads: Classification/bbox/landmark outputs
         """
         groups = {
-            'backbone_early': [],
-            'backbone_late': [],
-            'efficient_cbam': [],
-            'efficient_bifpn': [],
-            'grouped_ssh': [],
+            'backbone': [],
+            'standard_cbam': [],
+            'standard_bifpn': [],
+            'modules_2024': [],
             'detection_heads': []
         }
         
         for name, module in self.model.named_modules():
             if isinstance(module, nn.Conv2d):
-                if 'body' in name and ('conv1' in name or 'conv2' in name):
-                    if 'stage1' in name or 'stage2' in name:
-                        groups['backbone_early'].append(name)
-                    else:
-                        groups['backbone_late'].append(name)
+                # MobileNet backbone layers (all body.stageX layers)
+                if 'body' in name and 'stage' in name:
+                    groups['backbone'].append(name)
+                # Standard CBAM attention layers
                 elif 'cbam' in name.lower():
-                    groups['efficient_cbam'].append(name)
-                elif 'bifpn' in name.lower() or 'fpn' in name.lower():
-                    groups['efficient_bifpn'].append(name)
+                    groups['standard_cbam'].append(name)
+                # Standard BiFPN layers 
+                elif 'bifpn' in name.lower():
+                    groups['standard_bifpn'].append(name)
+                # 2024 specialized modules
+                elif any(module_2024 in name.lower() for module_2024 in ['scale_decoupling', 'assn', 'mse_fpn', 'semantic_enhancement']):
+                    groups['modules_2024'].append(name)
+                # SSH heads (standard implementation)
                 elif 'ssh' in name.lower():
-                    groups['grouped_ssh'].append(name)
+                    groups['standard_bifpn'].append(name)  # SSH fait partie du pipeline standard
+                # Detection heads
                 elif any(head in name for head in ['ClassHead', 'BboxHead', 'LandmarkHead']):
                     groups['detection_heads'].append(name)
         
@@ -507,14 +510,17 @@ class FeatherFaceNanoBPruner:
         
         for group_name in group_names:
             if 'detection_heads' in group_name:
-                # More conservative pruning for detection heads
+                # Conservative pruning for detection heads (critical outputs)
                 bounds.append((0.0, 0.3))
-            elif 'backbone_early' in group_name:
-                # Conservative pruning for early layers
+            elif 'backbone' in group_name:
+                # Conservative pruning for backbone (foundation layers)
+                bounds.append((0.0, 0.4))
+            elif 'modules_2024' in group_name:
+                # Conservative pruning for specialized 2024 modules
                 bounds.append((0.0, 0.4))
             else:
-                # More aggressive pruning for other layers
-                bounds.append((0.1, 0.6))
+                # Standard pruning for CBAM and BiFPN layers
+                bounds.append((0.1, 0.5))
         
         # Bayesian optimization loop
         best_config = None
@@ -611,8 +617,9 @@ class FeatherFaceNanoBPruner:
 
 # Example usage
 if __name__ == "__main__":
-    # Example configuration
-    config = create_nano_b_config(target_reduction=0.4)
-    print("FeatherFace Nano-B Configuration:")
-    for key, value in config.items():
-        print(f"  {key}: {value}")
+    # Use centralized configuration from data.config
+    from data.config import cfg_nano_b
+    print("FeatherFace Nano-B Configuration (from data.config):")
+    for key, value in cfg_nano_b.items():
+        if 'pruning' in key or 'bayesian' in key or 'target' in key:
+            print(f"  {key}: {value}")
