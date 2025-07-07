@@ -381,8 +381,8 @@ class FeatherFaceNanoB(nn.Module):
         # Small face detection enhancement (2024 research-based)
         # P3 level optimization for small face detection
         self.scale_decoupling_p3 = ScaleDecoupling(
-            channels=in_channels_list[0],  # P3: 64 channels
-            kernel_size=3
+            in_channels=in_channels_list[0],  # P3: 64 channels
+            reduction_ratio=4
         )
         
         # First CBAM attention - P3 gets special treatment
@@ -408,7 +408,7 @@ class FeatherFaceNanoB(nn.Module):
         
         # Semantic enhancement modules for better feature fusion (MSE-FPN 2024)
         self.semantic_enhancement = nn.ModuleList([
-            MSE_FPN(bifpn_channels, reduction=4) for _ in range(3)
+            MSE_FPN(bifpn_channels) for _ in range(3)
         ])
         
         # Second attention - P3 gets Scale Sequence Attention (ASSN 2024)
@@ -420,8 +420,8 @@ class FeatherFaceNanoB(nn.Module):
         
         # P3: Scale Sequence Attention for small face detection (ASSN 2024)
         self.assn_p3 = ASSN(
-            in_channels=bifpn_channels,
-            reduction=self.cfg.get('assn_reduction', 16)
+            channels=bifpn_channels,
+            scales=[80, 40, 20]
         )
         
         # SSH detection heads (Najibi et al. ICCV 2017) with optimization techniques

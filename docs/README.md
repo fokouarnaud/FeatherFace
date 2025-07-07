@@ -1,24 +1,40 @@
 # FeatherFace Documentation
 
-## 📂 Documentation Structure
+Comprehensive documentation for FeatherFace ultra-lightweight face detection models.
 
-### 🏗️ Architecture (Current - Enhanced 2024)
-- **[nano_b_enhanced_2024.md](architecture/nano_b_enhanced_2024.md)** - Main FeatherFace Nano-B Enhanced architecture documentation
-- **[enhanced_diagram.md](architecture/enhanced_diagram.md)** - Visual architecture diagrams and explanations
-- **[enhanced_diagram_guide.md](architecture/enhanced_diagram_guide.md)** - Detailed guide for architecture diagrams
-- **[enhanced_for_kids.md](architecture/enhanced_for_kids.md)** - Child-friendly explanation of the architecture
+## 📚 Documentation Sections
 
-### 📚 Guides
-- **[metaphors.md](guides/metaphors.md)** - Metaphors and visual explanations for understanding the architecture
+### 🏗️ [Architecture](architecture/)
+Complete technical architecture documentation
+- **[Nano-B Architecture](architecture/nano_b_2024.md)** - Current Nano-B Enhanced 2024 design
+- **[Visual Diagrams](architecture/nano_b_diagram.md)** - Architecture diagrams and explanations
+- **[Beginner Guide](architecture/nano_b_for_kids.md)** - Easy-to-understand explanations
+- **[Module Details](architecture/nano_b_diagram_guide.md)** - Individual component specifications
 
-### 🗃️ Legacy (Historical)
-- **V1_ARCHITECTURE_DIAGRAM.md** - Original V1 architecture documentation
-- **ARCHITECTURE_V1_OFFICIELLE.md** - Official V1 architecture specification
-- **ARCHITECTURE_PAYSAGE_SIMPLE.md** - Simple landscape architecture view
-- **REVUE_LITTERATURE_VISION_ORDINATEUR.md** - Computer vision literature review
+### 🔬 [Scientific Foundation](scientific/)
+Research papers and scientific validation
+- **[Research Papers](NANO_B_ARCHITECTURE.md)** - Complete bibliography (10 papers)
+- **[Literature Review](legacy/REVUE_LITTERATURE_VISION_ORDINATEUR.md)** - Computer vision foundation
+- **[Technical Validation](simulations/)** - Performance benchmarks and simulations
 
-### 🧪 Simulations
-- **[simulations/](simulations/)** - Numerical simulations and validation scripts
+### 🚀 [Deployment](deployment/)
+Production deployment guides and tools
+
+### 🎓 [Learning Resources](guides/)
+Tutorials and educational content
+- **[Metaphors & Analogies](guides/metaphors.md)** - Understanding through analogies
+- **[Getting Started](../notebooks/)** - Interactive Jupyter tutorials
+
+### ⚙️ [Setup](setup/)
+Installation and environment configuration
+
+### 🔧 [Technical Details](technical/)
+Advanced implementation documentation
+
+### 🧪 [Simulations](simulations/)
+Numerical validations and testing
+- **[Nano-B Validation](simulations/simul_nano_b.md)** - Performance simulations
+- **[V1 Baseline](simulations/simul_v1.md)** - Reference benchmarks
 
 ## 🎯 Current Architecture: FeatherFace Nano-B Enhanced 2024
 
