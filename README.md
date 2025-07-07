@@ -37,15 +37,15 @@ python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 
 
 ### V1 Baseline (Teacher)
 ```
-Input → MobileNet-0.25 → BiFPN → CBAM → SSH → Detection
+Input → MobileNet-0.25 → CBAM → BiFPN → CBAM → Detection Head (SSH + Channel Shuffle)
 ```
 
 ### Nano-B (Student with Bayesian Optimization)
 ```
 Input → MobileNet-0.25 → Feature Pyramid Network
-                          ├── P3 🔍: ScaleDecoupling → CBAM → BiFPN → MSE-FPN → ASSN → Detection
-                          ├── P4 👁️: CBAM → BiFPN → MSE-FPN → CBAM → Detection  
-                          └── P5 🔭: CBAM → BiFPN → MSE-FPN → CBAM → Detection
+                          ├── P3 🔍: ScaleDecoupling → CBAM → BiFPN → MSE-FPN → ASSN → Detection Head (SSH + Channel Shuffle)
+                          ├── P4 👁️: CBAM → BiFPN → MSE-FPN → CBAM → Detection Head (SSH + Channel Shuffle)
+                          └── P5 🔭: CBAM → BiFPN → MSE-FPN → CBAM → Detection Head (SSH + Channel Shuffle)
 ```
 
 **Key Modules** (2024 research):
