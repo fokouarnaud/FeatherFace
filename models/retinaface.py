@@ -84,12 +84,8 @@ class RetinaFace(nn.Module):
             ]
             out_channels = cfg['out_channel']
             
-            # PAPER COMPLIANT: First-stage CBAM on backbone features
-            # Applies both channel and spatial attention to refine features critical for accurate face detection
-            self.backbone_cbam_0 = CBAM(in_channels_list[0], 48)  # P3: refine high-res features for small faces
-            self.backbone_cbam_1 = CBAM(in_channels_list[1], 48)  # P4: refine balanced features for medium faces
-            self.backbone_cbam_2 = CBAM(in_channels_list[2], 48)  # P5: refine semantic features for large faces
-            self.backbone_relu = nn.ReLU()
+            # V1 BASELINE: Simple architecture without backbone CBAM
+            # Standard baseline implementation for comparison
             
             conv_channel_coef = {
                 # the channels of P3/P4/P5.
@@ -115,12 +111,8 @@ class RetinaFace(nn.Module):
                     )
               for _ in range(self.fpn_cell_repeats[self.compound_coef])])
             
-            # PAPER COMPLIANT: Second-stage CBAM after multiscale feature aggregation
-            # Further refines aggregated features for enhanced face detection accuracy
-            self.attention_cbam_0 = CBAM(out_channels, 48)  # P3: enhance aggregated small-face features
-            self.attention_cbam_1 = CBAM(out_channels, 48)  # P4: enhance aggregated medium-face features
-            self.attention_cbam_2 = CBAM(out_channels, 48)  # P5: enhance aggregated large-face features
-            self.attention_relu = nn.ReLU()
+            # V1 BASELINE: Simple architecture without additional CBAM
+            # Standard baseline implementation for comparison
 
             # PAPER COMPLIANT: Context Enhancement using SSH for multiscale contextual information
             # SSH modules capture adaptive context through parallel 3x3, 5x5, 7x7 deformable convolutions
@@ -166,39 +158,17 @@ class RetinaFace(nn.Module):
             out = self.body(inputs)
             out = list(out.values())  # [P3:64ch, P4:128ch, P5:256ch] - hierarchical features
             
-            # 2. CBAM Attention Mechanisms (First Stage): Channel + spatial attention on raw features
-            # Applies both channel and spatial attention to refine features critical for accurate face detection
-            backbone_attention_features = []
-            backbone_cbam_modules = [self.backbone_cbam_0, self.backbone_cbam_1, self.backbone_cbam_2]
-            
-            for i, (feat, cbam) in enumerate(zip(out, backbone_cbam_modules)):
-                # Apply both channel and spatial attention to identify critical features
-                att_feat = cbam(feat)  # Channel attention → Spatial attention
-                # Residual connection preserves original information
-                att_feat = att_feat + feat
-                # Activation for enhanced feature representation
-                att_feat = self.backbone_relu(att_feat)
-                backbone_attention_features.append(att_feat)
+            # 2. V1 BASELINE: Direct feature processing without CBAM
+            # Simple baseline for comparison with enhanced models
+            backbone_attention_features = out
             
             # 3. Multiscale Feature Aggregation (BiFPN): Strategic fusion for multi-scale face detection
             # High-resolution features (P3) help detect small faces, semantically rich features (P4,P5) enhance large faces
             bifpn_features = self.bifpn(backbone_attention_features)
             
-            # 4. CBAM Attention Mechanisms (Second Stage): Refine aggregated features
-            # Further applies attention to aggregated features for enhanced accuracy and robustness
-            final_attention_features = []
-            bifpn_cbam_modules = [self.attention_cbam_0, self.attention_cbam_1, self.attention_cbam_2]
-            
-            for i, (feat, cbam) in enumerate(zip(bifpn_features, bifpn_cbam_modules)):
-                # Apply attention to refined aggregated features
-                att_feat = cbam(feat)  # Enhanced channel + spatial attention
-                # Residual connection maintains information flow
-                att_feat = att_feat + feat
-                # Activation for optimized feature representation
-                att_feat = self.attention_relu(att_feat)
-                final_attention_features.append(att_feat)
-            
-            bif_features = final_attention_features
+            # 4. V1 BASELINE: Direct feature processing without additional CBAM
+            # Simple baseline for comparison with enhanced models
+            bif_features = bifpn_features
 
             # 5. Detection Heads: Context Enhancement using SSH for multiscale contextual information  
             # SSH modules use parallel deformable conv branches (3x3, 5x5, 7x7) for adaptive context
