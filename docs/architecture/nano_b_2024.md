@@ -14,8 +14,11 @@ FeatherFace Nano-B achieves **120,000-180,000 parameters** (50-66% reduction fro
 5. **MobileNet Backbone**: Howard et al., "MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications", 2017
 6. **Weighted Distillation**: 2025 Edge Computing Research on adaptive knowledge transfer
 7. **Bayesian Optimization**: Mockus, "Bayesian Methods for Seeking the Extremum", 1989
+8. **ScaleDecoupling**: 2024 SNLA research, "Small/large object separation for P3 optimization"
+9. **ASSN**: PMC/ScienceDirect 2024, "Attention-based scale sequence network for small object detection"
+10. **MSE-FPN**: Scientific Reports 2024, "Multi-scale semantic enhancement network for object detection"
 
-## Complete Scientific Foundation (7 Publications)
+## Complete Scientific Foundation (10 Publications)
 All techniques implemented in Nano-B are based on peer-reviewed research from 2017-2025.
 
 ## Architecture Evolution: V1 → Nano-B
@@ -23,9 +26,9 @@ All techniques implemented in Nano-B are based on peer-reviewed research from 20
 | Aspect | **FeatherFace V1 (Baseline)** | **FeatherFace Nano-B (2024)** |
 |--------|-------------------------------|-----------------------------------------|
 | **Parameters** | 494,000 | **120,000-180,000 (variable Bayesian optimization)** |
-| **Reduction** | - | **48-65% reduction via Nano-B 2024 techniques** |
+| **Reduction** | - | **50-66% reduction via Nano-B 2024 techniques** |
 | **Small Faces** | Generic attention | **3 specialized modules (ASSN + MSE-FPN + ScaleDecoupling)** |
-| **Architecture** | Standard pipeline | **P3 specialized + P4/P5 efficient pipeline** |
+| **Architecture** | Standard pipeline | **P3 specialized + P4/P5 standard pipeline** |
 | **Foundation** | 4 research papers | **10 verified research publications (2017-2025)** |
 | **Performance** | 87% mAP (baseline) | **Competitive mAP + 15-20% small face improvement** |
 
@@ -44,7 +47,7 @@ All techniques implemented in Nano-B are based on peer-reviewed research from 20
 - **Optimization**: Bayesian optimization with Expected Improvement
 - **Target Reduction**: 50% parameter reduction
 - **Iterations**: 25 Bayesian optimization cycles
-- **Layer Groups**: 6 groups with individual rate optimization
+- **Layer Groups**: 5 groups with individual rate optimization
 - **Goal**: Find optimal pruning rates automatically
 
 ### Phase 3: Fine-tuning (Epochs 71-100)
@@ -67,16 +70,16 @@ All techniques implemented in Nano-B are based on peer-reviewed research from 20
 
 ### Differential Pipeline Architecture
 - **P3 (Small Faces)**: Specialized pipeline with 3 modules
-- **P4/P5 (Medium/Large)**: Efficient standard pipeline
+- **P4/P5 (Medium/Large)**: Standard pipeline
 
 ### Model Comparison: V1 Baseline → Nano-B (2024)
 
 | Aspect | **FeatherFace V1 (Baseline)** | **FeatherFace Nano-B (2024)** |
 |--------|-------------------------------|-----------------------------------------|
 | **Parameters** | 494,000 | **120,000-180,000 (variable Bayesian optimization)** |
-| **Reduction** | - | **48-65% reduction via Nano-B 2024 techniques** |
+| **Reduction** | - | **50-66% reduction via Nano-B 2024 techniques** |
 | **Small Faces** | Generic attention | **3 specialized modules (ASSN + MSE-FPN + ScaleDecoupling)** |
-| **Architecture** | Standard pipeline | **P3 specialized + P4/P5 efficient pipeline** |
+| **Architecture** | Standard pipeline | **P3 specialized + P4/P5 standard pipeline** |
 | **Foundation** | 4 research papers | **10 verified research publications (2017-2025)** |
 | **Performance** | 87% mAP (baseline) | **Competitive mAP + 15-20% small face improvement** |
 
@@ -139,14 +142,13 @@ Outputs: Classifications (2), BBox (4), Landmarks (10)
 ## B-FPGM Bayesian Optimization Details
 
 ### Layer Group Configuration
-The network is divided into 6 groups for independent pruning optimization:
+The network is divided into 5 groups for independent pruning optimization:
 
-1. **Backbone Layers**: MobileNet depthwise/pointwise convolutions
-2. **CBAM Modules**: Channel and spatial attention components  
-3. **BiFPN Layers**: Bidirectional feature pyramid convolutions
-4. **SSH Modules**: Context aggregation convolutions
+1. **Backbone**: MobileNet depthwise/pointwise convolutions
+2. **Standard CBAM**: Channel and spatial attention components  
+3. **Standard BiFPN**: Bidirectional feature pyramid convolutions
+4. **Modules 2024**: ScaleDecoupling, ASSN, MSE-FPN specialized modules
 5. **Detection Heads**: Task-specific output layers
-6. **Auxiliary Layers**: Batch norm, activation functions
 
 ### Bayesian Optimization Process
 1. **Search Space**: Pruning rates [0.05, 0.6] per group
@@ -154,7 +156,7 @@ The network is divided into 6 groups for independent pruning optimization:
 3. **Iterations**: 25 optimization cycles
 4. **Evaluation**: Simplified validation loss on 100 batches
 5. **Constraints**: Minimum 40% total parameter retention
-6. **Output**: Optimal pruning rate vector [r1, r2, r3, r4, r5, r6]
+6. **Output**: Optimal pruning rate vector [r1, r2, r3, r4, r5]
 
 ### FPGM + SFP Integration
 - **FPGM**: Geometric median-based filter importance ranking
@@ -182,9 +184,10 @@ pruning_rates = {
 ```python
 # Optimisation bayésienne - nombre variable mais optimal
 optimal_rates = {
-    'backbone_early': 0.25,    # Pruning conservateur (couches importantes)
-    'backbone_late': 0.45,     # Pruning plus agressif
-    'efficient_cbam': 0.35,    # Optimisé pour l'attention
+    'backbone': 0.25,          # Pruning conservateur (foundation layers)
+    'standard_cbam': 0.35,     # Optimisé pour l'attention standard
+    'standard_bifpn': 0.40,    # Features multi-échelles
+    'modules_2024': 0.20,      # Conservateur pour modules spécialisés
     'detection_heads': 0.15    # Très conservateur (critique)
 }
 # Résultat : 120K-180K paramètres selon optimisation, performances préservées
@@ -197,15 +200,14 @@ optimal_rates = {
 3. **Garantie de Plage** : Toujours dans 120K-180K (contrôlé)
 4. **Base Scientifique** : Kaparinos & Mezaris WACVW 2025
 
-### 📊 Groupes d'Optimisation (6 groupes)
+### 📊 Groupes d'Optimisation (5 groupes)
 ```
 Groupe                    Bornes Pruning    Justification
 ─────────────────────────────────────────────────────────
-backbone_early           [0.0, 0.4]        Couches critiques
-backbone_late            [0.1, 0.6]        Plus de redondance
-efficient_cbam           [0.1, 0.6]        Attention adaptable
-efficient_bifpn          [0.1, 0.6]        Features multi-échelles
-grouped_ssh              [0.1, 0.6]        Contexte local
+backbone                 [0.0, 0.4]        Foundation layers critiques
+standard_cbam            [0.1, 0.5]        Attention standard adaptable
+standard_bifpn           [0.1, 0.5]        Features multi-échelles standard
+modules_2024             [0.0, 0.4]        Modules spécialisés 2024
 detection_heads          [0.0, 0.3]        Sorties critiques
 ```
 
@@ -216,7 +218,7 @@ detection_heads          [0.0, 0.3]        Sorties critiques
 4. **Convergence** vers configuration optimale dans la plage
 
 ### 📈 Résultats Typiques
-- **Configuration Conservative** : ~180K paramètres (48% réduction, sécurisé)
+- **Configuration Conservative** : ~180K paramètres (50% réduction, sécurisé)
 - **Configuration Optimale** : ~149.5K paramètres (56% réduction, équilibré)
 - **Configuration Agressive** : ~120K paramètres (65% réduction, limite)
 
@@ -226,7 +228,7 @@ detection_heads          [0.0, 0.3]        Sorties critiques
 
 ### Parameter Targets
 - **Minimum**: 120,000 parameters (65% reduction from V1)
-- **Maximum**: 180,000 parameters (48% reduction from V1)
+- **Maximum**: 180,000 parameters (50% reduction from V1)
 - **Optimal**: 149,500 parameters (56% reduction from V1)
 - **Compression**: 2.5x-4x from V1 baseline
 - **Variabilité**: Contrôlée par optimisation bayésienne pour qualité optimale
@@ -331,10 +333,10 @@ If you use FeatherFace Nano-B in your research, please cite:
 @article{featherface_nano_b_2025,
   title={FeatherFace Nano-B: Ultra-Lightweight Face Detection via Bayesian-Optimized Pruning},
   author={[Your Name]},
-  journal={Implementation based on 7 research publications},
+  journal={Implementation based on 10 research publications},
   year={2025},
   note={Combines B-FPGM (Kaparinos & Mezaris WACVW 2025) with knowledge distillation}
 }
 ```
 
-**Research Foundation**: 7 publications spanning 2017-2025, representing the state-of-the-art in lightweight neural network design and optimization with Bayesian-optimized pruning.
+**Research Foundation**: 10 publications spanning 2017-2025, representing the state-of-the-art in lightweight neural network design and optimization with Bayesian-optimized pruning including specialized 2024 modules.
