@@ -304,8 +304,8 @@ Optimized 32-channel heads (vs 56 in V1):
 P3 Processing:      CBAM only                   ScaleDecoupling → CBAM → BiFPN+MSE → ASSN
 P4 Processing:      CBAM only                   CBAM → BiFPN+MSE → CBAM  
 P5 Processing:      CBAM only                   CBAM → BiFPN+MSE → CBAM
-Techniques:         "Efficient" variants        Standard + 3 modules 2024
-Publications:       7 papers                    10 papers (2017-2025)
+Techniques:         Standard variants           Standard + 3 modules 2024
+Publications:       4 papers                    10 papers (2017-2025)
 Specialization:     Generic optimization        Small face specialization
 Small Face Gain:    Standard performance        +15-20% improvement
 ```

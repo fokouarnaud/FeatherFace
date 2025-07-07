@@ -83,7 +83,7 @@ Imagine une **usine magique Nano-B** qui regarde des photos et trouve tous les v
 - Il a 4 outils Enhanced magiques pour les petits visages
 
 ### 🧠 **Plus Intelligent Enhanced**
-- **10 cerveaux Enhanced** différents (au lieu de 7) travaillent ensemble
+- **10 cerveaux Enhanced** différents (au lieu de 4) travaillent ensemble
 - Chaque cerveau a une spécialité différente Enhanced
 
 ### ⚡ **Plus Rapide**
@@ -114,7 +114,7 @@ Imagine une **usine magique Nano-B** qui regarde des photos et trouve tous les v
 **R :** Imagine que tu cherches une petite pièce de monnaie dans ta chambre. Scale Decoupling enlève d'abord les gros jouets pour que tu puisses mieux chercher la petite pièce !
 
 **Q : Pourquoi c'est mieux qu'avant ?**
-**R :** Avant, la machine avait juste des yeux normaux. Maintenant Enhanced, l'œil détective 🔍 a des **super-pouvoirs Enhanced** pour les petits visages ! C'est comme avoir des lunettes magiques Enhanced !
+**R :** Avant, la machine avait juste des yeux normaux. Maintenant, l'œil détective 🔍 a des **super-pouvoirs standard** pour les petits visages ! C'est comme avoir des lunettes magiques standard !
 
 ---
 
