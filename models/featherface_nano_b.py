@@ -140,11 +140,16 @@ class WeightedKnowledgeDistillation(nn.Module):
         """
         losses = {}
         
-        # Extract outputs - handle different output orders between models
-        # Student (Nano-B): [classifications, bbox_regressions, landmarks]
-        cls_student, bbox_student, landmark_student = student_outputs
-        # Teacher (RetinaFace): (bbox_regressions, classifications, ldm_regressions)  
+        # Extract outputs - BOTH models use same order for consistency
+        # Both Teacher (RetinaFace) and Student (Nano-B): [bbox_regressions, classifications, landmarks]
+        
+        # Validate output format consistency
+        assert len(teacher_outputs) == 3, f"Teacher should have 3 outputs, got {len(teacher_outputs)}"
+        assert len(student_outputs) == 3, f"Student should have 3 outputs, got {len(student_outputs)}"
+        
+        # Extract with consistent order: [bbox_regressions, classifications, landmarks]
         bbox_teacher, cls_teacher, landmark_teacher = teacher_outputs
+        bbox_student, cls_student, landmark_student = student_outputs
         
         # Validate tensor shapes for safety
         assert cls_student.shape[-1] == 2, f"Student classification should have 2 classes, got {cls_student.shape[-1]}"
