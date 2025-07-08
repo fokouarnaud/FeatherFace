@@ -2,7 +2,7 @@
 
 ## 🎯 Objectif de la Simulation
 
-Cette simulation détaille le processus complet de forward pass de **FeatherFace Nano-B (2024)** avec des exemples numériques concrets sur une image **640x640x3**. Nano-B utilise **des techniques standard pour la détection de petits visages** et un **pruning bayésien** pour atteindre **120K-180K paramètres** (48-65% de réduction vs V1) avec des performances compétitives.
+Cette simulation détaille le processus complet de forward pass de **FeatherFace Nano-B (V1 Clone + Pruning)** avec des exemples numériques concrets sur une image **640x640x3**. Nano-B utilise **l'architecture V1 identique** puis un **pruning bayésien intelligent** pour atteindre **120K-180K paramètres** (64-76% de réduction) en préservant les optimisations V1.
 
 ## 📊 Configuration Nano-B 2024
 
@@ -10,18 +10,21 @@ Cette simulation détaille le processus complet de forward pass de **FeatherFace
 cfg_nano_b = {
     'image_size': 640,
     'in_channel': 32,
-    'out_channel': 32,  # Optimisé pour 120-180K paramètres (variable)
+    'out_channel': 56,  # IDENTICAL to V1 (100% compatibility initially)
+    'bifpn_channels': 74,  # IDENTICAL to V1 (74 channels before pruning)
     'min_sizes': [[16, 32], [64, 128], [256, 512]], 
     'steps': [8, 16, 32],
     'variance': [0.1, 0.2],
     
-    # Nano-B 2024: Core optimizations
-    'efficient_modules': True,
+    # Nano-B Strategy: V1 Clone + Intelligent Pruning
+    'v1_identical_start': True,
     'bayesian_pruning': True,
-    'knowledge_distillation': True
+    'knowledge_distillation': True,
+    'preserve_v1_optimizations': True,
     
-    # Pruning Bayésien B-FPGM (inchangé)
-    'target_reduction': 0.5,
+    # Pruning Bayésien B-FPGM (intelligent decisions)
+    'start_parameters': 494000,  # V1-identical initially
+    'target_reduction': 0.7,     # 70% intelligent reduction
     'bayesian_iterations': 25,
     'acquisition_function': 'ei',
 }
@@ -29,15 +32,15 @@ cfg_nano_b = {
 
 ## 🔬 Techniques Scientifiques Nano-B 2024
 
-### Architecture Standard : V1 → Nano-B
+### Architecture Strategy : V1 → Nano-B
 
-| Composant | **V1 Baseline** | **Nano-B Standard** |
-|-----------|-------------------|--------------------|
-| **P3 (Petits Visages)** | CBAM standard | **CBAM + BiFPN standard** |
-| **P4/P5 (Moyens/Gros)** | CBAM + BiFPN standard | **CBAM + BiFPN standard** |
-| **Fusion Features** | BiFPN standard | **BiFPN standard** |
-| **Techniques** | Training standard | **Bayesian Pruning + Knowledge Distillation** |
-| **Paramètres** | 494K | **120K-180K (48-65% réduction)** |
+| Phase | **V1 Baseline** | **Nano-B Strategy** |
+|-------|-----------------|---------------------|
+| **Start** | CBAM + BiFPN + SSH + 56 channels | **IDENTICAL to V1 (100% compatibility)** |
+| **Processing** | Training standard | **Bayesian Analysis + Intelligent Pruning** |
+| **Decisions** | Manual architecture | **AI-driven optimization** |
+| **Result** | 494K parameters | **120K-180K (64-76% intelligent reduction)** |
+| **Preserved** | Original optimizations | **ALL V1 optimizations + efficiency** |
 
 ### Techniques Implémentées
 

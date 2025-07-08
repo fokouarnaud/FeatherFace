@@ -6,9 +6,9 @@
 Input Image (640×640×3)
          ↓
 ╔════════════════════════════════════════════════════════════════════════════════╗
-║                     FEATHERFACE NANO-B STANDARD                                   ║
-║                      (120,000-180,000 Parameters Total)                       ║
-║              🎯 Standard Petits Visages + Bayesian Pruning                 ║
+║                     FEATHERFACE NANO-B (V1 CLONE + PRUNING)                   ║
+║                  Start: ~494K → Post-Pruning: 120-180K Parameters             ║
+║              🧠 V1-Identical Architecture + Bayesian Intelligence              ║
 ╚════════════════════════════════════════════════════════════════════════════════╝
          ↓
 ┌────────────────────────────────────────────────────────────────────────────────┐
@@ -286,13 +286,19 @@ SSH Standard (Najibi et al. ICCV 2017) per level:
 └── Per Level: ~4,000 params × 3 levels = ~12,000 params
 ```
 
-### Detection Heads Enhanced (~1,600 params, 1.1%)
+### Detection Heads V1-Identical (Pre-Pruning)
 ```
-Optimized 32-channel heads (vs 56 in V1):
-├── Classification: Conv2d(32, 6, 1×1) × 3 levels       # ~576 params
-├── BBox Regression: Conv2d(32, 12, 1×1) × 3 levels     # ~1,152 params  
-├── Landmarks: Conv2d(32, 30, 1×1) × 3 levels           # ~2,880 params
-└── Total Detection Heads: ~1,600 parameters (43% reduction vs V1)
+V1-Identical 56-channel heads (START configuration):
+├── Classification: Conv2d(56, 4, 1×1) × 3 levels       # ~672 params
+├── BBox Regression: Conv2d(56, 8, 1×1) × 3 levels      # ~1,344 params  
+├── Landmarks: Conv2d(56, 20, 1×1) × 3 levels           # ~3,360 params
+└── Total Detection Heads: ~5,376 parameters (IDENTICAL to V1)
+
+Post-Bayesian Pruning (AUTOMATIC optimization):
+├── Intelligent channel reduction: 56 → optimal channels
+├── Preserved structure: SSH + ChannelShuffle maintained
+├── Smart parameter allocation: AI decides optimal configuration
+└── Final result: Efficient heads preserving V1's proven design
 ```
 
 ## 🎯 Enhanced vs Original Comparison

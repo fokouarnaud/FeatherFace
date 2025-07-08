@@ -2,15 +2,21 @@
 
 Advanced technical details and implementation guides for FeatherFace development.
 
-## 🔧 Technical Overview
+## 🔧 Technical Overview: V1 Clone + Intelligent Pruning Strategy
 
-Comprehensive technical documentation for developers, researchers, and contributors working on FeatherFace architectures.
+Comprehensive technical documentation for the **FeatherFace Nano-B** approach: start with V1-identical architecture, then apply Bayesian-optimized pruning for intelligent 64-76% parameter reduction.
+
+### Core Strategy Implementation
+- **Phase 1**: V1-identical start (494K parameters, 100% compatibility)
+- **Phase 2**: Bayesian analysis + intelligent pruning decisions
+- **Phase 3**: Optimized result (120-180K parameters, preserved V1 optimizations)
+- **Scientific Foundation**: V1's proven 4-paper foundation + Bayesian optimization
 
 ### Code Architecture
-- **Models**: V1 baseline and Nano-B architectures
-- **Training**: Knowledge distillation and Bayesian optimization pipelines
-- **Evaluation**: WIDERFace benchmarking and performance analysis
-- **Deployment**: Multi-format export and optimization
+- **Models**: V1 baseline and Nano-B (V1 Clone + Pruning) architectures
+- **Training**: Knowledge distillation V1→Nano-B + B-FPGM Bayesian pruning
+- **Evaluation**: WIDERFace benchmarking with V1 compatibility validation
+- **Deployment**: Multi-format export maintaining V1 optimization patterns
 
 ## 📚 Technical Documents
 
@@ -80,60 +86,66 @@ FeatherFace/
 ### Key Components
 
 #### Model Architecture
-- **RetinaFace**: V1 baseline implementation
-- **FeatherFaceNanoB**: Ultra-lightweight variant with Bayesian optimization
-- **Specialized Modules**: ASSN, MSE-FPN, ScaleDecoupling (2024 research)
+- **RetinaFace (V1)**: Proven baseline (SSH + CBAM + BiFPN + 56 channels)
+- **FeatherFaceNanoB**: V1-identical start + Bayesian pruning intelligence
+- **Strategy**: Preserve V1's validated optimizations, let AI decide parameter reduction
+- **Configuration**: cfg_nano_b starts identical to cfg_mnet, then intelligent optimization
 
 #### Training System
-- **Knowledge Distillation**: Teacher-student framework
-- **Bayesian Optimization**: Automated pruning rate discovery
-- **Multi-GPU Support**: Distributed training capabilities
+- **Knowledge Distillation**: V1 teacher → Nano-B student (proven architecture transfer)
+- **Bayesian Optimization**: Automated pruning decisions (avoid manual architecture changes)
+- **B-FPGM Pruning**: Intelligent parameter reduction while preserving V1's design principles
+- **Multi-GPU Support**: Distributed training with architecture compatibility
 
 #### Evaluation Framework
-- **WIDERFace Integration**: Official evaluation protocol
-- **Performance Metrics**: mAP, parameter count, inference speed
-- **Comparison Tools**: V1 vs Nano-B analysis
+- **WIDERFace Integration**: Official evaluation protocol with V1 compatibility checks
+- **Performance Metrics**: Parameter reduction % + preserved mAP + V1 optimization retention
+- **Comparison Tools**: V1 vs Nano-B with emphasis on architectural preservation analysis
 
 ## 🎯 API Reference
 
 ### Core Classes
 ```python
-# Model Creation
-from models.retinaface import RetinaFace
-from models.featherface_nano_b import create_featherface_nano_b
+# Model Creation - V1 Clone + Pruning Strategy
+from models.retinaface import RetinaFace  # V1 teacher model
+from models.featherface_nano_b import create_featherface_nano_b  # V1-identical start
 
-# Configuration
-from data.config import cfg_mnet, cfg_nano_b
+# Configuration - Strategic Alignment
+from data.config import cfg_mnet, cfg_nano_b  # cfg_nano_b starts IDENTICAL to cfg_mnet
 
-# Training Utilities
-from layers.modules_distill import DistillationLoss
-from models.pruning_b_fpgm import FeatherFaceNanoBPruner
+# Training Utilities - Intelligent Optimization
+from layers.modules_distill import DistillationLoss  # V1→Nano-B knowledge transfer
+from models.pruning_b_fpgm import FeatherFaceNanoBPruner  # Bayesian-optimized pruning
 ```
 
-### Key Functions
-- **Model Loading**: Load pre-trained checkpoints
-- **Inference**: Run face detection on images
-- **Training**: Knowledge distillation pipeline
-- **Export**: Convert to deployment formats
+### Key Strategy Functions
+- **V1 Architecture Preservation**: Maintain SSH + CBAM + BiFPN + 56 channels initially
+- **Bayesian Intelligence**: Automated pruning decisions vs manual architecture changes
+- **Knowledge Transfer**: V1 teacher trains Nano-B student with identical start
+- **Smart Parameter Reduction**: AI-driven optimization preserving V1's proven optimizations
 
 ## 🧪 Testing & Validation
 
-### Test Coverage
-- **Unit Tests**: Individual component testing
-- **Integration Tests**: End-to-end workflow validation
-- **Performance Tests**: Speed and accuracy benchmarks
-- **Regression Tests**: Ensure consistent behavior
+### Test Coverage - V1 Compatibility Focus
+- **Architecture Tests**: V1 vs Nano-B initial compatibility validation
+- **Integration Tests**: End-to-end V1 Clone + Pruning workflow
+- **Performance Tests**: Parameter reduction with preserved mAP benchmarks
+- **Regression Tests**: Ensure V1 optimizations remain functional
 
-### Validation Tools
+### Validation Tools - Strategic Testing
 ```bash
-# Run all tests
-python -m pytest tests/ -v
+# Validate V1 Clone compatibility
+python validate_nano_b.py  # V1 architectural preservation check
 
-# Validate models
-python scripts/validation/validate_model.py --version nano_b
+# Test V1 vs Nano-B comparison
+python test_v1_nano_b_comparison.py  # Performance with preserved optimizations
 
-# Performance benchmarks
-python scripts/validation/benchmark_performance.py
+# Comprehensive validation
+python validate_claims.py --detailed  # Strategy validation
+
+# Architecture compatibility check
+python -c "from data.config import cfg_mnet, cfg_nano_b; 
+           print('V1-identical start:', cfg_nano_b['out_channel'] == 56)"
 ```
 
 ## 🔧 Development Workflow

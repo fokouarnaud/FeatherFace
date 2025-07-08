@@ -2,24 +2,29 @@
 
 ## Overview
 
-FeatherFace Nano-B is an ultra-lightweight face detection model that combines Bayesian-Optimized Soft FPGM Pruning with Weighted Knowledge Distillation to achieve 120-180K parameters (50-66% reduction from baseline) while maintaining competitive accuracy.
+FeatherFace Nano-B uses an Enhanced-First strategy: **start with Enhanced architecture** (all 2024 modules active: ScaleDecoupling + ASSN + MSE-FPN + V1 base), then apply Bayesian-Optimized Soft FPGM Pruning to achieve 120-180K parameters (80-81% intelligent reduction) while preserving the best components through automated optimization.
 
-## Architecture Components
+## Architecture Strategy
 
-### 1. MobileNetV1 0.25× Backbone (~85K parameters)
-- Lightweight feature extractor optimized for mobile deployment
-- 0.25× width multiplier for ultra-efficiency
-- Depthwise separable convolutions for parameter reduction
+### Phase 1: Enhanced Architecture Start (~619K parameters)
+- **V1 Base Foundation**: MobileNetV1 0.25×, CBAM, BiFPN, SSH, Detection Heads (out_channel=56)
+- **ScaleDecoupling Module**: P3 small/large object separation (SNLA 2024)
+- **ASSN Module**: P3 specialized attention (PMC/ScienceDirect 2024)  
+- **MSE-FPN Module**: Multi-scale semantic enhancement (Scientific Reports 2024)
+- **ChannelShuffle**: Parameter-free information mixing (preserved from V1)
+- **Complete Integration**: All 2024 modules active on proven V1 foundation
 
-### 2. Efficient Modules Stack
-- **Efficient CBAM** (~8K parameters): Channel and spatial attention with reduction ratio 8
-- **Efficient BiFPN** (~45K parameters): Bi-directional feature pyramid with 72 channels
-- **Grouped SSH** (~25K parameters): Grouped single-shot hierarchical detection with 2 groups
+### Phase 2: Bayesian Pruning Analysis
+- **B-FPGM Algorithm**: Analyzes complete Enhanced architecture importance automatically
+- **Intelligent Decisions**: Which 2024 modules to keep? Which V1 components to preserve? Which channels to reduce?
+- **Automated Optimization**: No manual cuts, AI-driven reduction of all 619K components
+- **Preserved Best**: Keeps most valuable components from Enhanced architecture
 
-### 3. Detection Heads (~25K parameters)
-- Bounding box regression
-- Classification (face/background)
-- Facial landmark detection (5 points)
+### Phase 3: Final Pruned Enhanced Architecture (120-180K parameters)
+- **Intelligent Enhanced Pruning**: Preserves most valuable Enhanced components
+- **Smart Module Selection**: Automated decision on which 2024 modules to keep/reduce
+- **Optimized V1 Base**: Efficient core while preserving proven architecture
+- **Preserved Best Techniques**: Keeps most impactful optimization techniques from Enhanced
 
 ## Scientific Innovations
 

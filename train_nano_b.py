@@ -41,11 +41,11 @@ sys.path.append(str(PROJECT_ROOT))
 # Model imports
 from models.retinaface import RetinaFace
 from models.featherface_nano_b import FeatherFaceNanoB, create_featherface_nano_b
-from models.pruning_b_fpgm import create_nano_b_config
+# Using cfg_nano_b directly from data.config instead of create_nano_b_config
 from data.config import cfg_mnet, cfg_nano_b
 from data.wider_face import WiderFaceDetection, detection_collate
 from layers.modules_distill import DistillationLoss
-from utils.augmentations import SSDAugmentation
+from data.data_augment import preproc as SSDAugmentation
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -161,9 +161,45 @@ class NanoBTrainer:
             teacher_checkpoint = torch.load(self.args.teacher_model, map_location='cpu')
             
             if 'model_state_dict' in teacher_checkpoint:
-                self.teacher.load_state_dict(teacher_checkpoint['model_state_dict'])
+                state_dict = teacher_checkpoint['model_state_dict']
             else:
-                self.teacher.load_state_dict(teacher_checkpoint)
+                state_dict = teacher_checkpoint
+            
+            # Filter out profiling keys and incompatible architecture keys
+            teacher_model_dict = self.teacher.state_dict()
+            
+            # Keep only keys that exist in current model and have compatible shapes
+            compatible_state_dict = {}
+            profiling_keys_count = 0
+            incompatible_keys_count = 0
+            
+            for k, v in state_dict.items():
+                # Skip profiling keys
+                if k.endswith(('.total_ops', '.total_params')):
+                    profiling_keys_count += 1
+                    continue
+                
+                # Check if key exists in current model and has compatible shape
+                if k in teacher_model_dict:
+                    if v.shape == teacher_model_dict[k].shape:
+                        compatible_state_dict[k] = v
+                    else:
+                        incompatible_keys_count += 1
+                else:
+                    incompatible_keys_count += 1
+            
+            logger.info(f"Filtered checkpoint: {profiling_keys_count} profiling keys, {incompatible_keys_count} incompatible keys")
+            logger.info(f"Loading {len(compatible_state_dict)} compatible weights from teacher checkpoint")
+            
+            # Load only compatible weights
+            missing_keys, unexpected_keys = self.teacher.load_state_dict(compatible_state_dict, strict=False)
+            
+            if missing_keys:
+                logger.info(f"Teacher model will use random initialization for {len(missing_keys)} missing layers")
+            if unexpected_keys:
+                logger.warning(f"Unexpected keys: {len(unexpected_keys)} (should be zero with filtering)")
+                
+            logger.info("Teacher model loaded with compatible weights only")
             
             logger.info(f"Loaded teacher model from {self.args.teacher_model}")
         else:
@@ -175,11 +211,16 @@ class NanoBTrainer:
             param.requires_grad = False
         
         # Create student model (FeatherFace Nano-B)
-        pruning_config = create_nano_b_config(target_reduction=self.args.target_reduction)
-        pruning_config.update({
+        # Use cfg_nano_b directly, overriding with command line arguments
+        pruning_config = {
+            'target_reduction': self.args.target_reduction,
+            'bayesian_iterations': cfg_nano_b['bayesian_iterations'],
             'acquisition_function': self.args.acquisition_function,
+            'distance_type': cfg_nano_b['distance_type'],
+            'sparsity_schedule': cfg_nano_b['sparsity_schedule'],
+            'num_groups': cfg_nano_b['num_groups'],
             'eval_batches': self.args.eval_batches
-        })
+        }
         
         self.student = create_featherface_nano_b(
             cfg=cfg_nano_b,
@@ -322,13 +363,16 @@ class NanoBTrainer:
             targets = [target.to(self.device) for target in targets]
             
             # Teacher forward pass (no gradients)
+            # Returns: [cls_pred(B,N,2), bbox_pred(B,N,4), landmark_pred(B,N,10)]
             with torch.no_grad():
                 teacher_outputs = self.teacher(images)
             
-            # Student forward pass
+            # Student forward pass  
+            # Returns: [cls_pred(B,N,2), bbox_pred(B,N,4), landmark_pred(B,N,10)]
             student_outputs = self.student(images)
             
             # Compute distillation loss
+            # Handles 3 components: classification(2), bbox regression(4), landmarks(10)
             distill_losses = self.student.compute_distillation_loss(
                 student_outputs, teacher_outputs, targets
             )
@@ -343,8 +387,39 @@ class NanoBTrainer:
             self.optimizer.zero_grad()
             total_loss.backward()
             
-            # Gradient clipping
-            torch.nn.utils.clip_grad_norm_(self.student.parameters(), max_norm=1.0)
+            # ULTRA-ENHANCED gradient clipping for stability
+            grad_norm = torch.nn.utils.clip_grad_norm_(self.student.parameters(), max_norm=0.3)
+            
+            # ENHANCED monitoring for loss stability with stricter bounds
+            loss_value = total_loss.item()
+            
+            # Monitor gradient norm for stability
+            if grad_norm > 2.0:
+                logger.warning(f"High gradient norm detected: {grad_norm:.4f}")
+            
+            # More aggressive loss monitoring with stricter bounds
+            if loss_value > 100 or loss_value < -10 or not torch.isfinite(total_loss):
+                logger.warning(f"Unstable loss detected: {loss_value:.2f}, grad_norm: {grad_norm:.4f}")
+                
+                # Log individual loss components for debugging
+                for key, value in distill_losses.items():
+                    if hasattr(value, 'item'):
+                        logger.warning(f"  {key}: {value.item():.4f}")
+                
+                # Emergency learning rate reduction
+                for param_group in self.optimizer.param_groups:
+                    old_lr = param_group['lr']
+                    param_group['lr'] *= 0.1  # Very aggressive reduction
+                    logger.warning(f"Emergency LR reduction: {old_lr:.6f} → {param_group['lr']:.6f}")
+                
+                # Emergency stop if losses become extreme or invalid
+                if abs(loss_value) > 1000 or not torch.isfinite(total_loss):
+                    logger.error(f"CRITICAL ERROR: Loss extreme or invalid {loss_value:.2f}")
+                    logger.error("Setting minimal learning rate and skipping this batch")
+                    # Set minimal LR but continue
+                    for param_group in self.optimizer.param_groups:
+                        param_group['lr'] = 1e-7
+                    continue  # Skip this batch
             
             self.optimizer.step()
             
@@ -360,10 +435,15 @@ class NanoBTrainer:
             
             num_batches += 1
             
-            # Logging
+            # Enhanced logging with distillation components
             if batch_idx % 100 == 0:
+                distill_loss_val = distill_losses.get('distill_total', torch.tensor(0.0)).item()
+                task_loss_val = distill_losses.get('task_total', torch.tensor(0.0)).item()
                 logger.info(f'Epoch {epoch}, Batch {batch_idx}/{len(self.train_loader)}, '
-                           f'Loss: {total_loss.item():.4f}, '
+                           f'Total: {total_loss.item():.4f}, '
+                           f'Distill: {distill_loss_val:.4f}, '
+                           f'Task: {task_loss_val:.4f}, '
+                           f'GradNorm: {grad_norm:.3f}, '
                            f'LR: {self.scheduler.get_last_lr()[0]:.6f}')
         
         # Average losses

@@ -2,15 +2,15 @@
 
 Complete technical architecture specifications for FeatherFace models.
 
-## 🏗️ Current Architecture: Nano-B Enhanced 2024
+## 🏗️ Current Strategy: Enhanced Nano-B (Enhanced-First + Intelligent Pruning)
 
-**Production-ready ultra-lightweight face detection** with specialized small face optimization.
+**Production-ready ultra-lightweight face detection** using Enhanced architecture (all 2024 modules) + Bayesian optimization.
 
 ### Key Specifications
-- **Parameters**: 120-180K (variable Bayesian optimization)
-- **Reduction**: 50-66% from V1 baseline (494K)
-- **Scientific Foundation**: 10 research publications (2017-2025)
-- **Specialization**: Differential P3/P4/P5 processing pipeline
+- **Start**: Enhanced 619K parameters (ScaleDecoupling + ASSN + MSE-FPN + V1 base, out_channel=56)
+- **Post-Pruning**: 120-180K (80-81% intelligent reduction from Enhanced)
+- **Strategy**: Enhanced-complete + automated Bayesian optimization + ablation validation
+- **Scientific Foundation**: V1 proven base + 2024 modules + Bayesian optimization
 
 ## 📚 Architecture Documents
 
@@ -24,9 +24,9 @@ Complete technical architecture specifications for FeatherFace models.
 - **[Understanding Through Metaphors](../guides/metaphors.md)** - Real-world analogies
 
 ### 📊 Comparison & Analysis
-- **V1 vs Nano-B**: Parameter reduction analysis
-- **Module Efficiency**: Individual component performance
-- **Pipeline Optimization**: P3 specialization benefits
+- **V1 (489K) vs Enhanced (619K) vs Pruned (120-180K)**: Complete parameter analysis
+- **Ablation Studies**: Individual 2024 module contributions (ScaleDecoupling, ASSN, MSE-FPN)
+- **Enhanced Pipeline**: P3 specialization + multi-scale semantic enhancement benefits
 
 ## 🔬 Scientific Components (2024)
 
@@ -44,26 +44,33 @@ Complete technical architecture specifications for FeatherFace models.
 
 ## 🎯 Architecture Highlights
 
-### Differential Processing Pipeline
+### Enhanced Processing Pipeline (All Modules Active)
 ```
-P3 (Small Faces):  ScaleDecoupling → CBAM → BiFPN → MSE-FPN → ASSN → Detection
-P4 (Medium):       CBAM → BiFPN → MSE-FPN → CBAM → Detection
-P5 (Large):        CBAM → BiFPN → MSE-FPN → CBAM → Detection
+Enhanced Nano-B Default (619K parameters):
+Input → MobileNet-0.25 → CBAM → BiFPN → MSE-FPN → SSH → Detection (out_channel=56)
+                                  ↓          ↓
+                        ScaleDecoupling   ASSN (P3)
+                                  ↓
+                           ChannelShuffle + 3 outputs
+                                  ↓
+                      Bayesian Pruning (619K → 120-180K)
 ```
 
 ### Innovation Summary
-- **P3 Specialization**: 3 specialized modules for small face detection
-- **P4/P5 Standard**: Proven efficient processing for medium/large objects
-- **Bayesian Optimization**: Automated parameter reduction (25 iterations)
-- **Knowledge Distillation**: V1 teacher → Nano-B student training
+- **Enhanced-First Approach**: Start with all 2024 modules active (619K parameters)
+- **Bayesian Optimization**: Intelligent reduction of complete Enhanced architecture (25 iterations)
+- **Ablation Validation**: Scientific study of individual module contributions
+- **Knowledge Distillation**: V1 teacher → Enhanced Nano-B student training
 
 ## 🔄 Architecture Evolution
 
-### V1 Baseline → Nano-B Enhanced
-- **Parameter Reduction**: 494K → 120-180K (50-66% reduction)
-- **Technique Expansion**: 4 → 10 scientific techniques
-- **Processing**: Generic → Differential pipeline
-- **Target**: Accuracy → Efficiency + specialized performance
+### V1 Baseline → Enhanced Nano-B → Pruned Enhanced
+- **V1 Teacher**: 489K parameters (proven baseline)
+- **Enhanced Nano-B**: 619K parameters (all 2024 modules active)
+- **Pruned Enhanced**: 120-180K parameters (80-81% intelligent reduction)
+- **Technique Expansion**: 4 → 7 scientific techniques (2017-2025)
+- **Processing**: Generic → Enhanced specialized pipeline
+- **Target**: Accuracy → Enhanced performance + ultra-efficiency + ablation validation
 
 ## 📖 Quick Navigation
 

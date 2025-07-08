@@ -4,7 +4,7 @@ Research papers and scientific validation for FeatherFace architectures.
 
 ## 🔬 Research Foundation (10 Publications)
 
-FeatherFace Nano-B is built on **10 peer-reviewed research publications** spanning 2017-2025.
+FeatherFace Nano-B strategy combines **V1's proven 4-paper foundation** with **Bayesian optimization research** for intelligent architecture reduction.
 
 ### Core Architecture Foundation (2017-2020)
 1. **MobileNet**: Howard et al. (2017) - Lightweight CNN backbone
@@ -12,13 +12,15 @@ FeatherFace Nano-B is built on **10 peer-reviewed research publications** spanni
 3. **BiFPN**: Tan et al. CVPR 2020 - Bidirectional Feature Pyramid Networks
 4. **SSH**: Najibi et al. ICCV 2017 - Single Shot Hierarchical detection
 
-### Advanced Techniques (2023-2025)
-5. **Knowledge Distillation**: Li et al. CVPR 2023 - Feature-based distillation for face recognition
-6. **B-FPGM Pruning**: Kaparinos & Mezaris WACVW 2025 - Bayesian-optimized soft pruning
-7. **ASSN**: PMC/ScienceDirect 2024 - Attention-based scale sequence network (+1.9% AP)
-8. **MSE-FPN**: Scientific Reports 2024 - Multi-scale semantic enhancement (+43.4 AP)
-9. **Scale Decoupling**: 2024 research - SNLA approach for P3 optimization
-10. **Bayesian Optimization**: Mockus 1989 - Automated hyperparameter optimization
+### Nano-B Strategy Foundation (1989-2025)
+5. **Bayesian Optimization**: Mockus 1989 - Automated hyperparameter optimization foundation
+6. **Knowledge Distillation**: Li et al. CVPR 2023 - Feature-based distillation for face recognition
+7. **B-FPGM Pruning**: Kaparinos & Mezaris WACVW 2025 - Bayesian-optimized soft structured pruning
+
+### Key Scientific Innovation: Intelligent Architecture Preservation
+- **V1 Foundation Preserved**: All 4 core techniques (MobileNet, CBAM, BiFPN, SSH) maintained
+- **Bayesian Intelligence Added**: Automated pruning decisions vs manual architecture changes
+- **Scientific Approach**: Base proven architecture + intelligent reduction vs reinvention
 
 ## 📚 Detailed Research Documentation
 

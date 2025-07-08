@@ -1,6 +1,6 @@
 # Scripts Directory
 
-This directory contains organized scripts for FeatherFace V1 baseline and Nano-B 2024 operations.
+This directory contains organized scripts for **FeatherFace V1 baseline** and **Nano-B (V1 Clone + Intelligent Pruning)** operations.
 
 ## 📁 Directory Structure
 
@@ -24,13 +24,13 @@ scripts/
 
 ## 🚀 Quick Usage
 
-### Training
+### Training - V1 Clone + Pruning Strategy
 ```bash
-# V1 baseline training (teacher model)
+# V1 baseline training (teacher model with proven SSH + CBAM + BiFPN + 56 channels)
 python train_v1.py --training_dataset ./data/widerface/train/label.txt --network mobile0.25
 
-# Nano-B Enhanced 2024 training with specialized small face detection
-python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 400
+# Nano-B training (V1-identical start + Bayesian pruning intelligence)
+python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --target_reduction 0.5 --bayesian_iterations 25
 ```
 
 ### Setup
@@ -69,19 +69,19 @@ python scripts/detection/detect.py --image path/to/image.jpg --model nano_b
 
 ## 📖 Detailed Information
 
-### Training Scripts
-- **train.py**: V1 baseline training script (teacher model for knowledge distillation)
-- **../train_nano_b.py**: Nano-B Enhanced 2024 training with specialized small face pipeline
+### Training Scripts - Strategic Architecture Preservation
+- **train.py**: V1 baseline training (teacher model: SSH + CBAM + BiFPN + 56 channels)
+- **../train_nano_b.py**: Nano-B training (V1-identical start + Bayesian pruning intelligence)
 
-### Validation Scripts
-- **validate_parameters.py**: Validates model parameter counts against targets
-- **final_validation.py**: Comprehensive model validation including architecture, performance, and compatibility
+### Validation Scripts - V1 Compatibility Testing
+- **validate_parameters.py**: Validates V1→Nano-B parameter reduction with preserved optimizations
+- **final_validation.py**: Comprehensive V1 architectural preservation and Bayesian optimization validation
 
-### Deployment Scripts
-- **export_dynamic_onnx.py**: Exports models to ONNX format with dynamic input sizes
+### Deployment Scripts - V1 Pattern Preservation
+- **export_dynamic_onnx.py**: Exports models maintaining V1 optimization patterns in efficient format
 
-### Detection Scripts
-- **detect.py**: Face detection inference supporting V1 baseline and Nano-B Enhanced models
+### Detection Scripts - V1/Nano-B Compatibility
+- **detect.py**: Face detection supporting V1 (494K) and Nano-B (120-180K with preserved optimizations)
 
 ## 🔗 Related Documentation
 
@@ -99,7 +99,7 @@ python scripts/detection/detect.py --image path/to/image.jpg --model nano_b
 ---
 
 **Note**: For interactive development, prefer using the Jupyter notebooks:
-- `notebooks/01_train_evaluate_featherface.ipynb` for V1 baseline
-- `notebooks/04_train_evaluate_featherface_nano_b.ipynb` for Nano-B Enhanced 2024 training
+- `notebooks/01_train_evaluate_featherface.ipynb` for V1 baseline (teacher model with proven optimizations)
+- `notebooks/04_train_evaluate_featherface_nano_b.ipynb` for Nano-B (V1 Clone + Bayesian pruning)
 
-These scripts are optimized for command-line usage and batch processing.
+These scripts are optimized for command-line usage and batch processing with V1 architectural preservation focus.

@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 
-**Scientifically grounded face detection with extreme efficiency**: from 494K parameters (V1) to 120-180K parameters (Nano-B) using Bayesian-optimized pruning and specialized small face detection.
+**Scientifically grounded face detection with extreme efficiency**: from Enhanced 619K parameters (all 2024 modules) to 120-180K parameters (Nano-B) using intelligent Bayesian pruning + ablation studies.
 
 ## 🚀 Quick Start
 
@@ -25,34 +25,47 @@ python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth --epochs 
 
 | Model | Parameters | Size | mAP (Easy) | Scientific Techniques | Use Case |
 |-------|------------|------|------------|----------------------|----------|
-| **V1 (Baseline)** | 494K | 1.9MB | 87.0% | 4 papers (2017-2020) | Teacher model, high accuracy |
-| **Nano-B** | 120-180K | 0.6-0.9MB | **Competitive** | **10 papers (2017-2025)** | **Edge deployment** |
+| **V1 (Teacher)** | 489K | 1.9MB | 87.0% | 4 papers (2017-2020) | Teacher model, proven baseline |
+| **Enhanced Nano-B** | **Start: 619K**<br>**Post-pruning: 120-180K** | **0.5-2.4MB** | **Enhanced** | **7 papers (2017-2025)** | **All 2024 modules + intelligent pruning** |
+| **Ablation Studies** | **535K-619K** | **Variable** | **Component analysis** | **Individual module impact** | **Scientific validation** |
 
-### Key Improvements (V1 → Nano-B)
-- **50-66% parameter reduction** via Bayesian-optimized B-FPGM pruning
-- **Specialized small face pipeline** with 3 research-backed modules
-- **Differential processing**: P3 (small faces) vs P4/P5 (standard)
+### Key Strategy (Enhanced-First + Bayesian Pruning)
+- **Start with Enhanced Nano-B** (ScaleDecoupling + ASSN + MSE-FPN + V1 base, out_channel=56)
+- **Intelligent Bayesian pruning** optimizes the complete Enhanced architecture (619K → 120-180K)
+- **Ablation studies** validate individual component contributions scientifically
+- **V1 base preserved** with all 2024 modules building on proven foundation
 
 ## 🎯 Architecture Overview
 
 ### V1 Baseline (Teacher)
 ```
-Input → MobileNet-0.25 → CBAM → BiFPN → CBAM → Detection Head (SSH + Channel Shuffle)
+Input → MobileNet-0.25 → CBAM → BiFPN → CBAM → SSH → Detection Heads (56 channels)
+                                                      ↓
+                                            ChannelShuffle + 3 outputs
 ```
 
-### Nano-B (Student with Bayesian Optimization)
+### Enhanced Nano-B Strategy (Enhanced-First + Intelligent Pruning)
 ```
-Input → MobileNet-0.25 → Feature Pyramid Network
-                          ├── P3 🔍: ScaleDecoupling → CBAM → BiFPN → MSE-FPN → ASSN → Detection Head (SSH + Channel Shuffle)
-                          ├── P4 👁️: CBAM → BiFPN → MSE-FPN → CBAM → Detection Head (SSH + Channel Shuffle)
-                          └── P5 🔭: CBAM → BiFPN → MSE-FPN → CBAM → Detection Head (SSH + Channel Shuffle)
+🎯 Phase 1: Start Enhanced (619K parameters)
+Input → MobileNet-0.25 → CBAM → BiFPN → MSE-FPN → SSH → Detection Heads (56 channels)
+                                   ↓           ↓
+                         ScaleDecoupling   ASSN (P3)
+                                   ↓
+                            ChannelShuffle + 3 outputs
+                                   ↓
+🧠 Phase 2: Bayesian Pruning Analysis  
+        Analyzes: All 2024 modules + V1 base components
+        Decides: What to keep/prune for optimal 120-180K target
+                                   ↓
+⚡ Phase 3: Intelligent Pruned Enhanced (120-180K parameters)
+Input → Optimized Enhanced Architecture → Ultra-efficient deployment
 ```
 
-**Key Modules** (2024 research):
-- **ScaleDecoupling**: Small/large object separation (P3 only)
-- **ASSN**: Scale-aware attention for small faces (P3 only)  
-- **MSE-FPN**: Semantic enhancement (all levels)
-- **B-FPGM**: Bayesian-optimized pruning (automated)
+**Key Innovation** (Enhanced-First 2025 strategy):
+- **Start Enhanced-complete**: All 2024 modules active (ScaleDecoupling + ASSN + MSE-FPN)
+- **Bayesian intelligence**: AI optimizes the complete Enhanced architecture vs manual cuts  
+- **Automated optimization**: All modules + V1 base optimized together for 120-180K target
+- **Ablation validation**: Scientific study of individual module contributions
 
 ## 💻 Usage Examples
 
@@ -73,12 +86,13 @@ outputs = model(input_tensor)  # [classifications, boxes, landmarks]
 
 ### Training with Knowledge Distillation
 ```python
-# Train Nano-B with V1 as teacher
+# Train Enhanced Nano-B with V1 as teacher
 python train_nano_b.py \
     --teacher_model weights/mobilenet0.25_Final.pth \
-    --distillation_temperature 4.0 \
-    --distillation_alpha 0.7 \
-    --target_reduction 0.5
+    --distillation_temperature 2.0 \
+    --distillation_alpha 0.8 \
+    --target_reduction 0.5 \
+    --bayesian_iterations 25
 ```
 
 ### Evaluation on WIDERFace

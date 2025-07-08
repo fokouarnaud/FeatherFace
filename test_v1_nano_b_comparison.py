@@ -38,7 +38,7 @@ from models.featherface_nano_b import FeatherFaceNanoB
 from data.config import cfg_mnet, cfg_nano_b
 from data.wider_face import WiderFaceDetection, detection_collate
 from torch.utils.data import DataLoader
-from utils.augmentations import SSDAugmentation
+from data.data_augment import preproc as SSDAugmentation
 
 
 def parse_args():

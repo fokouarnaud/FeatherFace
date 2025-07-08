@@ -41,7 +41,7 @@ sys.path.append(str(PROJECT_ROOT))
 from models.retinaface import RetinaFace
 from models.featherface_nano import FeatherFaceNano
 from models.featherface_nano_b import FeatherFaceNanoB, create_featherface_nano_b
-from models.pruning_b_fpgm import (FeatherFaceNanoBPruner, create_nano_b_config,
+from models.pruning_b_fpgm import (FeatherFaceNanoBPruner,
                                    GeometricMedianPruner, SoftFilterPruner, BayesianOptimizer)
 from data.config import cfg_mnet, cfg_nano, cfg_nano_b
 
