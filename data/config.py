@@ -34,7 +34,7 @@ cfg_nano_b = {
     'clip': False,
     'loc_weight': 2.0,
     'gpu_train': True,
-    'batch_size': 32,
+    'batch_size': 64,        # Optimized for H100 80GB HBM3
     'ngpu': 1,
     'epoch': 300,  # Optimized for 3-phase training pipeline
     'decay1': 150,
@@ -47,8 +47,8 @@ cfg_nano_b = {
     'num_classes': 2,            # Binary classification (background/face) - CORRECT for face detection
                                  # Note: bbox_regression=4 coords, landmarks=10 coords, but classification=2 classes
     
-    # Learning configuration (STABILIZED for knowledge distillation)
-    'lr': 1e-6,              # Ultra-reduced for maximum stability with high gradient norms
+    # Learning configuration (OPTIMIZED for H100 training)
+    'lr': 1e-4,              # Proper learning rate for effective gradient flow
     'optim': 'adamw',
     'weight_decay': 5e-4,
     
@@ -91,7 +91,7 @@ cfg_nano_b = {
     
     # Performance targets (ENHANCED-FIRST BAYESIAN PRUNING)
     'target_parameter_range': {
-        'enhanced_start': 619000,         # Enhanced with all 2024 modules active
+        'enhanced_start': 619000,         # Enhanced with all 2024 modules active (CORRECT TARGET)
         'aggressive_pruning': 120000,     # 80% reduction (ultra-efficient post-pruning)
         'balanced_pruning': 150000,       # 76% reduction (optimal balance post-pruning)  
         'conservative_pruning': 180000,   # 71% reduction (safe performance post-pruning)

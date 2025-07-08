@@ -105,8 +105,8 @@ def parse_args():
                        help='Bayesian optimization acquisition function')
     
     # System arguments
-    parser.add_argument('--num_workers', type=int, default=4,
-                       help='Number of data loading workers')
+    parser.add_argument('--num_workers', type=int, default=8,
+                       help='Number of data loading workers (optimized for H100)')
     parser.add_argument('--cuda', action='store_true', default=True,
                        help='Use CUDA if available')
     parser.add_argument('--multigpu', action='store_true',
@@ -147,8 +147,18 @@ class NanoBTrainer:
         self._setup_optimization()
         
         logger.info(f"Trainer initialized on device: {self.device}")
-        logger.info(f"Teacher parameters: {sum(p.numel() for p in self.teacher.parameters()):,}")
-        logger.info(f"Student parameters: {sum(p.numel() for p in self.student.parameters()):,}")
+        teacher_params = sum(p.numel() for p in self.teacher.parameters())
+        student_params = sum(p.numel() for p in self.student.parameters())
+        logger.info(f"Teacher parameters: {teacher_params:,}")
+        logger.info(f"Student parameters: {student_params:,}")
+        
+        # Validate parameter count for Enhanced Nano-B (should be ~619K)
+        expected_params = 619000
+        if abs(student_params - expected_params) > 50000:  # 50K tolerance
+            logger.warning(f"PARAMETER COUNT MISMATCH: Expected ~{expected_params:,}, got {student_params:,}")
+            logger.warning(f"This may indicate incorrect model configuration or missing modules")
+        else:
+            logger.info(f"✓ Parameter count validated: {student_params:,} (target: {expected_params:,})")
     
     def _setup_models(self):
         """Setup teacher and student models"""
@@ -264,7 +274,9 @@ class NanoBTrainer:
             shuffle=True,
             num_workers=self.args.num_workers,
             collate_fn=detection_collate,
-            pin_memory=True
+            pin_memory=True,
+            persistent_workers=True,    # H100 optimization
+            prefetch_factor=2           # H100 optimization
         )
         
         # Validation dataset
@@ -280,7 +292,9 @@ class NanoBTrainer:
                 shuffle=False,
                 num_workers=self.args.num_workers,
                 collate_fn=detection_collate,
-                pin_memory=True
+                pin_memory=True,
+                persistent_workers=True,    # H100 optimization
+                prefetch_factor=2           # H100 optimization
             )
         else:
             # Use part of training data for validation
@@ -297,7 +311,9 @@ class NanoBTrainer:
                 shuffle=True,
                 num_workers=self.args.num_workers,
                 collate_fn=detection_collate,
-                pin_memory=True
+                pin_memory=True,
+                persistent_workers=True,    # H100 optimization
+                prefetch_factor=2           # H100 optimization
             )
             
             self.val_loader = DataLoader(
@@ -306,7 +322,9 @@ class NanoBTrainer:
                 shuffle=False,
                 num_workers=self.args.num_workers,
                 collate_fn=detection_collate,
-                pin_memory=True
+                pin_memory=True,
+                persistent_workers=True,    # H100 optimization
+                prefetch_factor=2           # H100 optimization
             )
         
         logger.info(f"Training batches: {len(self.train_loader)}")
@@ -387,8 +405,8 @@ class NanoBTrainer:
             self.optimizer.zero_grad()
             total_loss.backward()
             
-            # ULTRA-ENHANCED gradient clipping for stability
-            grad_norm = torch.nn.utils.clip_grad_norm_(self.student.parameters(), max_norm=0.3)
+            # OPTIMIZED gradient clipping for H100 training
+            grad_norm = torch.nn.utils.clip_grad_norm_(self.student.parameters(), max_norm=2.0)
             
             # ENHANCED monitoring for loss stability with stricter bounds
             loss_value = total_loss.item()
@@ -435,20 +453,19 @@ class NanoBTrainer:
             
             num_batches += 1
             
-            # Enhanced logging with distillation components
-            if batch_idx % 100 == 0:
-                distill_loss_val = distill_losses.get('distill_total', torch.tensor(0.0)).item()
-                task_loss_val = distill_losses.get('task_total', torch.tensor(0.0)).item()
-                logger.info(f'Epoch {epoch}, Batch {batch_idx}/{len(self.train_loader)}, '
-                           f'Total: {total_loss.item():.4f}, '
-                           f'Distill: {distill_loss_val:.4f}, '
-                           f'Task: {task_loss_val:.4f}, '
-                           f'GradNorm: {grad_norm:.3f}, '
-                           f'LR: {self.scheduler.get_last_lr()[0]:.6f}')
+            # Progress indicator (only show every 50 batches to reduce clutter)
+            if batch_idx % 50 == 0:
+                progress = f"[{batch_idx:3d}/{len(self.train_loader):3d}]"
+                loss_short = f"L:{total_loss.item():.2f}"
+                grad_short = f"G:{grad_norm:.1f}"
+                print(f"\r{progress} {loss_short} {grad_short}", end="", flush=True)
         
         # Average losses
         for key in total_losses:
             total_losses[key] /= max(num_batches, 1)
+        
+        # Clear progress line
+        print("\r" + " " * 80 + "\r", end="")
         
         return total_losses
     
@@ -590,10 +607,16 @@ class NanoBTrainer:
         """Main training loop"""
         logger.info("Starting FeatherFace Nano-B training...")
         
-        # Training phases
-        phase_1_end = self.args.pruning_start_epoch
-        phase_2_end = phase_1_end + self.args.pruning_epochs
-        phase_3_end = phase_2_end + self.args.fine_tune_epochs
+        # Training phases (Enhanced-First Bayesian Pruning Strategy)
+        phase_1_end = self.args.pruning_start_epoch      # Stabilization: 0-30 epochs
+        phase_2_end = phase_1_end + self.args.pruning_epochs  # Pruning: 30-50 epochs
+        phase_3_end = phase_2_end + self.args.fine_tune_epochs  # Fine-tuning: 50-300 epochs
+        
+        logger.info(f"Training phases configured:")
+        logger.info(f"  Phase 1 (Stabilization): Epochs 0-{phase_1_end}")
+        logger.info(f"  Phase 2 (Pruning): Epochs {phase_1_end}-{phase_2_end}")
+        logger.info(f"  Phase 3 (Fine-tuning): Epochs {phase_2_end}-{self.args.epochs}")
+        logger.info(f"  Target: {self.args.target_reduction*100:.0f}% reduction via Bayesian optimization")
         
         pruning_applied = False
         
@@ -608,7 +631,7 @@ class NanoBTrainer:
             else:
                 phase = "Fine-tuning"
             
-            logger.info(f"\n=== Epoch {epoch + 1}/{self.args.epochs} - Phase: {phase} ===")
+            print(f"\n=== Epoch {epoch + 1}/{self.args.epochs} - Phase: {phase} ===")
             
             # Apply pruning at the right time
             if epoch == self.args.pruning_start_epoch and not pruning_applied:
@@ -660,10 +683,32 @@ class NanoBTrainer:
             
             self.training_history.append(history_entry)
             
-            # Log epoch summary
-            logger.info(f"Epoch {epoch + 1} completed in {epoch_time:.1f}s")
-            logger.info(f"Train losses: {train_losses}")
-            logger.info(f"Current parameters: {sum(p.numel() for p in self.student.parameters()):,}")
+            # Compact epoch summary for H100 efficiency monitoring
+            current_params = sum(p.numel() for p in self.student.parameters())
+            gpu_util = f"{torch.cuda.utilization()}%" if torch.cuda.is_available() else "N/A"
+            
+            print(f"Results: Loss={train_losses['total']:.2f} | "
+                  f"Distill={train_losses['distill']:.2f} | "
+                  f"Task={train_losses['task']:.2f} | "
+                  f"Time={epoch_time:.1f}s | "
+                  f"GPU={gpu_util} | "
+                  f"Params={current_params:,} | "
+                  f"LR={self.scheduler.get_last_lr()[0]:.1e}")
+            
+            # Add evaluation results if available
+            if (epoch + 1) % self.args.eval_frequency == 0:
+                print(f"Eval Score: {eval_score:.4f}")
+                
+            # Add phase progress info
+            if epoch < phase_1_end:
+                epochs_left = phase_1_end - epoch - 1
+                print(f"Phase Progress: Stabilization ({epochs_left} epochs left)")
+            elif epoch < phase_2_end and not pruning_applied:
+                epochs_left = phase_2_end - epoch - 1
+                print(f"Phase Progress: Pruning Optimization ({epochs_left} epochs left)")
+            else:
+                epochs_left = self.args.epochs - epoch - 1
+                print(f"Phase Progress: Fine-tuning ({epochs_left} epochs left)")
         
         # Final model export
         logger.info("\n=== Training Complete ===")
