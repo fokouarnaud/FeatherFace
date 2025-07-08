@@ -122,7 +122,127 @@ def parse_args():
     parser.add_argument('--eval_batches', type=int, default=100,
                        help='Number of batches for evaluation (for speed)')
     
+    # Ablation study configuration
+    parser.add_argument('--ablation_config', type=str, default='enhanced_complete',
+                       choices=['v1_baseline', 'scale_only', 'assn_only', 'mse_only',
+                               'scale_assn', 'scale_mse', 'assn_mse', 'enhanced_complete'],
+                       help='Ablation configuration to use')
+    
     return parser.parse_args()
+
+
+# Ablation study configuration mapping
+ABLATION_CONFIGURATIONS = {
+    'v1_baseline': {
+        'name': 'V1 Baseline (Référence)',
+        'modules': {
+            'small_face_optimization': False,  # Pas de ScaleDecoupling
+            'assn_enabled': False,             # CBAM standard sur P3
+            'mse_fpn_enabled': False           # BiFPN standard
+        },
+        'description': 'Configuration V1 pure pour établir la référence de performance'
+    },
+    'scale_only': {
+        'name': 'ScaleDecoupling Seulement', 
+        'modules': {
+            'small_face_optimization': True,   # ScaleDecoupling activé
+            'assn_enabled': False,             # CBAM standard
+            'mse_fpn_enabled': False           # BiFPN standard
+        },
+        'description': 'Test isolation de ScaleDecoupling pour optimisation petits visages'
+    },
+    'assn_only': {
+        'name': 'ASSN Attention Seulement',
+        'modules': {
+            'small_face_optimization': False,  # Pas de ScaleDecoupling
+            'assn_enabled': True,              # ASSN sur P3
+            'mse_fpn_enabled': False           # BiFPN standard
+        }, 
+        'description': 'Test isolation ASSN pour amélioration séquences d\'échelle'
+    },
+    'mse_only': {
+        'name': 'MSE-FPN Seulement',
+        'modules': {
+            'small_face_optimization': False,  # Pas de ScaleDecoupling
+            'assn_enabled': False,             # CBAM standard
+            'mse_fpn_enabled': True            # MSE-FPN activé
+        },
+        'description': 'Test isolation MSE-FPN pour réduction gaps sémantiques'
+    },
+    'scale_assn': {
+        'name': 'ScaleDecoupling + ASSN',
+        'modules': {
+            'small_face_optimization': True,   # ScaleDecoupling
+            'assn_enabled': True,              # ASSN P3
+            'mse_fpn_enabled': False           # BiFPN standard
+        },
+        'description': 'Test P3 specialized pipeline effectiveness'
+    },
+    'scale_mse': {
+        'name': 'ScaleDecoupling + MSE-FPN',
+        'modules': {
+            'small_face_optimization': True,   # ScaleDecoupling
+            'assn_enabled': False,             # CBAM standard
+            'mse_fpn_enabled': True            # MSE-FPN
+        },
+        'description': 'Test ScaleDecoupling + semantic enhancement combination'
+    },
+    'assn_mse': {
+        'name': 'ASSN + MSE-FPN',
+        'modules': {
+            'small_face_optimization': False,  # Pas de ScaleDecoupling
+            'assn_enabled': True,              # ASSN P3
+            'mse_fpn_enabled': True            # MSE-FPN
+        },
+        'description': 'Test attention + semantic enhancement combination'
+    },
+    'enhanced_complete': {
+        'name': 'Tous Modules Activés (Défaut)',
+        'modules': {
+            'small_face_optimization': True,   # ScaleDecoupling
+            'assn_enabled': True,              # ASSN P3
+            'mse_fpn_enabled': True            # MSE-FPN
+        },
+        'description': 'Configuration complète avec tous les modules 2024'
+    }
+}
+
+
+def apply_ablation_config(ablation_config_name):
+    """Apply ablation configuration to cfg_nano_b"""
+    if ablation_config_name not in ABLATION_CONFIGURATIONS:
+        logger.error(f"Unknown ablation config: {ablation_config_name}")
+        logger.info(f"Available configs: {list(ABLATION_CONFIGURATIONS.keys())}")
+        return False
+    
+    # Get selected configuration
+    selected_config = ABLATION_CONFIGURATIONS[ablation_config_name]
+    selected_modules = selected_config['modules']
+    
+    # Update cfg_nano_b with selected configuration
+    cfg_nano_b['ablation_modules'].update(selected_modules)
+    
+    # Log applied configuration
+    logger.info(f"✅ ABLATION CONFIG APPLIED: {selected_config['name']}")
+    logger.info(f"Description: {selected_config['description']}")
+    
+    module_names = {
+        'small_face_optimization': 'ScaleDecoupling (P3 small faces)',
+        'assn_enabled': 'ASSN (P3 specialized attention)',
+        'mse_fpn_enabled': 'MSE-FPN (semantic enhancement)'
+    }
+    
+    logger.info("📊 MODULES CONFIGURATION:")
+    for module, enabled in selected_modules.items():
+        status = "ENABLED" if enabled else "DISABLED"
+        module_display = module_names.get(module, module)
+        logger.info(f"   {module_display}: {status}")
+    
+    # Count active modules
+    active_count = sum(selected_modules.values())
+    logger.info(f"Active modules: {active_count}/3")
+    
+    return True
 
 
 class NanoBTrainer:
@@ -740,6 +860,11 @@ class NanoBTrainer:
 def main():
     """Main training function"""
     args = parse_args()
+    
+    # Apply ablation configuration BEFORE creating models
+    logger.info(f"Applying ablation configuration: {args.ablation_config}")
+    if not apply_ablation_config(args.ablation_config):
+        raise ValueError(f"Failed to apply ablation config: {args.ablation_config}")
     
     # Validate arguments
     if not os.path.exists(args.training_dataset):
