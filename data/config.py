@@ -47,8 +47,8 @@ cfg_nano_b = {
     'num_classes': 2,            # Binary classification (background/face) - CORRECT for face detection
                                  # Note: bbox_regression=4 coords, landmarks=10 coords, but classification=2 classes
     
-    # Learning configuration (OPTIMIZED for H100 training)
-    'lr': 1e-4,              # Proper learning rate for effective gradient flow
+    # Learning configuration (STABILIZED for Enhanced Nano-B with 706K parameters)
+    'lr': 1e-5,              # Reduced for gradient stability with Enhanced modules
     'optim': 'adamw',
     'weight_decay': 5e-4,
     
@@ -91,11 +91,11 @@ cfg_nano_b = {
     
     # Performance targets (ENHANCED-FIRST BAYESIAN PRUNING)
     'target_parameter_range': {
-        'enhanced_start': 619000,         # Enhanced with all 2024 modules active (CORRECT TARGET)
+        'enhanced_start': 706000,         # Enhanced with all 2024 modules active (MEASURED: ScaleDecoupling + ASSN + MSE-FPN)
         'aggressive_pruning': 120000,     # 80% reduction (ultra-efficient post-pruning)
         'balanced_pruning': 150000,       # 76% reduction (optimal balance post-pruning)  
         'conservative_pruning': 180000,   # 71% reduction (safe performance post-pruning)
-        'pruning_philosophy': 'Start Enhanced-complete (619K all modules), let Bayesian pruning optimize intelligently',
+        'pruning_philosophy': 'Start Enhanced-complete (706K all modules), let Bayesian pruning optimize intelligently',
         'advantage': 'Best-first approach + intelligent automated reduction vs manual optimization'
     },
     
@@ -103,7 +103,7 @@ cfg_nano_b = {
     'phase_justification': {
         'phase_1_stabilization': {
             'duration': '30 epochs',
-            'goal': 'Enhanced modules adaptation and V1 base integration',
+            'goal': 'Enhanced modules adaptation and V1 base integration (706K parameters)',
             'scientific_basis': 'Gradient flow stabilization (Frankle & Carbin ICLR 2019)',
             'modules_adaptation': 'ScaleDecoupling + ASSN + MSE-FPN learn to collaborate with V1',
             'knowledge_distillation': 'Basic Teacher → Enhanced Student transfer',
@@ -115,7 +115,7 @@ cfg_nano_b = {
             'scientific_basis': 'B-FPGM on trained weights (Kaparinos & Mezaris WACVW 2025)',
             'advantage': 'Better importance estimation than random initialization',
             'bayesian_optimization': '25 iterations for optimal pruning configuration',
-            'output': 'Optimized pruned architecture (619K → 120-180K)'
+            'output': 'Optimized pruned architecture (706K → 120-180K)'
         },
         'phase_3_training': {
             'duration': '250 epochs (epochs 50-300)',
