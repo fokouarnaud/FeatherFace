@@ -642,49 +642,65 @@ class FeatherFaceNanoB(nn.Module):
         return IntermediateLayerGetter(backbone, return_layers)
     
     def _make_detection_heads(self, in_channels: int):
-        """Create detection heads with pruning support"""
+        """Create V1-compatible detection heads with 2 anchors per pixel (16,800 total anchors)"""
         
-        # Classification head
-        if self.use_pruned_conv:
-            self.ClassHead = nn.Sequential(
-                PrunedConv2d(in_channels, in_channels//2, 3, padding=1, pruning_enabled=True),
-                nn.ReLU(inplace=True),
-                PrunedConv2d(in_channels//2, self.cfg['num_classes'], 1, pruning_enabled=True)
-            )
-        else:
-            self.ClassHead = nn.Sequential(
-                nn.Conv2d(in_channels, in_channels//2, 3, padding=1),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(in_channels//2, self.cfg['num_classes'], 1)
-            )
+        # V1 COMPATIBILITY: Use same anchor system as Teacher (num_anchors=2)
+        num_anchors = 2
+        fpn_num = 3  # P3, P4, P5 levels
         
-        # Bounding box regression head
+        # Classification heads (V1-compatible: num_anchors * 2 = 4 output channels)
         if self.use_pruned_conv:
-            self.BboxHead = nn.Sequential(
-                PrunedConv2d(in_channels, in_channels//2, 3, padding=1, pruning_enabled=True),
-                nn.ReLU(inplace=True),
-                PrunedConv2d(in_channels//2, 4, 1, pruning_enabled=True)
-            )
+            self.ClassHead = nn.ModuleList([
+                nn.Sequential(
+                    PrunedConv2d(in_channels, in_channels//2, 3, padding=1, pruning_enabled=True),
+                    nn.ReLU(inplace=True),
+                    PrunedConv2d(in_channels//2, num_anchors * 2, 1, pruning_enabled=True)
+                ) for _ in range(fpn_num)
+            ])
         else:
-            self.BboxHead = nn.Sequential(
-                nn.Conv2d(in_channels, in_channels//2, 3, padding=1),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(in_channels//2, 4, 1)
-            )
+            self.ClassHead = nn.ModuleList([
+                nn.Sequential(
+                    nn.Conv2d(in_channels, in_channels//2, 3, padding=1),
+                    nn.ReLU(inplace=True),
+                    nn.Conv2d(in_channels//2, num_anchors * 2, 1)
+                ) for _ in range(fpn_num)
+            ])
         
-        # Landmark head
+        # Bounding box regression heads (V1-compatible: num_anchors * 4 = 8 output channels)
         if self.use_pruned_conv:
-            self.LandmarkHead = nn.Sequential(
-                PrunedConv2d(in_channels, in_channels//2, 3, padding=1, pruning_enabled=True),
-                nn.ReLU(inplace=True),
-                PrunedConv2d(in_channels//2, 10, 1, pruning_enabled=True)
-            )
+            self.BboxHead = nn.ModuleList([
+                nn.Sequential(
+                    PrunedConv2d(in_channels, in_channels//2, 3, padding=1, pruning_enabled=True),
+                    nn.ReLU(inplace=True),
+                    PrunedConv2d(in_channels//2, num_anchors * 4, 1, pruning_enabled=True)
+                ) for _ in range(fpn_num)
+            ])
         else:
-            self.LandmarkHead = nn.Sequential(
-                nn.Conv2d(in_channels, in_channels//2, 3, padding=1),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(in_channels//2, 10, 1)
-            )
+            self.BboxHead = nn.ModuleList([
+                nn.Sequential(
+                    nn.Conv2d(in_channels, in_channels//2, 3, padding=1),
+                    nn.ReLU(inplace=True),
+                    nn.Conv2d(in_channels//2, num_anchors * 4, 1)
+                ) for _ in range(fpn_num)
+            ])
+        
+        # Landmark heads (V1-compatible: num_anchors * 10 = 20 output channels)
+        if self.use_pruned_conv:
+            self.LandmarkHead = nn.ModuleList([
+                nn.Sequential(
+                    PrunedConv2d(in_channels, in_channels//2, 3, padding=1, pruning_enabled=True),
+                    nn.ReLU(inplace=True),
+                    PrunedConv2d(in_channels//2, num_anchors * 10, 1, pruning_enabled=True)
+                ) for _ in range(fpn_num)
+            ])
+        else:
+            self.LandmarkHead = nn.ModuleList([
+                nn.Sequential(
+                    nn.Conv2d(in_channels, in_channels//2, 3, padding=1),
+                    nn.ReLU(inplace=True),
+                    nn.Conv2d(in_channels//2, num_anchors * 10, 1)
+                ) for _ in range(fpn_num)
+            ])
     
     def forward(self, inputs: torch.Tensor) -> List[torch.Tensor]:
         """
@@ -783,17 +799,19 @@ class FeatherFaceNanoB(nn.Module):
         bbox_regressions = []
         landmarks = []
         
-        for feat in shuffled_features:
-            cls_out = self.ClassHead(feat)
-            bbox_out = self.BboxHead(feat)
-            landmark_out = self.LandmarkHead(feat)
+        for i, feat in enumerate(shuffled_features):
+            # V1-compatible: Use indexed heads for each pyramid level
+            cls_out = self.ClassHead[i](feat)
+            bbox_out = self.BboxHead[i](feat)
+            landmark_out = self.LandmarkHead[i](feat)
             
-            # Reshape for output
+            # Reshape for output (V1-compatible format)
             cls_out = cls_out.permute(0, 2, 3, 1).contiguous()
             bbox_out = bbox_out.permute(0, 2, 3, 1).contiguous()
             landmark_out = landmark_out.permute(0, 2, 3, 1).contiguous()
             
-            classifications.append(cls_out.view(cls_out.shape[0], -1, self.cfg['num_classes']))
+            # V1-compatible reshaping with num_anchors=2
+            classifications.append(cls_out.view(cls_out.shape[0], -1, 2))
             bbox_regressions.append(bbox_out.view(bbox_out.shape[0], -1, 4))
             landmarks.append(landmark_out.view(landmark_out.shape[0], -1, 10))
         
@@ -803,9 +821,9 @@ class FeatherFaceNanoB(nn.Module):
         landmarks = torch.cat(landmarks, dim=1)
         
         if self.phase == 'train':
-            return [classifications, bbox_regressions, landmarks]
+            return [bbox_regressions, classifications, landmarks]
         else:
-            return [F.softmax(classifications, dim=-1), bbox_regressions, landmarks]
+            return [bbox_regressions, F.softmax(classifications, dim=-1), landmarks]
     
     def setup_pruning(self, validation_loader, criterion):
         """Setup Bayesian optimization for pruning"""
