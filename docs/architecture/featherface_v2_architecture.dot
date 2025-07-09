@@ -1,0 +1,234 @@
+digraph FeatherFaceV2Architecture {
+    // Global settings - Paysage horizontal
+    rankdir=LR
+    bgcolor="#f8f9fa"
+    fontname="Arial"
+    fontsize=12
+    
+    // Node defaults
+    node [fontname="Arial", fontsize=10, shape=box, style=filled]
+    edge [fontname="Arial", fontsize=9]
+    
+    // Title
+    title [label="FeatherFace V2 Architecture\n(Coordinate Attention Innovation)", 
+           shape=plaintext, fontsize=16, fontcolor="#2c3e50"]
+    
+    // (a) FeatherFace V2 Main Architecture
+    subgraph cluster_main {
+        label="(a) FeatherFace V2 Architecture"
+        fontsize=14
+        fontcolor="#34495e"
+        color="#bdc3c7"
+        style=rounded
+        
+        // Input
+        input [label="Input\n(640×640×3)", fillcolor="#ecf0f1", color="#95a5a6"]
+        
+        // Backbone
+        backbone [label="MobileNet-0.25\nBackbone", fillcolor="#3498db", fontcolor="white"]
+        
+        // CBAM before BiFPN (conservé V1)
+        cbam_before [label="CBAM\n(V1 Conservé)", fillcolor="#e74c3c", fontcolor="white", shape=ellipse]
+        
+        // BiFPN Feature Pyramid
+        subgraph cluster_fpn {
+            label="BiFPN Multi-scale Features"
+            fontsize=11
+            color="#27ae60"
+            style=dashed
+            
+            p3 [label="P3/8", fillcolor="#e74c3c", fontcolor="white"]
+            p4 [label="P4/16", fillcolor="#f39c12", fontcolor="white"] 
+            p5 [label="P5/32", fillcolor="#9b59b6", fontcolor="white"]
+            
+            // BiFPN connections
+            p3 -> p4 [label="↓", color="#27ae60"]
+            p4 -> p5 [label="↓", color="#27ae60"]
+            p5 -> p4 [label="↑", color="#27ae60"]
+            p4 -> p3 [label="↑", color="#27ae60"]
+        }
+        
+        // V2 Innovation: Coordinate Attention (après BiFPN)
+        coord_attn [label="Coordinate\nAttention\n(V2 Innovation)", 
+                   fillcolor="#e67e22", fontcolor="white", 
+                   shape=ellipse, style="filled,bold"]
+        
+        // Detection heads
+        det_head [label="Detection Head\n(SSH)", fillcolor="#1abc9c", fontcolor="white"]
+        
+        // Outputs
+        outputs [label="Detection Outputs\n[BBox, Classification, Landmarks]", 
+                fillcolor="#34495e", fontcolor="white"]
+        
+        // Main flow - Architecture V2 corrigée
+        input -> backbone
+        backbone -> cbam_before
+        cbam_before -> p3
+        cbam_before -> p4  
+        cbam_before -> p5
+        
+        p3 -> coord_attn
+        p4 -> coord_attn
+        p5 -> coord_attn
+        
+        coord_attn -> det_head
+        det_head -> outputs
+    }
+    
+    // (b) Coordinate Attention Mechanism Detail
+    subgraph cluster_coord_attn {
+        label="(b) Coordinate Attention Mechanism"
+        fontsize=14
+        fontcolor="#e67e22"
+        color="#e67e22"
+        style=rounded
+        
+        // Input feature
+        feat_input [label="Input Feature\n[H, W, C]", fillcolor="#ecf0f1", color="#95a5a6"]
+        
+        // Spatial factorization
+        subgraph cluster_factorization {
+            label="Spatial Factorization"
+            fontsize=11
+            color="#3498db"
+            style=dashed
+            
+            pool_h [label="X-Pool\n(H×1)", fillcolor="#3498db", fontcolor="white", shape=ellipse]
+            pool_w [label="Y-Pool\n(1×W)", fillcolor="#3498db", fontcolor="white", shape=ellipse]
+            
+            feat_h [label="X_h\n[H,1,C]", fillcolor="#e74c3c", fontcolor="white"]
+            feat_w [label="X_w\n[1,W,C]", fillcolor="#e74c3c", fontcolor="white"]
+        }
+        
+        // Shared transformation
+        conv_transform [label="Conv1×1\n+ BatchNorm\n+ ReLU", fillcolor="#27ae60", fontcolor="white"]
+        
+        // Directional attention
+        subgraph cluster_attention {
+            label="Directional Attention"
+            fontsize=11
+            color="#9b59b6"
+            style=dashed
+            
+            conv_h [label="Conv_h", fillcolor="#9b59b6", fontcolor="white"]
+            conv_w [label="Conv_w", fillcolor="#9b59b6", fontcolor="white"]
+            
+            sigmoid_h [label="Sigmoid", fillcolor="#8e44ad", fontcolor="white", shape=diamond]
+            sigmoid_w [label="Sigmoid", fillcolor="#8e44ad", fontcolor="white", shape=diamond]
+            
+            attn_h [label="Att_h\n[H,1,C]", fillcolor="#e67e22", fontcolor="white"]
+            attn_w [label="Att_w\n[1,W,C]", fillcolor="#e67e22", fontcolor="white"]
+        }
+        
+        // Coordinate fusion
+        fusion [label="Fusion\nY = X ⊗ Att_h ⊗ Att_w", 
+               fillcolor="#f39c12", fontcolor="white", shape=hexagon]
+        
+        output_feat [label="Enhanced\nFeature", fillcolor="#1abc9c", fontcolor="white"]
+        
+        // Flow within coordinate attention
+        feat_input -> pool_h
+        feat_input -> pool_w
+        
+        pool_h -> feat_h
+        pool_w -> feat_w
+        
+        feat_h -> conv_transform
+        feat_w -> conv_transform
+        
+        conv_transform -> conv_h
+        conv_transform -> conv_w
+        
+        conv_h -> sigmoid_h
+        conv_w -> sigmoid_w
+        
+        sigmoid_h -> attn_h
+        sigmoid_w -> attn_w
+        
+        attn_h -> fusion
+        attn_w -> fusion
+        feat_input -> fusion [label="⊗", color="#f39c12"]
+        
+        fusion -> output_feat
+    }
+    
+    // (c) Detection Head (SSH) Detail
+    subgraph cluster_detection {
+        label="(c) Detection Head (SSH)"
+        fontsize=14
+        fontcolor="#1abc9c"
+        color="#1abc9c"
+        style=rounded
+        
+        // Input to detection head
+        det_input [label="Multi-scale\nFeatures", fillcolor="#ecf0f1", color="#95a5a6"]
+        
+        // Context enhancement
+        subgraph cluster_context {
+            label="Context Enhancement"
+            fontsize=11
+            color="#e74c3c"
+            style=dashed
+            
+            dcb [label="DCB\n(3×3)", fillcolor="#e74c3c", fontcolor="white"]
+            dcbr [label="DCBR\n(5×5)", fillcolor="#c0392b", fontcolor="white"]
+            conv7 [label="Conv\n(7×7)", fillcolor="#e74c3c", fontcolor="white"]
+            
+            concat_context [label="Concat", fillcolor="#d35400", fontcolor="white", shape=diamond]
+            relu_context [label="ReLU", fillcolor="#e67e22", fontcolor="white", shape=diamond]
+        }
+        
+        // Channel shuffle
+        subgraph cluster_shuffle {
+            label="Channel Shuffle"
+            fontsize=11
+            color="#16a085"
+            style=dashed
+            
+            channel_shuffle [label="Channel\nShuffle", fillcolor="#16a085", fontcolor="white", shape=ellipse]
+            
+            conv_bbox [label="Conv\nBBox", fillcolor="#1abc9c", fontcolor="white"]
+            conv_cls [label="Conv\nCls", fillcolor="#1abc9c", fontcolor="white"]
+            conv_landmark [label="Conv\nLandmark", fillcolor="#1abc9c", fontcolor="white"]
+        }
+        
+        // Final outputs
+        bbox_out [label="BBox\nRegression", fillcolor="#34495e", fontcolor="white"]
+        cls_out [label="Classification", fillcolor="#34495e", fontcolor="white"]
+        landmark_out [label="Landmark\nRegression", fillcolor="#34495e", fontcolor="white"]
+        
+        // Detection head flow
+        det_input -> dcb
+        det_input -> dcbr
+        det_input -> conv7
+        
+        dcb -> concat_context
+        dcbr -> concat_context
+        conv7 -> concat_context
+        
+        concat_context -> relu_context
+        relu_context -> channel_shuffle
+        
+        channel_shuffle -> conv_bbox
+        channel_shuffle -> conv_cls
+        channel_shuffle -> conv_landmark
+        
+        conv_bbox -> bbox_out
+        conv_cls -> cls_out
+        conv_landmark -> landmark_out
+    }
+    
+    // Main connections between subgraphs
+    title -> input [style=invis]
+    coord_attn -> feat_input [style=invis, constraint=false]
+    det_head -> det_input [style=invis, constraint=false]
+    
+    // Annotations
+    note1 [label="Innovation V2: Coordinate Attention\nremplace CBAM après BiFPN", 
+           shape=note, fillcolor="#fff3cd", color="#856404", fontcolor="#856404"]
+    note2 [label="CBAM conservé avant BiFPN\n(proven baseline V1)", 
+           shape=note, fillcolor="#d4edda", color="#155724", fontcolor="#155724"]
+    
+    coord_attn -> note1 [style=dashed, color="#856404"]
+    cbam_before -> note2 [style=dashed, color="#155724"]
+}

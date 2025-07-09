@@ -16,13 +16,19 @@ FeatherFace V2 introduces **Coordinate Attention** to the proven V1 architecture
 
 ## 🏗️ Architecture Overview
 
+![FeatherFace V2 Architecture](featherface_v2_architecture.png)
+
+*Complete FeatherFace V2 Architecture with Coordinate Attention Innovation*
+
+The diagram above illustrates the complete V2 architecture, highlighting the key innovation: replacing CBAM with Coordinate Attention for mobile-optimized spatial awareness and 2x inference speedup.
+
 ### V2 Core Architecture
 ```
 🎯 FeatherFace V2 (493K parameters)
-Input → MobileNet-0.25 → CBAM → BiFPN → CBAM → SSH → Detection Heads (56 channels)
-                                  ↓                    ↓
-                        CoordinateAttention    ChannelShuffle + 3 outputs
-                              (4K params)
+Input → MobileNet-0.25 → CBAM → BiFPN → CoordinateAttention → SSH → Detection Heads (56 channels)
+                        ↑                        ↑                    ↓
+                  Conservé V1            Innovation V2        ChannelShuffle + 3 outputs
+                                            (4K params)
 ```
 
 ### Key Innovation: Coordinate Attention
