@@ -1,20 +1,20 @@
 # FeatherFace Deployment Guide
 
-This directory contains production-ready deployment packages for FeatherFace V1 (baseline) and Nano-B Enhanced 2024 (ultra-lightweight) models with scientifically justified architectures.
+This directory contains production-ready deployment packages for FeatherFace V1 (baseline) and V2 Coordinate Attention (mobile-optimized) models with scientifically justified architectures.
 
 ## 📁 Directory Structure
 
 ```
 deployment/
 ├── README.md                    # This file
-├── v1_baseline/                 # V1 baseline model (494K params)
+├── v1_baseline/                 # V1 baseline model (489K params)
 │   ├── featherface_v1.onnx
 │   ├── featherface_v1.pth
 │   ├── deployment_config.json
 │   └── usage_examples/
-├── nano_b_enhanced_2024/        # Nano-B Enhanced 2024 model (120K-180K params)
-│   ├── featherface_nano_b.onnx
-│   ├── featherface_nano_b.pth
+├── v2_coordinate_attention/     # V2 Coordinate Attention model (493K params)
+│   ├── featherface_v2.onnx
+│   ├── featherface_v2.pth
 │   ├── deployment_config.json
 │   └── usage_examples/
 ├── configs/                     # Deployment configurations
@@ -44,8 +44,8 @@ from pathlib import Path
 model_path = "deployment/v1_baseline/featherface_v1.pth"
 checkpoint = torch.load(model_path, map_location='cpu')
 
-# Or load Nano-B Enhanced 2024 model (recommended for deployment)
-model_path = "deployment/nano_b_enhanced_2024/featherface_nano_b.pth"
+# Or load V2 Coordinate Attention model (recommended for deployment)
+model_path = "deployment/v2_coordinate_attention/featherface_v2.pth"
 checkpoint = torch.load(model_path, map_location='cpu')
 
 # Use the model for inference
@@ -59,8 +59,8 @@ model.eval()
 import onnxruntime as ort
 import numpy as np
 
-# Load ONNX model (Nano-B Enhanced 2024 recommended for production)
-session = ort.InferenceSession('deployment/nano_b_enhanced_2024/featherface_nano_b.onnx')
+# Load ONNX model (V2 Coordinate Attention recommended for production)
+session = ort.InferenceSession('deployment/v2_coordinate_attention/featherface_v2.onnx')
 
 # Prepare input (BGR format, mean subtracted)
 input_data = np.random.randn(1, 3, 640, 640).astype(np.float32)
