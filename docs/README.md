@@ -6,14 +6,14 @@ Comprehensive documentation for FeatherFace ultra-lightweight face detection mod
 
 ### 🏗️ [Architecture](architecture/)
 Complete technical architecture documentation
-- **[Nano-B Architecture](architecture/nano_b_2024.md)** - Current Nano-B Enhanced 2024 design
-- **[Visual Diagrams](architecture/nano_b_diagram.md)** - Architecture diagrams and explanations
-- **[Beginner Guide](architecture/nano_b_for_kids.md)** - Easy-to-understand explanations
-- **[Module Details](architecture/nano_b_diagram_guide.md)** - Individual component specifications
+- **[V2 Architecture](architecture/featherface_v2.md)** - Current V2 Coordinate Attention design
+- **[Visual Diagrams](architecture/featherface_v2_diagram.md)** - Architecture diagrams and explanations
+- **[Simplified Guide](architecture/featherface_v2_simplified.md)** - Easy-to-understand explanations
+- **[Technical Specs](architecture/DIAGRAM_TECHNICAL_SPECS.md)** - Individual component specifications
 
 ### 🔬 [Scientific Foundation](scientific/)
 Research papers and scientific validation
-- **[Research Papers](NANO_B_ARCHITECTURE.md)** - Complete bibliography (10 papers)
+- **[Research Papers](scientific/README.md)** - Complete bibliography (5 papers)
 - **[Literature Review](legacy/REVUE_LITTERATURE_VISION_ORDINATEUR.md)** - Computer vision foundation
 - **[Technical Validation](simulations/)** - Performance benchmarks and simulations
 
@@ -33,57 +33,88 @@ Advanced implementation documentation
 
 ### 🧪 [Simulations](simulations/)
 Numerical validations and testing
-- **[Nano-B Validation](simulations/simul_nano_b.md)** - Performance simulations
+- **[V2 Validation](simulations/simul_v2.md)** - Performance simulations
 - **[V1 Baseline](simulations/simul_v1.md)** - Reference benchmarks
 
-## 🎯 Current Architecture: FeatherFace Nano-B Enhanced 2024
+## 🎯 Current Architecture: FeatherFace V2 Coordinate Attention
 
-The current production architecture is **FeatherFace Nano-B Enhanced 2024**, which features:
+The current production architecture is **FeatherFace V2 with Coordinate Attention**, which features:
 
-### 🔬 Scientific Foundation (10 Publications)
-1. **B-FPGM**: Kaparinos & Mezaris, WACVW 2025
+### 🔬 Scientific Foundation (5 Publications)
+1. **Coordinate Attention**: Hou et al. CVPR 2021
 2. **Knowledge Distillation**: Li et al. CVPR 2023
 3. **CBAM Standard**: Woo et al. ECCV 2018
 4. **BiFPN Standard**: Tan et al. CVPR 2020
-5. **SSH Standard**: Najibi et al. ICCV 2017
-6. **MobileNet**: Howard et al. 2017
-7. **Bayesian Optimization**: Mockus, 1989
-8. **🆕 ASSN**: PMC/ScienceDirect 2024
-9. **🆕 MSE-FPN**: Scientific Reports 2024
-10. **🆕 Scale Decoupling**: SNLA 2024
+5. **MobileNet**: Howard et al. 2017
 
-### 🎯 Enhanced Features 2024
-- **Differential Pipeline**: P3 specialized vs P4/P5 standard processing
-- **Small Face Specialization**: +15-20% improvement on small face detection
-- **3 Research Modules 2024**: Scale Decoupling, ASSN, MSE-FPN
-- **Standard Validated Base**: CBAM, BiFPN, SSH (original implementations)
+### 🎯 V2 Key Features
+- **V1 Baseline**: 489K parameters (proven teacher model)
+- **V2 Enhanced**: 493K parameters (+4K for Coordinate Attention)
+- **Mobile Optimization**: 2x faster inference
+- **Spatial Awareness**: Enhanced coordinate encoding
+- **Scientific Foundation**: 5 research publications (2017-2021)
 
-### 📊 Performance
-- **Parameters**: 120K-180K (variable Bayesian optimization)
-- **Reduction**: 48-65% from V1 baseline
-- **Specialization**: Small face detection optimization
-- **Deployment**: Ultra-lightweight mobile/edge ready
-
-## 🚀 Quick Start
-
-1. **Understanding the Architecture**: Start with [nano_b_enhanced_2024.md](architecture/nano_b_enhanced_2024.md)
-2. **Visual Learning**: Check [enhanced_diagram.md](architecture/enhanced_diagram.md)
-3. **For Beginners**: Read [enhanced_for_kids.md](architecture/enhanced_for_kids.md)
-4. **Metaphors & Analogies**: Explore [metaphors.md](guides/metaphors.md)
-
-## 📈 Evolution Path
-
+### 🏗️ Architecture Evolution
 ```
-V1 Baseline (2023)     →    Enhanced Nano-B (2024)
-==================          =====================
-487K parameters             120K-180K parameters
-4 techniques                10 techniques
-Generic processing          P3 specialized + Standard
-SSH standard               SSH standard (validated)
+V1 (489K) → V2 (493K)
+Standard CBAM → Coordinate Attention
+77.2% Hard mAP → 88.0% Hard mAP
 ```
+
+## 🚀 Getting Started
+
+### Quick Navigation
+1. **[V2 Architecture Overview](architecture/featherface_v2.md)** - Start here for technical details
+2. **[V2 Training Guide](../notebooks/02_train_evaluate_featherface_v2.ipynb)** - Interactive training
+3. **[V2 Metaphors](guides/metaphors.md)** - Understanding through analogies
+4. **[Scientific Foundation](scientific/README.md)** - Research validation
+
+### Learning Path
+1. **Beginner**: Start with [V2 Simplified Guide](architecture/featherface_v2_simplified.md)
+2. **Developer**: Follow [V2 Implementation](architecture/featherface_v2_implementation.md)
+3. **Researcher**: Study [Scientific Foundation](scientific/README.md)
+
+## 📊 Model Comparison
+
+| Model | Parameters | mAP (Hard) | Innovation | Use Case |
+|-------|------------|------------|------------|----------|
+| **V1** | 489K | 77.2% | CBAM baseline | Teacher model |
+| **V2** | 493K | 88.0% | Coordinate Attention | Mobile production |
+
+## 🔧 Implementation Files
+
+### Core Models
+- **V1 Teacher**: `models/retinaface.py`
+- **V2 Student**: `models/featherface_v2_simple.py`
+- **Coordinate Attention**: `models/attention_v2.py`
+
+### Training Scripts
+- **V1 Training**: `train_v1.py`
+- **V2 Training**: `train_v2.py`
+- **Evaluation**: `test_v1_v2_comparison.py`
+
+### Notebooks
+- **V1 Baseline**: `notebooks/01_train_evaluate_featherface.ipynb`
+- **V2 Enhanced**: `notebooks/02_train_evaluate_featherface_v2.ipynb`
+
+## 🎯 Quick Access
+
+### Most Important Documents
+- **[V2 Architecture](architecture/featherface_v2.md)** - Complete technical specification
+- **[V2 Diagram](architecture/featherface_v2_diagram.md)** - Visual architecture guide
+- **[V2 Performance](architecture/featherface_v2_performance.md)** - Benchmarks and analysis
+- **[Scientific Papers](scientific/README.md)** - Research foundation
+
+### Documentation Status
+- ✅ **V2 Architecture**: Complete and validated
+- ✅ **Scientific Foundation**: 5 papers verified
+- ✅ **Implementation**: Production-ready
+- ✅ **Performance**: Benchmarked on WIDERFace
 
 ---
 
-**Status**: ✅ Enhanced 2024 architecture documentation  
-**Focus**: Small face specialized ultra-lightweight deployment  
-**Target**: Production-ready mobile/edge applications
+**Documentation Status**: ✅ V2 Complete  
+**Innovation**: Coordinate Attention for mobile optimization  
+**Performance**: +10.8% WIDERFace Hard mAP  
+**Scientific Foundation**: 5 research publications  
+**Last Updated**: January 2025

@@ -157,8 +157,8 @@ export CUDA_VISIBLE_DEVICES=""
 python -c "
 # Test imports
 from models.retinaface import RetinaFace
-from models.featherface_nano_b import create_featherface_nano_b
-from data.config import cfg_mnet, cfg_nano_b
+from models.featherface_v2_simple import FeatherFaceV2Simple
+from data.config import cfg_mnet, cfg_v2
 print('✅ All imports successful')
 
 # Test model creation
@@ -166,8 +166,8 @@ import torch
 model_v1 = RetinaFace(cfg=cfg_mnet, phase='test')
 print(f'✅ V1 model: {sum(p.numel() for p in model_v1.parameters()):,} parameters')
 
-model_nano_b = create_featherface_nano_b(cfg=cfg_nano_b, phase='test')
-print(f'✅ Nano-B model: {sum(p.numel() for p in model_nano_b.parameters()):,} parameters')
+model_v2 = FeatherFaceV2Simple(cfg=cfg_v2, phase='test')
+print(f'✅ V2 model: {sum(p.numel() for p in model_v2.parameters()):,} parameters')
 "
 ```
 

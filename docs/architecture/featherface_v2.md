@@ -185,13 +185,13 @@ test_v2_training.py                 # V2 validation script
 
 ## 🔄 Evolution Path
 
-### V1 → V2 → Future
+### V1 → V2 Evolution
 ```
-V1 (489K params) → V2 (493K params) → Enhanced Nano-B (619K → 120-180K)
-     ↓                     ↓                        ↓
- Standard CBAM      Coordinate Attention    All 2024 modules
-     ↓                     ↓                        ↓
- 77.2% Hard mAP     88.0% Hard mAP        Enhanced performance
+V1 (489K params) → V2 (493K params)
+     ↓                     ↓
+ Standard CBAM      Coordinate Attention
+     ↓                     ↓
+ 77.2% Hard mAP     88.0% Hard mAP
 ```
 
 ## 📚 Documentation Links

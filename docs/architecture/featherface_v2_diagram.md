@@ -215,7 +215,7 @@ Use Case                V1        V2        Recommendation
 Baseline Training       ✓✓        ✓         Use V1 as teacher
 Spatial Enhancement     ✓         ✓✓        Use V2
 Mobile Deployment       ✓         ✓✓        Use V2
-Ultra Efficiency        ✓         ✓         Use Nano-B
+Ultra Efficiency        ✓         ✓✓        Use V2
 Research/Ablation       ✓✓        ✓         Use V1 baseline
 Production Mobile       ✓         ✓✓        Use V2
 ```

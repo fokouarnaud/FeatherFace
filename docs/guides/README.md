@@ -5,52 +5,52 @@ Educational content and tutorials for FeatherFace face detection models.
 ## 🎓 Getting Started
 
 ### For Beginners
-- **[Getting Started Guide](getting-started.md)** - Complete beginner tutorial
-- **[Understanding the Architecture](../architecture/nano_b_for_kids.md)** - Simplified explanations
-- **[Metaphors & Analogies](metaphors.md)** - Real-world comparisons
+- **[Understanding the Architecture](../architecture/featherface_v2.md)** - Complete V2 technical specification
+- **[Metaphors & Analogies](metaphors.md)** - Real-world comparisons and analogies
+- **[Setup Guide](../setup/README.md)** - Installation and environment setup
 
 ### For Developers
-- **[Training Guide](training.md)** - Step-by-step training instructions
-- **[Best Practices](best-practices.md)** - Recommended workflows
-- **[Troubleshooting](troubleshooting.md)** - Common issues and solutions
+- **[V2 Implementation](../architecture/featherface_v2_implementation.md)** - Complete implementation guide
+- **[V2 Performance](../architecture/featherface_v2_performance.md)** - Benchmarks and analysis
+- **[Technical Specifications](../architecture/DIAGRAM_TECHNICAL_SPECS.md)** - Detailed technical specs
 
 ### For Researchers
-- **[Scientific Background](../scientific/README.md)** - Research foundation
-- **[Performance Analysis](../technical/performance.md)** - Benchmarking methodology
-- **[Mathematical Details](../scientific/mathematics.md)** - Technical formulations
+- **[Scientific Background](../scientific/README.md)** - Research foundation (5 papers)
+- **[Architecture Details](../architecture/featherface_v2.md)** - Complete V2 architecture
+- **[Visual Diagrams](../architecture/featherface_v2_diagram.md)** - Architecture diagrams
 
-## 📚 Available Guides
+## 📚 Available Content
 
-### 🚀 Quick Start Tutorials
-- **Installation & Setup** - Environment configuration
-- **First Training Session** - Train your first model
-- **Model Evaluation** - Test on WIDERFace dataset
-- **Export & Deployment** - Production-ready models
+### 🚀 Core Documentation
+- **V1 Baseline Understanding** - 489K parameter teacher model
+- **V2 Enhanced Architecture** - 493K parameter Coordinate Attention model
+- **Knowledge Distillation** - V1 teacher → V2 student training
+- **Mobile Optimization** - 2x faster inference techniques
 
-### 🔧 Technical Guides
-- **Architecture Deep Dive** - Understanding Nano-B design
-- **Module Explanations** - ScaleDecoupling, ASSN, MSE-FPN
-- **Optimization Techniques** - Bayesian pruning and knowledge distillation
-- **Performance Tuning** - Maximizing efficiency
+### 🔧 Technical Resources
+- **Architecture Deep Dive** - Understanding V2 Coordinate Attention design
+- **Module Explanations** - MobileNet, CBAM, BiFPN, Coordinate Attention
+- **Optimization Techniques** - Knowledge distillation and mobile optimization
+- **Performance Analysis** - WIDERFace benchmarks and mobile inference
 
 ### 🎯 Specialized Topics
-- **Small Face Detection** - P3 layer specialization
+- **Coordinate Attention** - Mobile-optimized spatial encoding
 - **Mobile Deployment** - Edge device optimization
-- **Custom Datasets** - Training on your own data
-- **Research Extensions** - Building on FeatherFace
+- **Knowledge Distillation** - Teacher-student learning
+- **Performance Optimization** - Maximizing efficiency
 
 ## 🎨 Learning Through Analogies
 
 ### Understanding Complex Concepts
 The [Metaphors Guide](metaphors.md) explains technical concepts using familiar analogies:
 
-- **Neural Networks** → **Factory Assembly Lines**
-- **Attention Mechanisms** → **Spotlight Systems**
+- **V1 vs V2 Architecture** → **Traditional vs Smart Factory**
+- **Coordinate Attention** → **GPS Navigation System**
 - **Knowledge Distillation** → **Teacher-Student Learning**
-- **Bayesian Optimization** → **Smart Trial-and-Error**
+- **Mobile Optimization** → **Smartphone Efficiency**
 
 ### Visual Learning
-- **Architecture Diagrams** - Visual representation of model structure
+- **Architecture Diagrams** - Visual representation of V2 model structure
 - **Flow Charts** - Step-by-step process visualization
 - **Performance Graphs** - Results and comparisons
 
@@ -59,7 +59,7 @@ The [Metaphors Guide](metaphors.md) explains technical concepts using familiar a
 ### Jupyter Notebooks
 Located in `notebooks/` directory:
 1. **[01_train_evaluate_featherface.ipynb](../../notebooks/01_train_evaluate_featherface.ipynb)** - V1 baseline training
-2. **[04_train_evaluate_featherface_nano_b.ipynb](../../notebooks/04_train_evaluate_featherface_nano_b.ipynb)** - Nano-B training
+2. **[02_train_evaluate_featherface_v2.ipynb](../../notebooks/02_train_evaluate_featherface_v2.ipynb)** - V2 training
 
 ### Hands-on Examples
 - **Model Loading** - How to load and use trained models
@@ -70,57 +70,73 @@ Located in `notebooks/` directory:
 ## 🎯 Learning Paths
 
 ### Path 1: Complete Beginner
-1. Read [Getting Started Guide](getting-started.md)
-2. Understand [Basic Concepts](../architecture/nano_b_for_kids.md)
+1. Read [Architecture Overview](../architecture/featherface_v2.md)
+2. Understand [Basic Concepts](metaphors.md)
 3. Try [Interactive Notebook](../../notebooks/01_train_evaluate_featherface.ipynb)
-4. Follow [Training Guide](training.md)
+4. Follow [Setup Guide](../setup/README.md)
 
 ### Path 2: Experienced Developer
-1. Review [Architecture Overview](../architecture/README.md)
-2. Check [Best Practices](best-practices.md)
-3. Run [Nano-B Training](../../notebooks/04_train_evaluate_featherface_nano_b.ipynb)
-4. Explore [Deployment Options](../deployment/README.md)
+1. Review [V2 Architecture](../architecture/featherface_v2.md)
+2. Check [Implementation Guide](../architecture/featherface_v2_implementation.md)
+3. Run [V2 Training](../../notebooks/02_train_evaluate_featherface_v2.ipynb)
+4. Explore [Performance Analysis](../architecture/featherface_v2_performance.md)
 
 ### Path 3: Researcher/Scientist
 1. Study [Scientific Foundation](../scientific/README.md)
-2. Analyze [Mathematical Details](../scientific/mathematics.md)
-3. Review [Performance Validation](../scientific/validation.md)
-4. Examine [Implementation Details](../technical/implementation.md)
+2. Analyze [Technical Specifications](../architecture/DIAGRAM_TECHNICAL_SPECS.md)
+3. Review [Architecture Diagrams](../architecture/featherface_v2_diagram.md)
+4. Examine [V2 Implementation](../architecture/featherface_v2_implementation.md)
 
-## 🔧 Support Resources
+## 🔧 Available Resources
 
-### Getting Help
-- **[Troubleshooting Guide](troubleshooting.md)** - Common issues and fixes
-- **[FAQ Section](faq.md)** - Frequently asked questions
-- **[Community Forum](https://github.com/dohun-mat/FeatherFace/discussions)** - Ask questions
-- **[Issue Tracker](https://github.com/dohun-mat/FeatherFace/issues)** - Report bugs
+### Documentation Structure
+- **[Architecture Documentation](../architecture/)** - Complete V2 technical specs
+- **[Scientific Foundation](../scientific/)** - Research papers and validation
+- **[Setup Guide](../setup/)** - Installation and configuration
+- **[Main Documentation](../README.md)** - Complete documentation index
 
-### Additional Resources
-- **Video Tutorials** - Coming soon
-- **Webinar Recordings** - Technical deep dives
-- **Community Contributions** - User-generated content
-- **Research Papers** - Extended reading list
+### Model Information
+- **V1 Baseline**: 489K parameters, CBAM attention, proven teacher model
+- **V2 Enhanced**: 493K parameters, Coordinate Attention, mobile-optimized
+- **Innovation**: +4K parameters (+0.8%) for +10.8% WIDERFace Hard mAP
+- **Performance**: 2x faster mobile inference
 
 ## 📊 Progress Tracking
 
 ### Skill Assessment
-- **Beginner**: Can run pre-trained models
-- **Intermediate**: Can train custom models
-- **Advanced**: Can modify architecture
-- **Expert**: Can contribute research
+- **Beginner**: Can understand V1/V2 architecture differences
+- **Intermediate**: Can train V2 models with knowledge distillation
+- **Advanced**: Can modify Coordinate Attention architecture
+- **Expert**: Can contribute to V2 research and optimization
 
 ### Milestone Checklist
 - [ ] Successfully installed FeatherFace
-- [ ] Ran first inference
-- [ ] Trained V1 baseline model
-- [ ] Trained Nano-B model
-- [ ] Evaluated on WIDERFace
-- [ ] Exported for deployment
-- [ ] Understood architecture principles
-- [ ] Contributed to project
+- [ ] Ran first V1 baseline inference
+- [ ] Understood V1 vs V2 differences
+- [ ] Trained V2 model with Coordinate Attention
+- [ ] Evaluated on WIDERFace dataset
+- [ ] Exported for mobile deployment
+- [ ] Understood Coordinate Attention principles
+- [ ] Contributed to project improvement
+
+## 🎯 Key Takeaways
+
+### V2 Advantages
+1. **Spatial Awareness**: Coordinate Attention preserves spatial information
+2. **Mobile Optimization**: 2x faster inference on mobile devices
+3. **Minimal Overhead**: Only +4K parameters (+0.8% vs V1)
+4. **Proven Base**: Maintains reliable V1 foundation
+5. **Scientific Foundation**: Built on peer-reviewed research
+
+### When to Use V2
+- **Mobile Applications**: When you need fast inference on smartphones
+- **Small Face Detection**: When spatial precision is critical
+- **Production Deployment**: When efficiency and accuracy are both important
+- **Real-time Processing**: When low latency is essential
 
 ---
 
-**Learning Resources Status**: ✅ Comprehensive guides available  
+**Learning Resources Status**: ✅ Comprehensive V2 guides available  
 **Target Audience**: Beginners to advanced researchers  
+**Focus**: V1 baseline and V2 Coordinate Attention  
 **Last Updated**: January 2025
