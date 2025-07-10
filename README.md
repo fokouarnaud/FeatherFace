@@ -72,16 +72,32 @@ import torch
 from models.retinaface import RetinaFace
 from models.featherface_v2_simple import FeatherFaceV2Simple
 from data.config import cfg_mnet, cfg_v2
+from collections import OrderedDict
 
-# Load V1 model (Baseline)
+def load_model_safe(model_path, map_location='cpu'):
+    """Load model with profiling key filtering (thop library compatibility)"""
+    state_dict = torch.load(model_path, map_location=map_location)
+    clean_state_dict = OrderedDict()
+    
+    for k, v in state_dict.items():
+        # Skip profiling keys added by thop library
+        if k.endswith('total_ops') or k.endswith('total_params'):
+            continue
+        # Remove module prefix if present
+        name = k[7:] if k.startswith('module.') else k
+        clean_state_dict[name] = v
+    
+    return clean_state_dict
+
+# Load V1 model (Baseline) - with thop profiling key filtering
 v1_model = RetinaFace(cfg=cfg_mnet, phase='test')
-checkpoint = torch.load('weights/mobilenet0.25_Final.pth')
-v1_model.load_state_dict(checkpoint)
+v1_checkpoint = load_model_safe('weights/mobilenet0.25_Final.pth')
+v1_model.load_state_dict(v1_checkpoint)
 
-# Load V2 model (Coordinate Attention)
+# Load V2 model (Coordinate Attention) - safe loading
 v2_model = FeatherFaceV2Simple(cfg=cfg_v2, phase='test')
-checkpoint = torch.load('weights/v2/featherface_v2_best.pth')
-v2_model.load_state_dict(checkpoint)
+v2_checkpoint = load_model_safe('weights/v2/featherface_v2_best.pth')
+v2_model.load_state_dict(v2_checkpoint)
 
 # Run inference
 v1_outputs = v1_model(input_tensor)  # [classifications, boxes, landmarks]
