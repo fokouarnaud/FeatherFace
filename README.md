@@ -193,6 +193,37 @@ jupyter notebook notebooks/02_train_evaluate_featherface_v2.ipynb
 | Mobile Speed | Baseline | **2x faster** | **Optimized** |
 | Spatial Awareness | Standard | **Enhanced** | **CA Module** |
 
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### V2 Teacher Model Loading Error
+**Problem**: `Error(s) in loading state_dict: Unexpected key(s) in state_dict: "total_ops", "total_params"`
+
+**Cause**: V1 teacher model was saved with profiling metadata from `thop` library during FLOP calculation.
+
+**Quick Fix**:
+```bash
+# The fix is already implemented in train_v2.py and notebook 02
+# If you encounter this error, update to the latest version
+git pull origin main
+```
+
+**Manual Fix** (if needed):
+```python
+# Filter profiling keys when loading state dict
+from collections import OrderedDict
+state_dict = torch.load('weights/mobilenet0.25_Final.pth')
+new_state_dict = OrderedDict()
+for k, v in state_dict.items():
+    if k.endswith('total_ops') or k.endswith('total_params'):
+        continue
+    new_state_dict[k] = v
+model.load_state_dict(new_state_dict)
+```
+
+For more troubleshooting help: `python help.py issues` or see [detailed troubleshooting guide](docs/setup/README.md#troubleshooting).
+
 ## 🤝 Contributing
 
 1. Fork the repository

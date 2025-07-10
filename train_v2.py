@@ -186,6 +186,10 @@ def load_teacher_model(teacher_path: str, cfg: Dict) -> nn.Module:
         from collections import OrderedDict
         new_state_dict = OrderedDict()
         for k, v in state_dict.items():
+            # Skip profiling keys added by thop library
+            if k.endswith('total_ops') or k.endswith('total_params'):
+                continue
+            
             head = k[:7]
             if head == 'module.':
                 name = k[7:]  # remove `module.`

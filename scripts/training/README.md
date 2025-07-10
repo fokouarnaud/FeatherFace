@@ -122,10 +122,64 @@ python train_nano_b.py --batch_size 64
 ## 🔧 Troubleshooting
 
 ### Common Issues
-1. **CUDA out of memory**: Reduce batch size or use gradient accumulation
-2. **Teacher model not found**: Check teacher model path and ensure V1 is trained
-3. **Slow training**: Enable mixed precision and optimize batch size
-4. **Poor convergence**: Adjust learning rate and distillation parameters
+
+#### 1. CUDA out of memory
+**Solution**: Reduce batch size or use gradient accumulation
+```bash
+python train_nano_b.py --batch_size 16 --gradient_accumulation 2
+```
+
+#### 2. Teacher model not found
+**Solution**: Check teacher model path and ensure V1 is trained
+```bash
+ls weights/mobilenet0.25_Final.pth
+python train.py --network mobile0.25  # Train V1 first if missing
+```
+
+#### 3. Teacher Model State Dict Error (CRITICAL for V2/Nano-B Training)
+**Error**: `Unexpected key(s) in state_dict: "total_ops", "total_params"`
+
+**When it occurs**:
+- Loading V1 teacher model in `train_v2.py` or `train_nano_b.py`
+- Knowledge distillation setup phase
+- Using V1 model trained with profiling libraries
+
+**Cause**: V1 teacher model contains profiling metadata from `thop` library
+
+**Solution**: The fix is already implemented in current training scripts
+```bash
+# Update to latest version
+git pull origin main
+
+# Run V2 training (fix included)
+python train_v2.py --teacher_model weights/mobilenet0.25_Final.pth
+
+# Run Nano-B training (fix included)  
+python train_nano_b.py --teacher_model weights/mobilenet0.25_Final.pth
+```
+
+**Verification**: Test teacher model loading
+```bash
+python -c "
+from models.retinaface import RetinaFace
+from data.config import cfg_mnet
+import torch
+
+model = RetinaFace(cfg=cfg_mnet, phase='test')
+# This should work without errors in current version
+state_dict = torch.load('weights/mobilenet0.25_Final.pth', map_location='cpu')
+print(f'Total keys in state dict: {len(state_dict)}')
+profiling_keys = [k for k in state_dict.keys() if k.endswith(('total_ops', 'total_params'))]
+print(f'Profiling keys found: {len(profiling_keys)}')
+print('✅ Teacher model ready for knowledge distillation')
+"
+```
+
+#### 4. Slow training
+**Solution**: Enable mixed precision and optimize batch size
+
+#### 5. Poor convergence
+**Solution**: Adjust learning rate and distillation parameters
 
 ### Solutions
 ```bash

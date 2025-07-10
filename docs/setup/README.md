@@ -219,6 +219,107 @@ export CUDA_VISIBLE_DEVICES=0  # Use first GPU
 # --num_workers 2 --batch_size 8
 ```
 
+#### 4. Model Loading Issues
+
+##### V2 Teacher Model Loading Error (CRITICAL)
+**Error Message**:
+```
+Error(s) in loading state_dict for RetinaFace:
+Unexpected key(s) in state_dict: "total_ops", "total_params", "body.total_ops", "body.total_params", ...
+```
+
+**When it occurs**:
+- Loading V1 teacher model in `train_v2.py` for knowledge distillation
+- Running notebook `02_train_evaluate_featherface_v2.ipynb`
+- Using a V1 model trained with profiling libraries
+
+**Root Cause**:
+The V1 teacher model was saved with profiling metadata from the `thop` library during FLOP calculation. These extra keys (`total_ops`, `total_params`) are added to the model's state_dict but aren't expected when loading.
+
+**Solution (Automatic)**:
+```bash
+# The fix is already implemented in current version
+git pull origin main
+python train_v2.py --teacher_model weights/mobilenet0.25_Final.pth
+```
+
+**Solution (Manual Fix)**:
+If you encounter this error with older code, use this filtering approach:
+```python
+import torch
+from collections import OrderedDict
+
+# Load state dict with filtering
+def load_teacher_model_clean(model_path):
+    state_dict = torch.load(model_path, map_location='cpu')
+    new_state_dict = OrderedDict()
+    profiling_keys_found = 0
+    
+    for k, v in state_dict.items():
+        # Skip profiling keys added by thop library
+        if k.endswith('total_ops') or k.endswith('total_params'):
+            profiling_keys_found += 1
+            continue
+        
+        # Remove module prefix if present
+        head = k[:7]
+        if head == 'module.':
+            name = k[7:]  # remove `module.`
+        else:
+            name = k
+        new_state_dict[name] = v
+    
+    print(f"Filtered {profiling_keys_found} profiling keys")
+    return new_state_dict
+
+# Usage example
+teacher_model = RetinaFace(cfg=cfg_mnet, phase='test')
+clean_state_dict = load_teacher_model_clean('weights/mobilenet0.25_Final.pth')
+teacher_model.load_state_dict(clean_state_dict)
+```
+
+**Prevention**:
+When training V1 models, avoid saving immediately after profiling:
+```python
+# BAD: Save after thop profiling
+from thop import profile
+flops, params = profile(model, inputs=(dummy_input,))
+torch.save(model.state_dict(), 'model.pth')  # Contains profiling keys
+
+# GOOD: Save before profiling or filter before saving
+torch.save(model.state_dict(), 'model.pth')  # Save clean model first
+from thop import profile
+flops, params = profile(model, inputs=(dummy_input,))  # Profile after saving
+```
+
+**Verification**:
+```bash
+# Test that the fix works
+python -c "
+from models.retinaface import RetinaFace
+from data.config import cfg_mnet
+import torch
+from collections import OrderedDict
+
+model = RetinaFace(cfg=cfg_mnet, phase='test')
+state_dict = torch.load('weights/mobilenet0.25_Final.pth', map_location='cpu')
+
+# Count profiling keys
+profiling_keys = [k for k in state_dict.keys() if k.endswith(('total_ops', 'total_params'))]
+print(f'Profiling keys found: {len(profiling_keys)}')
+
+# Filter and load
+clean_dict = OrderedDict()
+for k, v in state_dict.items():
+    if not k.endswith(('total_ops', 'total_params')):
+        name = k[7:] if k.startswith('module.') else k
+        clean_dict[name] = v
+
+model.load_state_dict(clean_dict)
+print('✅ Model loaded successfully after filtering')
+"
+```
+
 ### Environment Debugging
 ```bash
 # Full environment check
