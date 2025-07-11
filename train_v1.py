@@ -11,7 +11,7 @@ from layers.functions.prior_box import PriorBox
 import time
 import datetime
 import math
-from models.retinaface import RetinaFace
+from models.retinaface import RetinaFace  # V1 Original (502K params, 6 CBAM modules)
 import numpy as np
 from thop import profile
 from thop import clever_format
@@ -29,17 +29,33 @@ parser.add_argument('--save_folder', default='./weights/', help='Location to sav
 
 args = parser.parse_args()
 
-def calculate_flops(net,img_dim):
+def calculate_flops(net, img_dim):
+    """Calculate FLOP without corrupting the model with thop metadata"""
     dummy_input = torch.randn(1, 3, img_dim, img_dim)
     
-    macs, params = profile(net, inputs=(dummy_input,))
-    macs, params = clever_format([macs, params], "%.3f")
+    # Create a copy for profiling to avoid corrupting the original model
+    import copy
+    net_copy = copy.deepcopy(net)
     
-    print('========================')
-    print(f'Computational complexity: {macs}')
-    print(f'Number of parameters: {params}')
-    print('========================')
-    return macs, params
+    try:
+        macs, params = profile(net_copy, inputs=(dummy_input,))
+        macs, params = clever_format([macs, params], "%.3f")
+        
+        print('========================')
+        print(f'Computational complexity: {macs}')
+        print(f'Number of parameters: {params}')
+        print('========================')
+        
+        # Delete the copy to free memory and avoid thop contamination
+        del net_copy
+        
+        return macs, params
+    except Exception as e:
+        print(f'FLOP calculation failed: {e}')
+        print('========================')
+        print(f'Number of parameters: {sum(p.numel() for p in net.parameters()):,}')
+        print('========================')
+        return "N/A", "N/A"
 
 if not os.path.exists(args.save_folder):
     os.mkdir(args.save_folder)
@@ -131,7 +147,9 @@ def train():
 
             batch_iterator = iter(data.DataLoader(dataset, batch_size, shuffle=True, num_workers=num_workers, collate_fn=detection_collate))
             if (epoch % 10 == 0 and epoch > 0) or (epoch % 5 == 0 and epoch > cfg['decay1']):
-                torch.save(net.state_dict(), save_folder + cfg['name']+ '_epoch_' + str(epoch) + '.pth')
+                # Save clean state dict without thop contamination
+                state_dict = net.state_dict() if not isinstance(net, torch.nn.DataParallel) else net.module.state_dict()
+                torch.save(state_dict, save_folder + cfg['name']+ '_epoch_' + str(epoch) + '.pth')
             epoch += 1
 
         load_t0 = time.time() 
@@ -161,7 +179,11 @@ def train():
               .format(epoch, max_epoch, (iteration % epoch_size) + 1,
               epoch_size, iteration + 1, max_iter, loss_l.item(), loss_c.item(), loss_landm.item(), lr, batch_time, str(datetime.timedelta(seconds=eta))))
           
-    torch.save(net.state_dict(), save_folder + cfg['name'] + '_Final.pth')
+    # Save final model with clean state dict (no thop contamination)
+    final_state_dict = net.state_dict() if not isinstance(net, torch.nn.DataParallel) else net.module.state_dict()
+    torch.save(final_state_dict, save_folder + cfg['name'] + '_Final.pth')
+    print(f"✅ Final model saved: {save_folder + cfg['name'] + '_Final.pth'}")
+    print("🎯 Model saved without thop contamination - safe for V2 loading!")
 
 if __name__ == '__main__':
     train()

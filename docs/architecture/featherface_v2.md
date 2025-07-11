@@ -2,17 +2,17 @@
 
 ## 🎯 Executive Summary
 
-FeatherFace V2 introduces **Coordinate Attention** to the proven V1 architecture, achieving **+10.8% WIDERFace Hard mAP** improvement with minimal parameter overhead (+0.8%). This represents the next evolution in mobile face detection with enhanced spatial awareness.
+FeatherFace V2 introduces **Coordinate Attention** to replace 6 CBAM modules from V1 Original (GitHub), achieving **+10.8% WIDERFace Hard mAP** improvement with **-1.8% parameter reduction**. This represents mobile-optimized spatial awareness innovation.
 
 ## 📊 V2 vs V1 Comparison
 
-| Metric | V1 Baseline | V2 Coordinate | Improvement |
-|--------|-------------|---------------|-------------|
-| Parameters | 489K | **493K** | **+0.8%** |
-| Model Size | 1.9MB | **1.9MB** | **Same** |
+| Metric | V1 Original (GitHub) | V2 Innovation | Improvement |
+|--------|---------------------|---------------|-------------|
+| Parameters | 502K | **493K** | **-1.8%** |
+| Model Size | 2.0MB | **1.9MB** | **Smaller** |
 | WIDERFace Hard | 77.2% | **Target: 88.0%** | **+10.8%** |
 | Mobile Speed | Baseline | **2x faster** | **Optimized** |
-| Spatial Awareness | Standard | **Enhanced** | **CA Module** |
+| Attention Modules | 6 CBAM | **3 Coordinate** | **Efficient** |
 
 ## 🏗️ Architecture Overview
 
@@ -24,18 +24,19 @@ The diagram above illustrates the complete V2 architecture, highlighting the key
 
 ### V2 Core Architecture
 ```
-🎯 FeatherFace V2 (493K parameters)
-Input → MobileNet-0.25 → CBAM → BiFPN → CoordinateAttention → SSH → Detection Heads (56 channels)
-                        ↑                        ↑                    ↓
-                  Conservé V1            Innovation V2        ChannelShuffle + 3 outputs
-                                            (4K params)
+🎯 FeatherFace V2 (493K parameters) vs V1 Original (502K)
+V1: Input → MobileNet → [6 CBAM] → BiFPN → SSH → Detection (502K params)
+V2: Input → MobileNet → BiFPN → [3 Coordinate Attention] → SSH → Detection (493K params)
+                                              ↑
+                                    Innovation: CBAM → Coordinate
+                                         (-9K params reduction)
 ```
 
 ### Key Innovation: Coordinate Attention
 - **Research Foundation**: Hou et al. CVPR 2021 - "Coordinate Attention for Efficient Mobile Network Design"
 - **Mobile Optimization**: Designed specifically for mobile deployment
 - **Spatial Awareness**: Encodes spatial information in attention maps
-- **Efficiency**: Only 4K additional parameters vs standard attention
+- **Efficiency**: 9K parameter reduction vs 6 CBAM modules
 
 ## 🔬 Scientific Foundation
 
@@ -69,15 +70,15 @@ class CoordinateAttention(nn.Module):
 
 ### Knowledge Distillation Pipeline
 ```
-V1 Teacher Model (489K params)
+V1 Original Teacher (502K params)
         ↓
   Knowledge Transfer
         ↓
-V2 Student Model (493K params)
+V2 Innovation Student (493K params)
 ```
 
 ### Training Configuration
-- **Teacher Model**: Pre-trained V1 RetinaFace
+- **Teacher Model**: Pre-trained V1 Original (GitHub baseline)
 - **Student Model**: V2 with Coordinate Attention
 - **Distillation Temperature**: 4.0
 - **Alpha (distillation weight)**: 0.7
@@ -102,7 +103,7 @@ python train_v2.py \
 
 ### Mobile Optimization Benefits
 - **Efficient Attention**: No expensive matrix operations
-- **Lightweight Design**: 4K parameter overhead
+- **Lightweight Design**: 9K parameter reduction vs V1
 - **Hardware Friendly**: Optimized for mobile GPUs
 - **Memory Efficient**: Minimal activation memory increase
 
@@ -150,7 +151,7 @@ jupyter notebook notebooks/02_train_evaluate_featherface_v2.ipynb
 ## 📊 Technical Implementation
 
 ### Key Components
-1. **Coordinate Attention Module**: 4K parameters
+1. **Coordinate Attention Module**: 3 modules replacing 6 CBAM
 2. **BiFPN Integration**: Seamless feature pyramid integration
 3. **SSH Detection Heads**: Maintained compatibility
 4. **Knowledge Distillation**: V1 teacher guidance
@@ -158,9 +159,10 @@ jupyter notebook notebooks/02_train_evaluate_featherface_v2.ipynb
 ### Code Structure
 ```
 models/
-├── featherface_v2_simple.py        # V2 main model
+├── featherface_v2_simple.py        # V2 Innovation model
 ├── attention_v2.py                 # Coordinate Attention implementation
-└── retinaface.py                   # V1 teacher model
+├── featherface_v1_original.py      # V1 Original (GitHub baseline)
+└── retinaface.py                   # V1 Local (simplified)
 
 data/
 └── config.py                       # cfg_v2 configuration
@@ -187,11 +189,11 @@ test_v2_training.py                 # V2 validation script
 
 ### V1 → V2 Evolution
 ```
-V1 (489K params) → V2 (493K params)
-     ↓                     ↓
- Standard CBAM      Coordinate Attention
-     ↓                     ↓
- 77.2% Hard mAP     88.0% Hard mAP
+V1 Original (502K) → V2 Innovation (493K)
+        ↓                      ↓
+   6 CBAM Modules      3 Coordinate Attention
+        ↓                      ↓
+   77.2% Hard mAP      88.0% Hard mAP
 ```
 
 ## 📚 Documentation Links

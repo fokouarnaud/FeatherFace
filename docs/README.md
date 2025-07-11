@@ -48,16 +48,16 @@ The current production architecture is **FeatherFace V2 with Coordinate Attentio
 5. **MobileNet**: Howard et al. 2017
 
 ### 🎯 V2 Key Features
-- **V1 Baseline**: 489K parameters (proven teacher model)
-- **V2 Enhanced**: 493K parameters (+4K for Coordinate Attention)
+- **V1 Original**: 502K parameters (GitHub repository baseline, 6 CBAM modules)
+- **V2 Innovation**: 493K parameters (-9K parameter reduction via Coordinate Attention)
 - **Mobile Optimization**: 2x faster inference
-- **Spatial Awareness**: Enhanced coordinate encoding
+- **Spatial Awareness**: Enhanced coordinate encoding vs global pooling
 - **Scientific Foundation**: 5 research publications (2017-2021)
 
 ### 🏗️ Architecture Evolution
 ```
-V1 (489K) → V2 (493K)
-Standard CBAM → Coordinate Attention
+V1 Original (502K) → V2 Innovation (493K)
+6 CBAM Modules → 3 Coordinate Attention
 77.2% Hard mAP → 88.0% Hard mAP
 ```
 
@@ -78,20 +78,20 @@ Standard CBAM → Coordinate Attention
 
 | Model | Parameters | mAP (Hard) | Innovation | Use Case |
 |-------|------------|------------|------------|----------|
-| **V1** | 489K | 77.2% | CBAM baseline | Teacher model |
-| **V2** | 493K | 88.0% | Coordinate Attention | Mobile production |
+| **V1 Original (GitHub)** | 502K | 77.2% | 6 CBAM modules | Teacher baseline |
+| **V2 Innovation** | 493K | 88.0% | Coordinate Attention | Mobile production |
 
 ## 🔧 Implementation Files
 
 ### Core Models
-- **V1 Teacher**: `models/retinaface.py`
-- **V2 Student**: `models/featherface_v2_simple.py`
+- **V1 Original**: `models/featherface_v1_original.py` (GitHub repository baseline)
+- **V2 Innovation**: `models/featherface_v2_simple.py` (Coordinate Attention)
 - **Coordinate Attention**: `models/attention_v2.py`
 
 ### Training Scripts
 - **V1 Training**: `train_v1.py`
 - **V2 Training**: `train_v2.py`
-- **Evaluation**: `test_v1_v2_comparison.py`
+- **Evaluation**: `test_v1_original_vs_v2_innovation.py`
 
 ### Notebooks
 - **V1 Baseline**: `notebooks/01_train_evaluate_featherface.ipynb`

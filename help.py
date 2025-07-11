@@ -13,22 +13,27 @@ from pathlib import Path
 def print_banner():
     print("🚀 " + "="*60)
     print("   FEATHERFACE - EFFICIENT FACE DETECTION TOOLKIT")
-    print("   V1 (487K) → Nano (344K) - Scientifically Justified Efficiency")
+    print("   V1 (489K) → V2 (493K) → Nano (344K) - Scientific Innovation")
     print("="*63)
 
 def print_quick_start():
     print("\n🎯 QUICK START")
     print("-" * 30)
-    print("1. Train V1 (Teacher):    python train_v1.py --training_dataset ./data/widerface/train/label.txt")
-    print("2. Train Nano:           python train_nano.py --teacher_model weights/mobilenet0.25_Final.pth")
-    print("3. Validate Results:      python validate_model.py --quick-check")
-    print("4. Compare Performance:   python test_v1_nano_comparison.py")
+    print("1. Train V1 (Baseline):   python train_v1.py --training_dataset ./data/widerface/train/label.txt")
+    print("2. Train V2 (Simple):     python train_v2_simple.py --training_dataset ./data/widerface/train/label.txt")
+    print("3. Train Nano:            python train_nano.py --teacher_model weights/mobilenet0.25_Final.pth")
+    print("4. Validate Results:      python validate_model.py --quick-check")
+    print("5. Compare Performance:   python test_v1_v2_comparison.py")
 
 def print_training_commands():
     print("\n🏃 TRAINING COMMANDS")
     print("-" * 30)
-    print("V1 (Baseline - 487K params):")
+    print("V1 (Baseline - 489K params):")
     print("  python train_v1.py --training_dataset ./data/widerface/train/label.txt --network mobile0.25")
+    print("")
+    print("V2 Simple (Coordinate Attention - 493K params):")
+    print("  python train_v2_simple.py --training_dataset ./data/widerface/train/label.txt")
+    print("  python train_v2_simple.py --resume_net weights/v2_simple/featherface_v2_simple_epoch_100.pth")
     print("")
     print("Nano (Ultra-Efficient - 344K params):")
     print("  python train_nano.py --epochs 400 --teacher_model weights/mobilenet0.25_Final.pth")

@@ -492,6 +492,39 @@ class BiFPN(nn.Module):
 
         return p3_out, p4_out, p5_out
 
+    def _forward(self, inputs):
+        """
+        Forward pass without attention mechanism
+        Simplified BiFPN without weighted fusion
+        """
+        if self.first_time:
+            p3, p4, p5 = inputs
+
+            p3_in = self.p3_down_channel(p3)
+            p4_in = self.p4_down_channel(p4)
+            p5_in = self.p5_down_channel(p5)
+
+        else:
+            # P3_0, P4_0, P5_0
+            p3_in, p4_in, p5_in = inputs
+
+        # Simple top-down path (no weighted attention)
+        p5_upsamp_p4 = F.interpolate(p5_in, size=[p4_in.size(2), p4_in.size(3)], mode="nearest")
+        p4_up = self.conv4_up(self.swish(p4_in + p5_upsamp_p4))
+
+        p4_upsamp_p3 = F.interpolate(p4_up, size=[p3_in.size(2), p3_in.size(3)], mode="nearest")
+        p3_out = self.conv3_up(self.swish(p3_in + p4_upsamp_p3))
+
+        if self.first_time:
+            p4_in = self.p4_down_channel_2(p4)
+            p5_in = self.p5_down_channel_2(p5)
+
+        # Simple bottom-up path (no weighted attention)
+        p4_out = self.conv4_down(self.swish(p4_in + p4_up + self.p4_downsample(p3_out)))
+        p5_out = self.conv5_down(self.swish(p5_in + self.p5_downsample(p4_out)))
+
+        return p3_out, p4_out, p5_out
+
 class DeformableConv2d(nn.Module):
     def __init__(self,
                  in_channels,

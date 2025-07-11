@@ -25,9 +25,9 @@ cfg_mnet = {
 
 # Configuration for FeatherFace V2 (V1 + Coordinate Attention)
 # INNOVATION: Replace CBAM with Coordinate Attention for mobile-optimized face detection
-# Scientific foundation: Hou et al. CVPR 2021 + 2024-2025 applications
+# Scientific foundation: Hou et al. CVPR 2021 + simplified training approach
 cfg_v2 = {
-    # Base configuration identical to V1 for controlled comparison
+    # Base configuration IDENTICAL to V1 for controlled comparison
     'name': 'mobilenet0.25',
     'min_sizes': [[16, 32], [64, 128], [256, 512]],
     'steps': [8, 16, 32],
@@ -57,34 +57,27 @@ cfg_v2 = {
         'use_depthwise': False,         # Standard conv for stability
     },
     
-    # Training configuration optimized for V2
-    'knowledge_distillation': {
-        'enabled': True,                # V1 → V2 knowledge transfer
-        'temperature': 4.0,             # Standard distillation temperature
-        'alpha': 0.7,                   # Distillation vs task loss weight
-        'teacher_model': 'v1',          # Use V1 as teacher
-    },
-    
-    # Performance targets based on research
+    # Performance targets based on research (simplified training)
     'performance_targets': {
-        'widerface_easy': 0.9300,      # +0.43% vs V1 (maintain)
-        'widerface_medium': 0.9150,    # +1.26% vs V1 (slight improvement)
-        'widerface_hard': 0.8800,      # +10.85% vs V1 (major improvement)
+        'widerface_easy': 0.9200,      # Maintain V1 level
+        'widerface_medium': 0.9000,    # Maintain V1 level
+        'widerface_hard': 0.8500,      # +8-10% vs V1 (realistic with simple training)
         'mobile_speedup': 2.0,         # 2x faster than CBAM
-        'parameter_budget': 500000,    # Maintain ~489K parameters
+        'parameter_budget': 500000,    # ~493K parameters (4K more than V1)
     },
     
     # Scientific validation references
     'scientific_basis': {
         'coordinate_attention': 'Hou et al. CVPR 2021',
-        'mobile_applications': 'EfficientFace 2024, FasterMLP 2025',
-        'face_detection': 'Dense Face Detection 2024',
-        'methodology': 'FeatherFace V2 Methodology 2025'
+        'training_methodology': 'Simplified direct training (like V1)',
+        'architectural_innovation': 'Post-SSH coordinate attention',
+        'controlled_experiment': 'Single variable change (attention mechanism)'
     },
     
     # Experimental configuration
     'experiment_config': {
         'baseline_model': 'v1',         # Comparison baseline
+        'training_approach': 'direct_supervision',  # No knowledge distillation
         'controlled_variables': ['attention_mechanism'],  # Only change attention
         'evaluation_metrics': ['widerface_ap', 'inference_time', 'parameters'],
         'validation_protocol': 'widerface_standard',
