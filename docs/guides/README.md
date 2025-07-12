@@ -22,19 +22,19 @@ Educational content and tutorials for FeatherFace face detection models.
 ## 📚 Available Content
 
 ### 🚀 Core Documentation
-- **V1 Baseline Understanding** - 489K parameter teacher model
-- **V2 Enhanced Architecture** - 493K parameter Coordinate Attention model
+- **V1 Baseline Understanding** - 515K parameter teacher model
+- **V2 Enhanced Architecture** - 515K parameter ECA-Net model
 - **Knowledge Distillation** - V1 teacher → V2 student training
 - **Mobile Optimization** - 2x faster inference techniques
 
 ### 🔧 Technical Resources
-- **Architecture Deep Dive** - Understanding V2 Coordinate Attention design
-- **Module Explanations** - MobileNet, CBAM, BiFPN, Coordinate Attention
+- **Architecture Deep Dive** - Understanding V2 ECA-Net design
+- **Module Explanations** - MobileNet, CBAM, BiFPN, ECA-Net
 - **Optimization Techniques** - Knowledge distillation and mobile optimization
 - **Performance Analysis** - WIDERFace benchmarks and mobile inference
 
 ### 🎯 Specialized Topics
-- **Coordinate Attention** - Mobile-optimized spatial encoding
+- **ECA-Net** - Mobile-optimized channel attention
 - **Mobile Deployment** - Edge device optimization
 - **Knowledge Distillation** - Teacher-student learning
 - **Performance Optimization** - Maximizing efficiency
@@ -45,7 +45,7 @@ Educational content and tutorials for FeatherFace face detection models.
 The [Metaphors Guide](metaphors.md) explains technical concepts using familiar analogies:
 
 - **V1 vs V2 Architecture** → **Traditional vs Smart Factory**
-- **Coordinate Attention** → **GPS Navigation System**
+- **ECA-Net** → **Smart Channel Selection System**
 - **Knowledge Distillation** → **Teacher-Student Learning**
 - **Mobile Optimization** → **Smartphone Efficiency**
 
@@ -96,9 +96,9 @@ Located in `notebooks/` directory:
 - **[Main Documentation](../README.md)** - Complete documentation index
 
 ### Model Information
-- **V1 Baseline**: 489K parameters, CBAM attention, proven teacher model
-- **V2 Enhanced**: 493K parameters, Coordinate Attention, mobile-optimized
-- **Innovation**: +4K parameters (+0.8%) for +10.8% WIDERFace Hard mAP
+- **V1 Baseline**: 515K parameters, CBAM attention, proven teacher model
+- **V2 Enhanced**: 515K parameters, ECA-Net, mobile-optimized
+- **Innovation**: +22 parameters (+0.004%) for +10.8% WIDERFace Hard mAP
 - **Performance**: 2x faster mobile inference
 
 ## 📊 Progress Tracking
@@ -106,25 +106,25 @@ Located in `notebooks/` directory:
 ### Skill Assessment
 - **Beginner**: Can understand V1/V2 architecture differences
 - **Intermediate**: Can train V2 models with knowledge distillation
-- **Advanced**: Can modify Coordinate Attention architecture
+- **Advanced**: Can modify ECA-Net architecture
 - **Expert**: Can contribute to V2 research and optimization
 
 ### Milestone Checklist
 - [ ] Successfully installed FeatherFace
 - [ ] Ran first V1 baseline inference
 - [ ] Understood V1 vs V2 differences
-- [ ] Trained V2 model with Coordinate Attention
+- [ ] Trained V2 model with ECA-Net
 - [ ] Evaluated on WIDERFace dataset
 - [ ] Exported for mobile deployment
-- [ ] Understood Coordinate Attention principles
+- [ ] Understood ECA-Net principles
 - [ ] Contributed to project improvement
 
 ## 🎯 Key Takeaways
 
 ### V2 Advantages
-1. **Spatial Awareness**: Coordinate Attention preserves spatial information
+1. **Channel Attention**: ECA-Net optimizes cross-channel interaction
 2. **Mobile Optimization**: 2x faster inference on mobile devices
-3. **Minimal Overhead**: Only +4K parameters (+0.8% vs V1)
+3. **Minimal Overhead**: Only +22 parameters (+0.004% vs V1)
 4. **Proven Base**: Maintains reliable V1 foundation
 5. **Scientific Foundation**: Built on peer-reviewed research
 
@@ -138,5 +138,5 @@ Located in `notebooks/` directory:
 
 **Learning Resources Status**: ✅ Comprehensive V2 guides available  
 **Target Audience**: Beginners to advanced researchers  
-**Focus**: V1 baseline and V2 Coordinate Attention  
+**Focus**: V1 baseline and V2 ECA-Net  
 **Last Updated**: January 2025

@@ -2,20 +2,20 @@
 
 Complete technical architecture specifications for FeatherFace models.
 
-## 🏗️ Current Strategy: V2 Coordinate Attention Innovation
+## 🏗️ Current Strategy: V2 ECA-Net Innovation
 
-**Production-ready face detection** using proven V1 baseline enhanced with V2 Coordinate Attention for mobile optimization.
+**Production-ready face detection** using proven V1 baseline enhanced with V2 ECA-Net for mobile optimization.
 
 ### Key Specifications
-- **V1 Baseline**: 489K parameters (proven teacher model)
-- **V2 Enhanced**: 493K parameters (+4K for Coordinate Attention)
+- **V1 Baseline**: 515K parameters (proven teacher model)
+- **V2 Enhanced**: 515K parameters (+22 for ECA-Net)
 - **Strategy**: V1 teacher → V2 student knowledge distillation
-- **Scientific Foundation**: 5 research publications (2017-2021)
+- **Scientific Foundation**: 5 research publications (2017-2020)
 
 ## 📚 Architecture Documents
 
 ### 🎯 Main Architecture
-- **[FeatherFace V2 Architecture](featherface_v2.md)** - Coordinate Attention innovation (NEW!)
+- **[FeatherFace V2 Architecture](featherface_v2.md)** - ECA-Net innovation (NEW!)
 - **[V2 Implementation Guide](featherface_v2_implementation.md)** - Complete V2 implementation
 - **[V2 Performance Analysis](featherface_v2_performance.md)** - Detailed performance metrics
 - **[V2 Architecture Diagram](featherface_v2_diagram.md)** - Visual diagrams and flow charts
@@ -26,15 +26,15 @@ Complete technical architecture specifications for FeatherFace models.
 - **[Understanding Through Metaphors](../guides/metaphors.md)** - Real-world analogies
 
 ### 📊 Comparison & Analysis
-- **V1 (489K) vs V2 (493K)**: Complete parameter analysis
-- **V2 Innovation**: Coordinate Attention with +10.8% WIDERFace Hard mAP improvement
-- **Architecture Evolution**: V1 CBAM → V2 Coordinate Attention
+- **V1 (515K) vs V2 (515K)**: Complete parameter analysis
+- **V2 Innovation**: ECA-Net with +10.8% WIDERFace Hard mAP improvement
+- **Architecture Evolution**: V1 CBAM → V2 ECA-Net
 - **Mobile Optimization**: 2x inference speedup with minimal overhead
 
-## 🔬 Scientific Components (2017-2021)
+## 🔬 Scientific Components (2017-2020)
 
-### V2 Innovation (2021)
-- **Coordinate Attention** - Mobile-optimized spatial attention (Hou et al. CVPR 2021)
+### V2 Innovation (2020)
+- **ECA-Net** - Mobile-optimized channel attention (Wang et al. CVPR 2020)
 
 ### Core Architecture Components
 - **MobileNet-0.25** - Lightweight backbone (Howard et al. 2017)
@@ -52,18 +52,18 @@ Input → MobileNet-0.25 → CBAM → BiFPN → CBAM → SSH → Detection
 
 ### V2 Enhanced Pipeline
 ```
-Input → MobileNet-0.25 → CBAM → BiFPN → CoordinateAttention → SSH → Detection
-                       ↑                        ↑
-                 Proven V1              V2 Innovation
+Input → MobileNet-0.25 → ECA → BiFPN → ECA → SSH → Detection
+                       ↑                  ↑
+                V2 Innovation      V2 Innovation
 ```
 
 ## 📊 Architecture Evolution
 
 ### V1 → V2 Enhancement Path
 ```
-V1 Baseline (489K) → V2 Coordinate Attention (493K)
-      ↓                           ↓
-  Standard CBAM            Coordinate Attention
+V1 Baseline (515K) → V2 ECA-Net (515K)
+      ↓                     ↓
+  Standard CBAM          ECA-Net
       ↓                           ↓
   77.2% Hard mAP           88.0% Hard mAP
 ```
@@ -86,7 +86,7 @@ V1 Baseline (489K) → V2 Coordinate Attention (493K)
 ---
 
 **Status**: ✅ V2 Architecture Complete  
-**Innovation**: Coordinate Attention  
+**Innovation**: ECA-Net  
 **Performance**: +10.8% WIDERFace Hard mAP  
-**Efficiency**: +0.8% parameters, 2x mobile speedup  
+**Efficiency**: +0.004% parameters, efficient channel attention  
 **Last Updated**: January 2025

@@ -1,0 +1,208 @@
+digraph FeatherFaceV2ECAArchitecture {
+    // Global settings - Paysage horizontal
+    rankdir=LR
+    bgcolor="#f8f9fa"
+    fontname="Arial"
+    fontsize=12
+    
+    // Node defaults
+    node [fontname="Arial", fontsize=10, shape=box, style=filled]
+    edge [fontname="Arial", fontsize=9]
+    
+    // Title
+    title [label="FeatherFace V2 Architecture\n(ECA-Net Scientific Innovation)", 
+           shape=plaintext, fontsize=16, fontcolor="#2c3e50"]
+    
+    // (a) FeatherFace V2 ECA-Net Main Architecture
+    subgraph cluster_main {
+        label="(a) FeatherFace V2 ECA-Net Architecture (515K parameters)"
+        fontsize=14
+        fontcolor="#34495e"
+        color="#bdc3c7"
+        style=rounded
+        
+        // Input
+        input [label="Input\n(640×640×3)", fillcolor="#ecf0f1", color="#95a5a6"]
+        
+        // Backbone
+        backbone [label="MobileNet-0.25\nBackbone", fillcolor="#3498db", fontcolor="white"]
+        
+        // ECA-Net modules on backbone features
+        subgraph cluster_backbone_eca {
+            label="Backbone ECA-Net Modules"
+            fontsize=11
+            color="#e67e22"
+            style=dashed
+            
+            eca_bb_0 [label="ECA-Net\n(64ch, k=3)", fillcolor="#e67e22", fontcolor="white", shape=ellipse]
+            eca_bb_1 [label="ECA-Net\n(128ch, k=5)", fillcolor="#e67e22", fontcolor="white", shape=ellipse] 
+            eca_bb_2 [label="ECA-Net\n(256ch, k=5)", fillcolor="#e67e22", fontcolor="white", shape=ellipse]
+        }
+        
+        // BiFPN Feature Pyramid
+        subgraph cluster_fpn {
+            label="BiFPN Multi-scale Features"
+            fontsize=11
+            color="#27ae60"
+            style=dashed
+            
+            p3 [label="P3/8", fillcolor="#e74c3c", fontcolor="white"]
+            p4 [label="P4/16", fillcolor="#f39c12", fontcolor="white"] 
+            p5 [label="P5/32", fillcolor="#9b59b6", fontcolor="white"]
+            
+            // BiFPN connections
+            p3 -> p4 [label="↓", color="#27ae60"]
+            p4 -> p5 [label="↓", color="#27ae60"]
+            p5 -> p4 [label="↑", color="#27ae60"]
+            p4 -> p3 [label="↑", color="#27ae60"]
+        }
+        
+        // ECA-Net modules on BiFPN features
+        subgraph cluster_bifpn_eca {
+            label="BiFPN ECA-Net Modules"
+            fontsize=11
+            color="#e67e22"
+            style=dashed
+            
+            eca_bif_0 [label="ECA-Net\n(56ch, k=3)", fillcolor="#e67e22", fontcolor="white", shape=ellipse]
+            eca_bif_1 [label="ECA-Net\n(56ch, k=3)", fillcolor="#e67e22", fontcolor="white", shape=ellipse]
+            eca_bif_2 [label="ECA-Net\n(56ch, k=3)", fillcolor="#e67e22", fontcolor="white", shape=ellipse]
+        }
+        
+        // Detection heads
+        det_head [label="Detection Head\n(SSH)", fillcolor="#1abc9c", fontcolor="white"]
+        
+        // Outputs
+        outputs [label="Detection Outputs\n[BBox, Classification, Landmarks]", 
+                fillcolor="#34495e", fontcolor="white"]
+        
+        // Main flow - FeatherFace V2 ECA Architecture
+        input -> backbone
+        backbone -> eca_bb_0
+        backbone -> eca_bb_1  
+        backbone -> eca_bb_2
+        
+        eca_bb_0 -> p3
+        eca_bb_1 -> p4
+        eca_bb_2 -> p5
+        
+        p3 -> eca_bif_0
+        p4 -> eca_bif_1
+        p5 -> eca_bif_2
+        
+        eca_bif_0 -> det_head
+        eca_bif_1 -> det_head
+        eca_bif_2 -> det_head
+        
+        det_head -> outputs
+    }
+    
+    // (b) ECA-Net Module Detail (Wang et al. CVPR 2020)
+    subgraph cluster_eca_detail {
+        label="(b) ECA-Net Module (Wang et al. CVPR 2020)"
+        fontsize=14
+        fontcolor="#e67e22"
+        color="#e67e22"
+        style=rounded
+        
+        // Input feature
+        eca_input [label="Input Feature\n[B, C, H, W]", fillcolor="#ecf0f1", color="#95a5a6"]
+        
+        // Global Average Pooling
+        gap [label="Global Average\nPooling", fillcolor="#3498db", fontcolor="white", shape=ellipse]
+        gap_output [label="GAP Output\n[B, C]", fillcolor="#e74c3c", fontcolor="white"]
+        
+        // Adaptive kernel calculation
+        kernel_calc [label="Adaptive Kernel\nk = |log₂(C)/γ + b/γ|_odd", 
+                    fillcolor="#9b59b6", fontcolor="white", shape=diamond]
+        
+        // 1D Convolution
+        conv1d [label="Conv1D_k\nLocal Cross-Channel", fillcolor="#27ae60", fontcolor="white"]
+        
+        // Sigmoid activation
+        sigmoid [label="Sigmoid\nActivation", fillcolor="#f39c12", fontcolor="white", shape=diamond]
+        
+        // Attention weights
+        attention_weights [label="Attention Weights\n[B, C]", fillcolor="#e67e22", fontcolor="white"]
+        
+        // Element-wise multiplication
+        multiply [label="Element-wise\nMultiplication ⊗", 
+                 fillcolor="#1abc9c", fontcolor="white", shape=hexagon]
+        
+        // Enhanced output
+        eca_output [label="Enhanced Feature\n[B, C, H, W]", fillcolor="#1abc9c", fontcolor="white"]
+        
+        // Flow within ECA-Net
+        eca_input -> gap
+        gap -> gap_output
+        gap_output -> kernel_calc
+        kernel_calc -> conv1d
+        conv1d -> sigmoid
+        sigmoid -> attention_weights
+        
+        attention_weights -> multiply
+        eca_input -> multiply [label="⊗", color="#1abc9c"]
+        multiply -> eca_output
+    }
+    
+    // (c) Efficiency Comparison
+    subgraph cluster_efficiency {
+        label="(c) Efficiency Comparison (C=256 channels)"
+        fontsize=14
+        fontcolor="#34495e"
+        color="#34495e"
+        style=rounded
+        
+        // Comparison table
+        comparison [label=<
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+            <TR><TD BGCOLOR="#34495e"><FONT COLOR="white"><B>Method</B></FONT></TD>
+                <TD BGCOLOR="#34495e"><FONT COLOR="white"><B>Parameters</B></FONT></TD>
+                <TD BGCOLOR="#34495e"><FONT COLOR="white"><B>ImageNet Top-1</B></FONT></TD>
+                <TD BGCOLOR="#34495e"><FONT COLOR="white"><B>Mobile Score</B></FONT></TD></TR>
+            <TR><TD>SE-Net</TD><TD BGCOLOR="#ffcccc">8,192</TD><TD>77.42%</TD><TD BGCOLOR="#ffcccc">❌ Poor</TD></TR>
+            <TR><TD>CBAM</TD><TD BGCOLOR="#ffcccc">8,290</TD><TD>77.34%</TD><TD BGCOLOR="#ffcccc">❌ Poor</TD></TR>
+            <TR><TD BGCOLOR="#ccffcc"><B>ECA-Net</B></TD><TD BGCOLOR="#ccffcc"><B>5</B></TD><TD BGCOLOR="#ccffcc"><B>77.48%</B></TD><TD BGCOLOR="#ccffcc"><B>✅ Excellent</B></TD></TR>
+            </TABLE>
+        >, shape=plaintext]
+        
+        efficiency_note [label="ECA-Net: 1,638x fewer parameters than SE-Net\nwith superior performance", 
+                        fillcolor="#d5f4e6", color="#27ae60", fontcolor="#27ae60"]
+    }
+    
+    // (d) Mathematical Foundation
+    subgraph cluster_math {
+        label="(d) Mathematical Foundation"
+        fontsize=14
+        fontcolor="#9b59b6"
+        color="#9b59b6"
+        style=rounded
+        
+        math_formula [label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+            <TR><TD><B>ECA-Net Formulation:</B></TD></TR>
+            <TR><TD>1. GAP: y<SUB>c</SUB> = (1/HW) ∑∑ x<SUB>c</SUB>(i,j)</TD></TR>
+            <TR><TD>2. Adaptive kernel: k = |log₂(C)/γ + b/γ|<SUB>odd</SUB></TD></TR>
+            <TR><TD>3. 1D Conv: w = σ(Conv1D<SUB>k</SUB>(y))</TD></TR>
+            <TR><TD>4. Recalibration: x̃ = x ⊗ w</TD></TR>
+            <TR><TD></TD></TR>
+            <TR><TD><B>Complexity: O(C×log(C)) vs O(C²/r) for SE</B></TD></TR>
+            </TABLE>
+        >, shape=plaintext, fillcolor="#f3e5f5", color="#9b59b6"]
+    }
+    
+    // Main connections between subgraphs
+    title -> input [style=invis]
+    eca_bb_0 -> eca_input [style=invis, constraint=false]
+    det_head -> comparison [style=invis, constraint=false]
+    
+    // Scientific validation annotations
+    validation [label="Scientific Validation:\n✅ Wang et al. CVPR 2020\n✅ 1,500+ citations\n✅ ImageNet benchmark proven\n✅ Superior to SE + CBAM", 
+               shape=note, fillcolor="#fff3cd", color="#856404", fontcolor="#856404"]
+    
+    innovation [label="Innovation V2:\n• ECA-Net replaces CBAM\n• 6 modules: 3 backbone + 3 BiFPN\n• Total: 22 parameters (ultra-minimal)\n• Proven mobile efficiency", 
+               shape=note, fillcolor="#d4edda", color="#155724", fontcolor="#155724"]
+    
+    eca_bb_0 -> validation [style=dashed, color="#856404"]
+    eca_bif_0 -> innovation [style=dashed, color="#155724"]
+}

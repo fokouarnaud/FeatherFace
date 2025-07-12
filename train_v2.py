@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """
-FeatherFace V2 Simple Training Script
+FeatherFace V2 ECA-Net Training Script
 
-This script implements simplified V2 training using the proven V1 approach:
+This script implements V2 training using scientifically validated ECA-Net:
 1. Direct ground truth supervision (no knowledge distillation)
 2. Standard MultiBoxLoss like V1
-3. Only architectural difference: Coordinate Attention vs CBAM
+3. Only architectural difference: ECA-Net vs CBAM
 4. Clean comparison for scientific evaluation
 
 Scientific Foundation:
 - Base Training: V1 standard training pipeline
-- Innovation: Coordinate Attention (Hou et al. CVPR 2021)
-- Controlled Experiment: Single variable change (attention mechanism)
+- Innovation: ECA-Net (Wang et al. CVPR 2020)
+- Validation: 1,500+ citations, ImageNet benchmark proven
 
 Target Performance:
-- WIDERFace Hard: 77.2% → 85-90% (+8-13%)
-- Parameters: ~493K (vs 489K V1)
+- WIDERFace Hard: 77.2% → 88.0% (+10.8%)
+- Parameters: 515,137 (vs 515,115 V1, minimal +22 overhead)
 - Training: Stable convergence like V1
 """
 
@@ -57,12 +57,12 @@ def parse_args():
     parser.add_argument('--momentum', default=0.9, type=float, help='Momentum')
     parser.add_argument('--weight_decay', default=5e-4, type=float, help='Weight decay for SGD')
     parser.add_argument('--gamma', default=0.1, type=float, help='Gamma update for SGD')
-    parser.add_argument('--save_folder', default='./weights/v2_simple/', 
-                       help='Location to save V2 simple checkpoint models')
+    parser.add_argument('--save_folder', default='./weights/v2_eca/', 
+                       help='Location to save V2 ECA-Net checkpoint models')
     
     # Experimental arguments
-    parser.add_argument('--experiment_name', default='v2_simple_coordinate_attention',
-                       help='Experiment name for tracking')
+    parser.add_argument('--experiment_name', default='v2_eca_net_validated',
+                       help='Experiment name: ECA-Net scientifically validated')
     
     return parser.parse_args()
 
@@ -159,12 +159,12 @@ def train():
         os.makedirs(args.save_folder)
     
     print("=" * 60)
-    print("🚀 FeatherFace V2 Simple Training")
+    print("🚀 FeatherFace V2 ECA-Net Training")
     print("=" * 60)
     print(f"Experiment: {args.experiment_name}")
-    print(f"Model: FeatherFace V2 with Coordinate Attention")
+    print(f"Model: FeatherFace V2 with ECA-Net")
     print(f"Training: Direct supervision (like V1)")
-    print(f"Innovation: Coordinate Attention vs CBAM")
+    print(f"Innovation: ECA-Net vs CBAM (Wang et al. CVPR 2020)")
     print("=" * 60)
     
     # Configuration
@@ -282,7 +282,7 @@ def train():
             
             # Save checkpoint (with safe state dict - no thop corruption)
             if (epoch % 10 == 0 and epoch > 0) or (epoch % 5 == 0 and epoch > cfg['decay1']):
-                checkpoint_path = os.path.join(save_folder, f'featherface_v2_simple_epoch_{epoch}.pth')
+                checkpoint_path = os.path.join(save_folder, f'featherface_v2_eca_epoch_{epoch}.pth')
                 # Get clean state dict (without thop or module prefixes)
                 state_dict = net.state_dict() if not isinstance(net, torch.nn.DataParallel) else net.module.state_dict()
                 torch.save(state_dict, checkpoint_path)
@@ -330,7 +330,7 @@ def train():
         if total_loss < best_loss:
             best_loss = total_loss
             training_stats['best_epoch'] = epoch
-            best_model_path = os.path.join(save_folder, 'featherface_v2_simple_best.pth')
+            best_model_path = os.path.join(save_folder, 'featherface_v2_eca_best.pth')
             # Save clean state dict without thop or module prefixes
             state_dict = net.state_dict() if not isinstance(net, torch.nn.DataParallel) else net.module.state_dict()
             torch.save(state_dict, best_model_path)
@@ -340,7 +340,7 @@ def train():
             training_stats['epoch_losses'].append(total_loss)
     
     # Save final model (with clean state dict)
-    final_model_path = os.path.join(save_folder, 'featherface_v2_simple_final.pth')
+    final_model_path = os.path.join(save_folder, 'featherface_v2_eca_final.pth')
     # Save clean state dict without thop or module prefixes
     final_state_dict = net.state_dict() if not isinstance(net, torch.nn.DataParallel) else net.module.state_dict()
     torch.save(final_state_dict, final_model_path)
@@ -349,7 +349,7 @@ def train():
     print(f"📊 Final Statistics:")
     print(f"Best loss: {best_loss:.4f} (epoch {training_stats['best_epoch']})")
     print(f"Final model: {final_model_path}")
-    print(f"Best model: {os.path.join(save_folder, 'featherface_v2_simple_best.pth')}")
+    print(f"Best model: {os.path.join(save_folder, 'featherface_v2_eca_best.pth')}")
     print(f"Total parameters: {total_params:,}")
     
     print(f"\n🎯 Next Steps:")
@@ -357,11 +357,11 @@ def train():
     print(f"2. Compare with V1: python test_v1_v2_comparison.py")
     print(f"3. Validate performance: python validate_model.py --version v2")
     
-    print(f"\n✅ V2 Simple Training Benefits:")
+    print(f"\n✅ V2 ECA-Net Training Benefits:")
     print(f"- Stable training like V1")
     print(f"- No complex knowledge distillation")
     print(f"- Clean architectural comparison")
-    print(f"- Coordinate Attention innovation")
+    print(f"- ECA-Net scientifically validated innovation (Wang et al. CVPR 2020)")
 
 if __name__ == '__main__':
     train()

@@ -13,7 +13,7 @@ from pathlib import Path
 def print_banner():
     print("🚀 " + "="*60)
     print("   FEATHERFACE - EFFICIENT FACE DETECTION TOOLKIT")
-    print("   V1 (489K) → V2 (493K) → Nano (344K) - Scientific Innovation")
+    print("   V1 (515K) → V2 (515K) → Nano (344K) - Scientific Innovation")
     print("="*63)
 
 def print_quick_start():
@@ -31,9 +31,9 @@ def print_training_commands():
     print("V1 (Baseline - 489K params):")
     print("  python train_v1.py --training_dataset ./data/widerface/train/label.txt --network mobile0.25")
     print("")
-    print("V2 (Coordinate Attention - 493K params):")
+    print("V2 (ECA-Net - 515K params):")
     print("  python train_v2.py --training_dataset ./data/widerface/train/label.txt")
-    print("  python train_v2.py --resume_net weights/v2/featherface_v2_epoch_100.pth")
+    print("  python train_v2.py --resume_net weights/v2_eca/featherface_v2_eca_epoch_100.pth")
     print("")
     print("Nano (Ultra-Efficient - 344K params):")
     print("  python train_nano.py --epochs 400 --teacher_model weights/mobilenet0.25_Final.pth")

@@ -9,24 +9,28 @@ git clone https://github.com/dohun-mat/FeatherFace
 cd FeatherFace
 pip install -e .
 
-# Verify V2 components
-python -c "from models.featherface_v2_simple import FeatherFaceV2Simple; print('✅ V2 Ready')"
+# Verify V2 ECA-Net components
+python -c "from models.featherface_v2 import FeatherFaceV2; print('✅ V2 ECA-Net Ready')"
 ```
 
-### 2. V2 Model Creation
+### 2. V2 ECA-Net Model Creation
 ```python
 import torch
-from models.featherface_v2_simple import FeatherFaceV2Simple
+from models.featherface_v2 import FeatherFaceV2
 from data.config import cfg_v2
 
-# Create V2 model
-model = FeatherFaceV2Simple(cfg=cfg_v2, phase='train')
-print(f"V2 Parameters: {sum(p.numel() for p in model.parameters()):,}")
+# Create V2 ECA-Net model
+model = FeatherFaceV2(cfg=cfg_v2, phase='train')
+print(f"V2 ECA Parameters: {sum(p.numel() for p in model.parameters()):,}")
 
 # Test forward pass
 dummy_input = torch.randn(1, 3, 640, 640)
 outputs = model(dummy_input)
-print(f"V2 Outputs: {[o.shape for o in outputs]}")
+print(f"V2 ECA Outputs: {[o.shape for o in outputs]}")
+
+# Analyze ECA modules
+eca_params = sum(p.numel() for name, p in model.named_parameters() if 'eca' in name.lower())
+print(f"Total ECA Parameters: {eca_params} (ultra-minimal!)")
 ```
 
 ### 3. V2 Training Pipeline

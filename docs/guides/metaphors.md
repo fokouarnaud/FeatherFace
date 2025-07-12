@@ -17,17 +17,17 @@ Raw Materials → Quality Control → Assembly → Final QC → Product
 - **Final QC**: CBAM attention again (final quality check)
 - **Product**: Detected faces with bounding boxes
 
-### V2 Enhanced: Smart Factory with GPS
+### V2 Enhanced: Smart Factory with Channel Selection
 ```
-Raw Materials → Quality Control → Assembly → GPS Navigation → Product
-    (Input)         (CBAM)        (BiFPN)   (Coordinate Attn)  (Output)
+Raw Materials → Quality Control → Assembly → Smart Channel Selector → Product
+    (Input)         (ECA-Net)      (BiFPN)      (ECA-Net)        (Output)
 ```
 
-**V2 adds GPS navigation to the factory:**
-- **GPS Navigation**: Coordinate Attention (knows exact X,Y location)
-- **Smart Workers**: Can find small parts anywhere in the factory
-- **2x Faster**: GPS helps workers move more efficiently
-- **Same Factory**: Only the navigation system is upgraded
+**V2 adds smart channel selection to the factory:**
+- **Smart Channel Selector**: ECA-Net (optimizes which conveyor belts to use)
+- **Efficient Workers**: Select the best communication channels
+- **Ultra-Efficient**: Only 22 parameters for optimal selection
+- **Same Factory**: Only the channel selection system is upgraded
 
 ## 🎯 The Photography Studio: Attention Mechanisms
 
@@ -43,20 +43,19 @@ Raw Materials → Quality Control → Assembly → GPS Navigation → Product
 - **Spatial Attention**: Decides where to point the camera
 - **Problem**: Loses exact location when zooming out
 
-### V2 Coordinate Attention: GPS Camera
+### V2 ECA-Net: Smart Channel Camera
 ```
-📸 GPS Camera
-├── 🔍 Zoom (Channel Attention)
-├── 📍 GPS X-coordinate (Horizontal tracking)
-├── 📍 GPS Y-coordinate (Vertical tracking)
-└── 🎯 Smart Focus (Spatial + Location)
+📸 Smart Channel Camera
+├── 🔍 Smart Zoom (Adaptive Channel Selection)
+├── 📡 Channel Optimizer (Cross-channel interaction)
+└── 📱 Adaptive Kernel (Smart zoom adjustment)
 ```
 
-**Coordinate Attention is like a GPS-enabled camera:**
-- **X-coordinate**: Remembers horizontal position
-- **Y-coordinate**: Remembers vertical position
-- **Smart Focus**: Combines location + attention
-- **Mobile Optimized**: Works great on phone cameras
+**ECA-Net is like a smart camera:**
+- **Adaptive Kernel**: Automatically adjusts focus size based on scene
+- **Channel Optimizer**: Selects best color channels for the shot
+- **Ultra-Efficient**: Only 22 settings to remember
+- **Mobile Optimized**: Perfect for smartphone cameras
 
 ## 🔍 The Security Guard: Detection Process
 
@@ -73,29 +72,29 @@ Raw Materials → Quality Control → Assembly → GPS Navigation → Product
 - **Good overall coverage**: Proven and reliable
 - **Standard equipment**: Works well for most situations
 
-### V2 Security: Guard with Smart Glasses
+### V2 Security: Guard with Smart Radio
 ```
 👮 Security Guard V2
 ├── 👀 Scan area (Global attention)
-├── 🥽 Smart glasses (Coordinate attention)
-│   ├── 📍 X-axis tracking
-│   └── 📍 Y-axis tracking
+├── 📻 Smart radio (ECA-Net)
+│   ├── 📡 Channel selector
+│   └── 🔊 Adaptive frequency
 ├── 🚨 Alert on suspicious activity
 └── 📝 Write detailed report
 ```
 
-**V2 is like a security guard with smart glasses:**
-- **Smart Glasses**: Show exact X,Y coordinates
-- **Better small object detection**: Can spot tiny suspicious items
-- **Faster response**: GPS helps navigate quickly
-- **Same guard**: Only the glasses are upgraded
+**V2 is like a security guard with a smart radio:**
+- **Smart Radio**: Automatically selects best communication channels
+- **Better coordination**: Optimizes team communication
+- **Ultra-efficient**: Only 22 channel settings needed
+- **Same guard**: Only the radio is upgraded
 
 ## 🏃‍♂️ The Relay Race: Information Flow
 
 ### V1 Relay: Traditional Handoff
 ```
 🏃‍♂️ Runner 1 → 🏃‍♂️ Runner 2 → 🏃‍♂️ Runner 3 → 🏃‍♂️ Runner 4 → 🏁 Finish
-   (Input)      (CBAM)      (BiFPN)      (CBAM)      (Output)
+   (Input)    (ECA-Net)    (BiFPN)    (ECA-Net)   (Output)
 ```
 
 **V1 is like a traditional relay race:**

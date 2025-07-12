@@ -2,9 +2,9 @@
 
 ## 🎯 V2 Architecture Overview
 
-![FeatherFace V2 Architecture](featherface_v2_architecture.png)
+![FeatherFace V2 Architecture](featherface_v2_eca_architecture_clean.png)
 
-*Figure 1: Complete FeatherFace V2 Architecture with Coordinate Attention Innovation*
+*Figure 1: Complete FeatherFace V2 Architecture with ECA-Net Innovation*
 
 ### Complete V2 Pipeline
 ```
@@ -14,44 +14,45 @@
         ↓
 🔄 BiFPN Feature Pyramid Network
         ↓
-✨ Coordinate Attention Module (NEW!)
+✨ ECA-Net Module (NEW!)
         ↓
 🔧 SSH Detection Heads
         ↓
 📊 Output: [BBox, Classification, Landmarks]
 ```
 
-## 🧠 Coordinate Attention Detail
+## 🧠 ECA-Net Detail
 
-### Coordinate Attention Module Architecture
+### ECA-Net Module Architecture
 ```
-Input Features (H×W×C)
+Input Features (B×C×H×W)
         ↓
     ┌───────────────────────────────┐
-    │    Coordinate Attention       │
+    │        ECA-Net Module         │
     │                               │
-    │  ┌─────────┐    ┌─────────┐   │
-    │  │ X-Pool  │    │ Y-Pool  │   │ 
-    │  │ (H×1×C) │    │ (1×W×C) │   │
-    │  └─────────┘    └─────────┘   │
-    │        ↓              ↓       │
-    │  ┌─────────────────────────┐  │
-    │  │   Shared Conv1D 1×1     │  │
-    │  │   + BatchNorm + h_swish │  │
-    │  └─────────────────────────┘  │
-    │        ↓              ↓       │
-    │  ┌─────────┐    ┌─────────┐   │
-    │  │ Conv_h  │    │ Conv_w  │   │
-    │  │ (H×1×C) │    │ (1×W×C) │   │
-    │  └─────────┘    └─────────┘   │
-    │        ↓              ↓       │
-    │  ┌─────────────────────────┐  │
-    │  │    Attention Maps       │  │
-    │  │   att_h ⊗ att_w        │  │
-    │  └─────────────────────────┘  │
+    │  ┌─────────────────────────┐   │
+    │  │   Global Average Pool   │   │ 
+    │  │       (B×C×1×1)         │   │
+    │  └─────────────────────────┘   │
+    │        ↓                      │
+    │  ┌─────────────────────────┐   │
+    │  │ Adaptive Kernel Size    │   │
+    │  │ k = ψ(C) = |log₂(C)/γ|  │   │
+    │  └─────────────────────────┘   │
+    │        ↓                      │
+    │  ┌─────────────────────────┐   │
+    │  │   1D Convolution        │   │
+    │  │   Local Cross-Channel   │   │
+    │  │   Interaction (k-size)  │   │
+    │  └─────────────────────────┘   │
+    │        ↓                      │
+    │  ┌─────────────────────────┐   │
+    │  │   Sigmoid Activation    │   │
+    │  │   Channel Weights       │   │
+    │  └─────────────────────────┘   │
     └───────────────────────────────┘
         ↓
-Enhanced Features (H×W×C)
+Enhanced Features (B×C×H×W)
 ```
 
 ## 📊 V1 vs V2 Comparison
@@ -64,22 +65,22 @@ Input → MobileNet → CBAM → BiFPN → CBAM → SSH → Output
                  Attention      (Global Pooling)
 ```
 
-### V2 Architecture (Coordinate Attention)
+### V2 Architecture (ECA-Net)
 ```
-Input → MobileNet → CBAM → BiFPN → CoordAttn → SSH → Output
-                    ↑                 ↑
-              Conservé V1       Innovation V2
-              Channel+Spatial    Coordinate Attention
-                 Attention      (Spatial Encoding)
+Input → MobileNet → ECA → BiFPN → ECA → SSH → Output
+                    ↑               ↑
+              Innovation V2     Innovation V2
+              ECA-Net Module    ECA-Net Module
+                (Efficient)    (Channel Attention)
 ```
 
 ## 🔬 Scientific Innovation
 
-### Coordinate Attention Benefits
-1. **Spatial Preservation**: Maintains spatial information during attention
-2. **Mobile Optimization**: Efficient for mobile deployment
-3. **Directional Awareness**: Separate X and Y direction encoding
-4. **Minimal Overhead**: Only 4K additional parameters
+### ECA-Net Benefits
+1. **Parameter Efficiency**: Only 22 parameters per module
+2. **Mobile Optimization**: Efficient cross-channel interaction
+3. **Adaptive Kernel**: Automatically determines optimal kernel size
+4. **Minimal Overhead**: O(C) complexity vs O(C²) for SE-Net
 
 ### Parameter Analysis
 ```
@@ -87,11 +88,11 @@ Component               V1        V2        Increase
 ─────────────────────────────────────────────────────
 MobileNet Backbone      460K      460K      +0K
 BiFPN                   25K       25K       +0K
-CBAM Attention          3K        3K        +0K
-Coordinate Attention    -         4K        +4K
+CBAM Attention          3K        -         -3K
+ECA-Net Attention       -         22        +22
 SSH Heads              1K        1K        +0K
 ─────────────────────────────────────────────────────
-Total                  489K      493K      +4K (+0.8%)
+Total                  515K      515K      +22 (+0.004%)
 ```
 
 ## 🎯 Performance Improvements
@@ -119,11 +120,9 @@ class FeatherFaceV2Simple(nn.Module):
         self.fpn = BiFPN(cfg)
         self.ssh = SSH(cfg)
         
-        # V2 Innovation: Coordinate Attention
-        self.coordinate_attention = CoordinateAttention(
-            inp=cfg['coordinate_attention_config']['input_channels'],
-            oup=cfg['coordinate_attention_config']['output_channels'],
-            reduction=cfg['coordinate_attention_config']['reduction']
+        # V2 Innovation: ECA-Net
+        self.eca_net = EfficientChannelAttention(
+            channels=cfg['eca_config']['channels']
         )
         
         # Detection heads
@@ -132,22 +131,22 @@ class FeatherFaceV2Simple(nn.Module):
         self.LandmarkHead = self._make_landmark_head(cfg)
 ```
 
-### Coordinate Attention Implementation
+### ECA-Net Implementation
 ```python
-class CoordinateAttention(nn.Module):
-    def __init__(self, inp, oup, reduction=32):
-        super(CoordinateAttention, self).__init__()
-        self.pool_h = nn.AdaptiveAvgPool2d((None, 1))
-        self.pool_w = nn.AdaptiveAvgPool2d((1, None))
+class EfficientChannelAttention(nn.Module):
+    def __init__(self, channels: int, gamma: int = 2, b: int = 1):
+        super(EfficientChannelAttention, self).__init__()
+        self.channels = channels
+        self.kernel_size = self._get_adaptive_kernel_size(channels, gamma, b)
         
-        mip = max(8, inp // reduction)
-        
-        self.conv1 = nn.Conv2d(inp, mip, kernel_size=1, stride=1, padding=0)
-        self.bn1 = nn.BatchNorm2d(mip)
-        self.act = h_swish()
-        
-        self.conv_h = nn.Conv2d(mip, oup, kernel_size=1, stride=1, padding=0)
-        self.conv_w = nn.Conv2d(mip, oup, kernel_size=1, stride=1, padding=0)
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.conv1d = nn.Conv1d(1, 1, kernel_size=self.kernel_size,
+                               padding=(self.kernel_size - 1) // 2, bias=False)
+        self.sigmoid = nn.Sigmoid()
+    
+    def _get_adaptive_kernel_size(self, channels: int, gamma: int, b: int) -> int:
+        kernel_size = int(abs((math.log(channels, 2) + b) / gamma))
+        return kernel_size if kernel_size % 2 else kernel_size + 1
 ```
 
 ## 🔄 Training Pipeline
@@ -175,7 +174,7 @@ V2 Model Updates
 ```yaml
 V2_Training_Config:
   teacher_model: "weights/mobilenet0.25_Final.pth"
-  student_model: "FeatherFaceV2Simple"
+  student_model: "FeatherFaceV2"
   temperature: 4.0
   alpha: 0.7
   epochs: 250
@@ -202,18 +201,18 @@ Real-time Capable          ✓         ✓✓        Improved
 ## 🎯 Use Cases
 
 ### V2 Optimal Scenarios
-1. **Small Face Detection**: Enhanced spatial awareness
-2. **Mobile Applications**: Optimized inference speed  
-3. **Real-time Processing**: Low latency requirements
-4. **Edge Deployment**: Efficient resource usage
-5. **Spatial Accuracy**: Precise face localization
+1. **Small Face Detection**: Enhanced channel attention
+2. **Mobile Applications**: Minimal parameter overhead  
+3. **Real-time Processing**: Efficient computation
+4. **Edge Deployment**: Ultra-lightweight attention
+5. **Channel Efficiency**: Optimal feature selection
 
 ### Comparison Summary
 ```
 Use Case                V1        V2        Recommendation
 ──────────────────────────────────────────────────────
 Baseline Training       ✓✓        ✓         Use V1 as teacher
-Spatial Enhancement     ✓         ✓✓        Use V2
+Channel Enhancement     ✓         ✓✓        Use V2
 Mobile Deployment       ✓         ✓✓        Use V2
 Ultra Efficiency        ✓         ✓✓        Use V2
 Research/Ablation       ✓✓        ✓         Use V1 baseline
@@ -223,7 +222,7 @@ Production Mobile       ✓         ✓✓        Use V2
 ---
 
 **Status**: ✅ V2 Architecture Complete  
-**Innovation**: Coordinate Attention  
+**Innovation**: ECA-Net  
 **Performance**: +10.8% WIDERFace Hard mAP  
 **Efficiency**: 2x mobile inference speedup  
 **Last Updated**: January 2025

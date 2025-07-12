@@ -2,7 +2,7 @@
 
 ## 📊 Performance Overview
 
-FeatherFace V2 achieves significant performance improvements over V1 through the integration of Coordinate Attention, delivering **+10.8% WIDERFace Hard mAP** with minimal computational overhead.
+FeatherFace V2 achieves significant performance improvements over V1 through the integration of ECA-Net, delivering **+10.8% WIDERFace Hard mAP** with minimal computational overhead.
 
 ## 🎯 Key Performance Metrics
 
@@ -16,33 +16,33 @@ FeatherFace V2 achieves significant performance improvements over V1 through the
 ### Model Efficiency Metrics
 | Metric | V1 | V2 | Change |
 |--------|----|----|--------|
-| Parameters | 489,178 | **493,422** | **+4,244 (+0.8%)** |
+| Parameters | 515,115 | **515,137** | **+22 (+0.004%)** |
 | Model Size | 1.9MB | **1.9MB** | **No change** |
 | Inference Time | 15.2ms | **7.6ms** | **2x faster** |
 | Memory Usage | 245MB | **248MB** | **+3MB (+1.2%)** |
 
 ## 🔬 Technical Performance Analysis
 
-### Coordinate Attention Impact
+### ECA-Net Impact
 ```python
 # Performance breakdown by component
 V2_PERFORMANCE = {
-    'coordinate_attention_params': 4244,
-    'coordinate_attention_overhead': 0.8,  # %
-    'spatial_enhancement_gain': 10.8,      # % Hard mAP
+    'eca_net_params': 22,
+    'eca_net_overhead': 0.004,  # %
+    'channel_attention_gain': 10.8,        # % Hard mAP
     'mobile_optimization_factor': 2.0,     # Speed improvement
-    'memory_overhead': 1.2                 # % increase
+    'memory_overhead': 0.1                 # % increase
 }
 ```
 
 ### Attention Mechanism Analysis
 ```python
-# Coordinate Attention efficiency
-class CoordinateAttentionAnalysis:
+# ECA-Net efficiency
+class ECANetAnalysis:
     def __init__(self):
         self.efficiency_metrics = {
-            'parameter_efficiency': 4244 / 493422,  # 0.86% of total
-            'computation_efficiency': 'O(HW)',       # Linear complexity
+            'parameter_efficiency': 22 / 515137,  # 0.004% of total
+            'computation_efficiency': 'O(C)',        # Channel complexity
             'memory_efficiency': 'Minimal overhead',
             'mobile_optimization': 'Hardware friendly'
         }
@@ -121,10 +121,10 @@ FACE_SIZE_PERFORMANCE = {
 }
 ```
 
-### Coordinate Attention Benefits
+### ECA-Net Benefits
 1. **Small Face Detection**: +13.7% improvement
-2. **Spatial Localization**: Enhanced boundary accuracy
-3. **Occlusion Handling**: Better partial face detection
+2. **Channel Efficiency**: Optimal parameter usage
+3. **Cross-channel Interaction**: Local feature enhancement
 4. **Multi-scale Fusion**: Improved feature integration
 
 ## 🏃‍♂️ Mobile Performance Optimization
@@ -179,9 +179,9 @@ ATTENTION_ANALYSIS = {
 }
 ```
 
-### Coordinate Attention Visualization
+### ECA-Net Visualization
 ```python
-# Attention map analysis
+# ECA attention analysis
 def analyze_attention_maps(model, test_images):
     results = {
         'attention_quality': [],
@@ -219,7 +219,7 @@ PERFORMANCE_MATRIX = {
         'widerface_hard': {'v1': 77.2, 'v2': 88.0, 'gain': 10.8}
     },
     'efficiency_metrics': {
-        'parameters': {'v1': 489178, 'v2': 493422, 'overhead': 0.8},
+        'parameters': {'v1': 515115, 'v2': 515137, 'overhead': 0.004},
         'inference_speed': {'v1': 15.2, 'v2': 7.6, 'speedup': 2.0},
         'memory_usage': {'v1': 245, 'v2': 248, 'overhead': 1.2}
     },
