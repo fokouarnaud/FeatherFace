@@ -108,12 +108,12 @@ class FeatherFaceV2(nn.Module):
             # INNOVATION V2: Coordinate Attention remplace CBAM (reduction_ratio=32)
             # Placement: Post-backbone pour optimiser les features extraites
             self.backbone_ca_0 = CoordinateAttention(in_channels_list[0], reduction_ratio=32)
-            self.backbone_ca_1 = CoordinateAttention(in_channels_list[1], reduction_ratio=32)
-            self.backbone_ca_2 = CoordinateAttention(in_channels_list[2], reduction_ratio=32)
-            
-            # ReLU activation après attention (comme V1 avec CBAM)
             self.relu_0 = nn.ReLU()
+
+            self.backbone_ca_1 = CoordinateAttention(in_channels_list[1], reduction_ratio=32)
             self.relu_1 = nn.ReLU()
+
+            self.backbone_ca_2 = CoordinateAttention(in_channels_list[2], reduction_ratio=32)
             self.relu_2 = nn.ReLU()
             
             # BiFPN configuration (identique V1)
@@ -143,11 +143,12 @@ class FeatherFaceV2(nn.Module):
             
             # Coordinate Attention post-BiFPN (innovation vs CBAM, reduction_ratio=32)
             self.bif_ca_0 = CoordinateAttention(out_channels, reduction_ratio=32)
-            self.bif_ca_1 = CoordinateAttention(out_channels, reduction_ratio=32)
-            self.bif_ca_2 = CoordinateAttention(out_channels, reduction_ratio=32)
-            
             self.bif_relu_0 = nn.ReLU()
+
+            self.bif_ca_1 = CoordinateAttention(out_channels, reduction_ratio=32)
             self.bif_relu_1 = nn.ReLU()
+
+            self.bif_ca_2 = CoordinateAttention(out_channels, reduction_ratio=32)
             self.bif_relu_2 = nn.ReLU()
             
             # SSH context modules (identique V1)
