@@ -105,7 +105,7 @@ class FeatherFaceV2(nn.Module):
             out_channels = cfg['out_channel']
             
             
-            # INNOVATION V2: Coordinate Attention remplace CBAM
+            # INNOVATION V2: Coordinate Attention remplace CBAM (reduction_ratio=32)
             # Placement: Post-backbone pour optimiser les features extraites
             self.backbone_ca_0 = CoordinateAttention(in_channels_list[0], reduction_ratio=32)
             self.backbone_ca_1 = CoordinateAttention(in_channels_list[1], reduction_ratio=32)
@@ -141,7 +141,7 @@ class FeatherFaceV2(nn.Module):
                         )
                   for _ in range(self.fpn_cell_repeats[self.compound_coef])])
             
-            # Coordinate Attention post-BiFPN (innovation vs CBAM)
+            # Coordinate Attention post-BiFPN (innovation vs CBAM, reduction_ratio=32)
             self.bif_ca_0 = CoordinateAttention(out_channels, reduction_ratio=32)
             self.bif_ca_1 = CoordinateAttention(out_channels, reduction_ratio=32)
             self.bif_ca_2 = CoordinateAttention(out_channels, reduction_ratio=32)
