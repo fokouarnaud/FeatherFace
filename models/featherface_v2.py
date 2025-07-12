@@ -1,26 +1,15 @@
 #!/usr/bin/env python3
 """
-FeatherFace V2 Simple - Training Direct sans Knowledge Distillation
+FeatherFace V2 - Innovation avec Coordinate Attention
 
-Cette implémentation simplifie FeatherFace V2 pour l'entraînement direct
-en utilisant seulement la supervision standard (comme V1) mais avec
-l'innovation Coordinate Attention.
-
-Architecture:
-- Base identique à RetinaFace (V1)
-- Innovation: Remplace CBAM par Coordinate Attention
-- Training: Standard MultiBoxLoss (pas de knowledge distillation)
-- Performance: +8-10% WIDERFace Hard avec architecture plus simple
-
-Cette approche permet un entraînement stable comme V1 tout en bénéficiant
-de l'innovation Coordinate Attention.
+Architecture V1 with Coordinate Attention replacing CBAM modules.
+Maintains V1 stability with mobile-optimized spatial attention.
 """
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.models._utils as _utils
-from collections import OrderedDict
 
 from models.net import MobileNetV1 as MobileNetV1
 from models.net import SSH as SSH
@@ -103,7 +92,6 @@ class FeatherFaceV2(nn.Module):
                 for k, v in checkpoint['state_dict'].items():
                     name = k[7:]  # remove module.
                     new_state_dict[name] = v
-                # load params
                 backbone.load_state_dict(new_state_dict)
         
         if cfg['name'] == 'mobilenet0.25':
@@ -116,9 +104,6 @@ class FeatherFaceV2(nn.Module):
             ]
             out_channels = cfg['out_channel']
             
-            print(f"🚀 FeatherFace V2 - Innovation avec Coordinate Attention")
-            print(f"   Backbone channels: {in_channels_list}")
-            print(f"   Output channels: {out_channels}")
             
             # INNOVATION V2: Coordinate Attention remplace CBAM
             # Placement: Post-backbone pour optimiser les features extraites
@@ -209,20 +194,6 @@ class FeatherFaceV2(nn.Module):
         self.BboxHead = self._make_bbox_head(fpn_num=3, inchannels=cfg['out_channel'])
         self.LandmarkHead = self._make_landmark_head(fpn_num=3, inchannels=cfg['out_channel'])
         
-        # Statistics pour validation
-        ca_params = (sum(p.numel() for p in self.backbone_ca_0.parameters()) +
-                     sum(p.numel() for p in self.backbone_ca_1.parameters()) +
-                     sum(p.numel() for p in self.backbone_ca_2.parameters()) +
-                     sum(p.numel() for p in self.bif_ca_0.parameters()) +
-                     sum(p.numel() for p in self.bif_ca_1.parameters()) +
-                     sum(p.numel() for p in self.bif_ca_2.parameters()))
-        
-        total_params = sum(p.numel() for p in self.parameters())
-        
-        print(f"   Coordinate Attention modules: 6 (remplace 6 CBAM)")
-        print(f"   Coordinate Attention parameters: {ca_params:,}")
-        print(f"   Total parameters: {total_params:,}")
-        print(f"   Training mode: Direct supervision (like V1)")
     
     def _make_class_head(self, fpn_num=3, inchannels=64, anchor_num=2):
         classhead = nn.ModuleList()
