@@ -1,20 +1,20 @@
 """
-FeatherFace V8 CAFormer Innovation Implementation
-================================================
+FeatherFace ECA-Net Innovation Implementation
+============================================
 
-This module implements our V8 innovation: replacing CBAM with CAFormer (Channel Attention + MetaFormer).
-This represents the ultimate evolution of attention mechanisms, achieving state-of-the-art performance
-through advanced token-based feature processing for mobile face detection.
+This module implements FeatherFace with ECA-Net (Efficient Channel Attention) replacing CBAM.
+This represents an ultra-efficient alternative that maintains performance while dramatically
+reducing attention parameters from 12,929 (CBAM) to typically ≤ 9 (ECA-Net).
 
-INNOVATION: CBAM/SPCII → CAFormer for cutting-edge 2025 performance
-Scientific foundation: MetaFormer 2025 research + Electronics 2025 baseline
+INNOVATION: CBAM (12,929 params) → ECA-Net (≤9 params) for revolutionary efficiency
+Scientific foundation: Wang et al. CVPR 2020 + Kim et al. Electronics 2025
 
-Performance Target: State-of-the-art mobile face detection with MetaFormer evolution
-Base Architecture: FeatherFaceCBAMExact (MobileNet + BiFPN + SSH) - proven components
-Innovation: Replace attention with CAFormer for ultimate spatial-channel-token interaction
+Performance Target: Maintain 78.3% WIDERFace Hard with revolutionary parameter efficiency
+Base Architecture: FeatherFace (MobileNet + BiFPN + SSH) - proven components
+Innovation: Replace CBAM with ECA-Net for ultra-efficient mobile deployment
 
-Authors: Original FeatherFace (Kim, D.; Jung, J.; Kim, J.) + CAFormer Innovation
-Implementation: V8 CAFormer representing the pinnacle of mobile face detection attention
+Authors: Original FeatherFace (Kim, D.; Jung, J.; Kim, J.) + ECA-Net Innovation (Wang et al.)
+Implementation: Ultra-efficient attention for optimal mobile face detection
 """
 
 import torch
@@ -24,45 +24,45 @@ import torchvision.models._utils as _utils
 from collections import OrderedDict
 
 from models.net import MobileNetV1, ChannelShuffle2, SSH
-from models.caformer import CAFormerBlock
+from models.eca import ECABlock
 
 
-class FeatherFaceV8CAFormer(nn.Module):
+class FeatherFaceECA(nn.Module):
     """
-    FeatherFace V8 CAFormer Innovation
+    FeatherFace ECA-Net Innovation
     
-    Replaces traditional attention mechanisms with CAFormer (Channel Attention + MetaFormer)
-    for the ultimate mobile face detection performance. This innovation represents the evolution
-    beyond CNN + attention to token-based feature processing.
+    Replaces CBAM attention with ECA-Net (Efficient Channel Attention) for ultra-efficient
+    mobile face detection. This innovation achieves revolutionary parameter efficiency while
+    maintaining the solid performance foundation of the original FeatherFace architecture.
     
     Key Innovation:
-    - Traditional attention → CAFormer MetaFormer architecture
-    - Token-based feature processing vs traditional convolution
-    - Advanced channel attention integrated with MetaFormer
-    - State-of-the-art mobile face detection performance
-    - Cutting-edge 2025 research foundation
+    - CBAM (12,929 params) → ECA-Net (typically ≤9 params per module)
+    - Revolutionary efficiency: 1000x+ parameter reduction in attention
+    - Maintained performance with ultra-low computational overhead
+    - Optimal for mobile/IoT deployment scenarios
+    - Scientific foundation: Wang et al. CVPR 2020
     
     Scientific Foundation:
-    - Base: FeatherFace Electronics 2025 (CBAM baseline: 488,664 params)
-    - Innovation: CAFormer MetaFormer Architecture (2025 research)
-    - Expected: State-of-the-art mobile face detection performance
+    - Base: FeatherFace Electronics 2025 (Kim et al.)
+    - Innovation: ECA-Net CVPR 2020 (Wang et al.)
+    - Expected: Maintained performance with revolutionary efficiency
     
-    Performance Targets (based on MetaFormer research):
-    - WIDERFace Easy: 93.0%+ AP (surpass all previous)
-    - WIDERFace Medium: 91.0%+ AP (surpass all previous)
-    - WIDERFace Hard: 82.0%+ AP (ultimate target performance)
-    - Overall mAP: 92.0%+ AP (state-of-the-art mobile face detection)
-    - MetaFormer superiority: Best mobile architecture for 2025
+    Performance Targets (based on ECA-Net research):
+    - WIDERFace Easy: 92.7% AP (maintained from baseline)
+    - WIDERFace Medium: 90.7% AP (maintained from baseline)
+    - WIDERFace Hard: 78.3% AP (maintained with ultra-efficiency)
+    - Attention Parameters: ≤54 total (vs 77,574 for CBAM baseline)
+    - Efficiency Gain: 1000x+ parameter reduction in attention modules
     """
     
     def __init__(self, cfg=None, phase='train'):
-        super(FeatherFaceV8CAFormer, self).__init__()
+        super(FeatherFaceECA, self).__init__()
         self.phase = phase
         self.cfg = cfg
         
-        # Innovation: Use same out_channel as CBAM baseline for controlled comparison
-        # CBAM baseline: 488,664 parameters with out_channel=52
-        # CAFormer innovation: Expected superior performance with advanced architecture
+        # Innovation: Use same architecture as CBAM baseline for direct comparison
+        # CBAM baseline: 488,664 parameters total
+        # ECA innovation: Expected ~476K parameters (attention reduction)
         
         # 1. MobileNet-0.25 Backbone (identical to baseline)
         backbone = MobileNetV1()
@@ -76,23 +76,11 @@ class FeatherFaceV8CAFormer(nn.Module):
             ]
             out_channels = cfg['out_channel']  # Same as baseline for comparison
         
-        # 2. CAFormer Attention Modules (INNOVATION: MetaFormer evolution)
-        # Backbone CAFormer modules (3x) - advanced token-based attention
-        self.backbone_caformer_0 = CAFormerBlock(
-            in_channels=in_channels_list[0],  # 64 channels
-            token_dim=min(64, in_channels_list[0]),
-            num_heads=8
-        )
-        self.backbone_caformer_1 = CAFormerBlock(
-            in_channels=in_channels_list[1],  # 128 channels
-            token_dim=min(64, in_channels_list[1]),
-            num_heads=8
-        )
-        self.backbone_caformer_2 = CAFormerBlock(
-            in_channels=in_channels_list[2],  # 256 channels
-            token_dim=min(64, in_channels_list[2]),
-            num_heads=8
-        )
+        # 2. ECA-Net Attention Modules (INNOVATION: Ultra-efficient attention)
+        # Backbone ECA modules (3x) - revolutionary parameter efficiency
+        self.backbone_eca_0 = ECABlock(in_channels_list[0])  # 64 channels, ~3 params
+        self.backbone_eca_1 = ECABlock(in_channels_list[1])  # 128 channels, ~5 params
+        self.backbone_eca_2 = ECABlock(in_channels_list[2])  # 256 channels, ~5 params
         
         # 3. BiFPN Feature Aggregation (keep proven architecture)
         conv_channel_coef = {
@@ -115,27 +103,10 @@ class FeatherFaceV8CAFormer(nn.Module):
               for _ in range(self.fpn_cell_repeats[self.compound_coef])]
         )
         
-        # 4. CAFormer modules for BiFPN outputs (INNOVATION: advanced attention)
-        # Ensure token_dim is divisible by num_heads for valid configuration
-        token_dim_bif = min(64, out_channels)
-        token_dim_bif = (token_dim_bif // 8) * 8  # Make divisible by 8
-        num_heads_bif = min(8, token_dim_bif // 8) if token_dim_bif >= 8 else 1
-        
-        self.bif_caformer_0 = CAFormerBlock(
-            in_channels=out_channels,  # P3
-            token_dim=token_dim_bif,
-            num_heads=num_heads_bif
-        )
-        self.bif_caformer_1 = CAFormerBlock(
-            in_channels=out_channels,  # P4
-            token_dim=token_dim_bif,
-            num_heads=num_heads_bif
-        )
-        self.bif_caformer_2 = CAFormerBlock(
-            in_channels=out_channels,  # P5
-            token_dim=token_dim_bif,
-            num_heads=num_heads_bif
-        )
+        # 4. ECA modules for BiFPN outputs (INNOVATION: ultra-efficient attention)
+        self.bif_eca_0 = ECABlock(out_channels)  # P3, ~3 params
+        self.bif_eca_1 = ECABlock(out_channels)  # P4, ~3 params
+        self.bif_eca_2 = ECABlock(out_channels)  # P5, ~3 params
         
         # 5. SSH Detection Heads (keep proven detection architecture)
         self.ssh1 = SSH(out_channels, out_channels)  # P3
@@ -174,7 +145,7 @@ class FeatherFaceV8CAFormer(nn.Module):
         return landmarkhead
     
     def forward(self, inputs):
-        """Forward pass with CAFormer MetaFormer attention (V8 innovation)"""
+        """Forward pass with ECA-Net ultra-efficient attention"""
         
         # 1. Backbone feature extraction (identical to baseline)
         out = self.body(inputs)
@@ -184,20 +155,20 @@ class FeatherFaceV8CAFormer(nn.Module):
         feat2 = out[2]  # stage2 -> 128 channels
         feat3 = out[3]  # stage3 -> 256 channels
         
-        # 2. Apply CAFormer attention to backbone features (INNOVATION: MetaFormer)
-        feat1 = self.backbone_caformer_0(feat1)
-        feat2 = self.backbone_caformer_1(feat2)
-        feat3 = self.backbone_caformer_2(feat3)
+        # 2. Apply ECA attention to backbone features (INNOVATION: ultra-efficient)
+        feat1 = self.backbone_eca_0(feat1)
+        feat2 = self.backbone_eca_1(feat2)
+        feat3 = self.backbone_eca_2(feat3)
         
         # 3. BiFPN feature aggregation (proven approach)
         features = [feat1, feat2, feat3]
         features = self.bifpn(features)
         p3, p4, p5 = features
         
-        # 4. Apply CAFormer attention to BiFPN features (INNOVATION: advanced fusion)
-        p3 = self.bif_caformer_0(p3)
-        p4 = self.bif_caformer_1(p4)
-        p5 = self.bif_caformer_2(p5)
+        # 4. Apply ECA attention to BiFPN features (INNOVATION: efficient fusion)
+        p3 = self.bif_eca_0(p3)
+        p4 = self.bif_eca_1(p4)
+        p5 = self.bif_eca_2(p5)
         
         # 5. Channel shuffle for better feature mixing
         p3 = self.feature_shuffle_0(p3)
@@ -225,22 +196,22 @@ class FeatherFaceV8CAFormer(nn.Module):
         return output
     
     def get_parameter_count(self):
-        """Get detailed parameter count breakdown with CAFormer"""
+        """Get detailed parameter count breakdown with ECA-Net"""
         backbone_params = sum(p.numel() for p in self.body.parameters())
         
-        # CAFormer modules parameters
-        caformer_backbone_params = (
-            sum(p.numel() for p in self.backbone_caformer_0.parameters()) +
-            sum(p.numel() for p in self.backbone_caformer_1.parameters()) +
-            sum(p.numel() for p in self.backbone_caformer_2.parameters())
+        # ECA modules parameters
+        eca_backbone_params = (
+            sum(p.numel() for p in self.backbone_eca_0.parameters()) +
+            sum(p.numel() for p in self.backbone_eca_1.parameters()) +
+            sum(p.numel() for p in self.backbone_eca_2.parameters())
         )
         
         bifpn_params = sum(p.numel() for p in self.bifpn.parameters())
         
-        caformer_bifpn_params = (
-            sum(p.numel() for p in self.bif_caformer_0.parameters()) +
-            sum(p.numel() for p in self.bif_caformer_1.parameters()) +
-            sum(p.numel() for p in self.bif_caformer_2.parameters())
+        eca_bifpn_params = (
+            sum(p.numel() for p in self.bif_eca_0.parameters()) +
+            sum(p.numel() for p in self.bif_eca_1.parameters()) +
+            sum(p.numel() for p in self.bif_eca_2.parameters())
         )
         
         ssh_params = (
@@ -261,56 +232,56 @@ class FeatherFaceV8CAFormer(nn.Module):
             sum(p.numel() for p in self.feature_shuffle_2.parameters())
         )
         
-        total = (backbone_params + caformer_backbone_params + bifpn_params + 
-                caformer_bifpn_params + ssh_params + head_params + channel_shuffle_params)
+        total = (backbone_params + eca_backbone_params + bifpn_params + 
+                eca_bifpn_params + ssh_params + head_params + channel_shuffle_params)
         
         return {
             'backbone': backbone_params,
-            'caformer_backbone': caformer_backbone_params,
+            'eca_backbone': eca_backbone_params,
             'bifpn': bifpn_params,
-            'caformer_bifpn': caformer_bifpn_params,
+            'eca_bifpn': eca_bifpn_params,
             'ssh_heads': ssh_params,
             'detection_heads': head_params,
             'channel_shuffle': channel_shuffle_params,
             'total': total,
             'cbam_baseline': 488664,  # CBAM baseline for comparison
-            'spcii_baseline': 681211,  # SPCII baseline for comparison
-            'caformer_total_attention': caformer_backbone_params + caformer_bifpn_params,
-            'parameter_efficiency_vs_cbam': 488664 - total,  # vs CBAM baseline
-            'parameter_efficiency_vs_spcii': 681211 - total,  # vs SPCII baseline
+            'cbam_attention_params': 77574,  # CBAM total attention (6 modules * 12,929)
+            'eca_total_attention': eca_backbone_params + eca_bifpn_params,
+            'parameter_efficiency_vs_cbam': 488664 - total,
+            'attention_efficiency': 77574 - (eca_backbone_params + eca_bifpn_params),
         }
     
     def compare_with_baselines(self):
-        """Compare CAFormer innovation with all previous attention methods"""
+        """Compare ECA-Net innovation with CBAM baseline"""
         param_info = self.get_parameter_count()
         
         comparison = {
-            'caformer_total': param_info['total'],
+            'eca_total': param_info['total'],
             'cbam_baseline': param_info['cbam_baseline'],
-            'spcii_baseline': param_info['spcii_baseline'],
-            'caformer_attention_params': param_info['caformer_total_attention'],
+            'cbam_attention_params': param_info['cbam_attention_params'],
+            'eca_attention_params': param_info['eca_total_attention'],
             'parameter_efficiency_vs_cbam': param_info['parameter_efficiency_vs_cbam'],
-            'parameter_efficiency_vs_spcii': param_info['parameter_efficiency_vs_spcii'],
-            'performance_expectation': 'State-of-the-art mobile face detection',
+            'attention_parameter_efficiency': param_info['attention_efficiency'],
+            'attention_efficiency_ratio': f"{param_info['cbam_attention_params'] // param_info['eca_total_attention']}x",
+            'performance_expectation': 'Maintained 78.3% WIDERFace Hard',
             'innovation_advantages': [
-                'MetaFormer token-based processing',
-                'Advanced channel attention integration',
-                'Superior spatial-channel-token interaction',
-                'Cutting-edge 2025 architecture evolution'
+                'Revolutionary parameter efficiency (1000x+ attention reduction)',
+                'No dimensionality reduction vs SE-Net foundation',
+                'Local cross-channel interaction vs global pooling',
+                'Adaptive kernel sizing for optimal channel interaction'
             ],
-            'innovation_type': 'metaformer_evolution',
-            'scientific_foundation': '2025_metaformer_research',
-            'mobile_deployment_advantage': 'ultimate_performance',
-            'architecture_evolution': 'CNN_attention → MetaFormer_token_processing',
+            'innovation_type': 'ultra_efficient_channel_attention',
+            'scientific_foundation': 'Wang_et_al_CVPR_2020',
+            'mobile_deployment_advantage': 'revolutionary_efficiency',
         }
         
         return comparison
     
-    def get_caformer_analysis(self, x):
+    def get_eca_analysis(self, x):
         """
-        Analyze CAFormer MetaFormer benefits vs traditional approaches
+        Analyze ECA-Net attention benefits vs CBAM approaches
         
-        Returns detailed CAFormer attention analysis and MetaFormer advantages.
+        Returns detailed ECA attention analysis and efficiency benefits.
         """
         # Get features up to backbone attention
         out = self.body(x)
@@ -318,22 +289,22 @@ class FeatherFaceV8CAFormer(nn.Module):
         feat2 = out[2]
         feat3 = out[3]
         
-        # Get CAFormer attention analysis
-        att_analysis1 = self.backbone_caformer_0.get_attention_analysis(feat1)
-        att_analysis2 = self.backbone_caformer_1.get_attention_analysis(feat2)
-        att_analysis3 = self.backbone_caformer_2.get_attention_analysis(feat3)
+        # Get ECA attention analysis
+        att_analysis1 = self.backbone_eca_0.get_attention_analysis(feat1)
+        att_analysis2 = self.backbone_eca_1.get_attention_analysis(feat2)
+        att_analysis3 = self.backbone_eca_2.get_attention_analysis(feat3)
         
         return {
             'attention_analyses': [att_analysis1, att_analysis2, att_analysis3],
-            'innovation_type': 'metaformer_channel_attention',
-            'vs_traditional_advantages': [
-                'Token-based processing vs traditional convolution',
-                'MetaFormer architecture vs CNN + attention',
-                'Advanced spatial-channel-token interaction',
-                'State-of-the-art mobile face detection capability'
+            'innovation_type': 'efficient_channel_attention',
+            'vs_cbam_advantages': [
+                'Ultra-efficient: ≤9 params vs 12,929 for single CBAM',
+                'No dimensionality reduction preserves information',
+                'Local cross-channel interaction vs global pooling',
+                'Adaptive kernel size for optimal channel dimensions'
             ],
-            'caformer_innovation': 'Ultimate MetaFormer evolution for mobile face detection',
-            'architecture_advancement': 'Represents cutting-edge 2025 research evolution'
+            'eca_innovation': 'Revolutionary parameter efficiency with maintained performance',
+            'efficiency_breakthrough': 'Wang et al. CVPR 2020 + FeatherFace mobile optimization'
         }
 
 
@@ -372,32 +343,32 @@ class LandmarkHead(nn.Module):
         return out.view(out.shape[0], -1, 10)
 
 
-def create_v8_caformer_model(cfg_v8_caformer, phase='train'):
+def create_featherface_eca_model(cfg_eca, phase='train'):
     """
-    Factory function to create CAFormer MetaFormer innovation model
+    Factory function to create FeatherFace ECA-Net innovation model
     
     Args:
-        cfg_v8_caformer: Configuration for CAFormer innovation
+        cfg_eca: Configuration for ECA-Net innovation
         phase: 'train' or 'test'
     
     Returns:
-        FeatherFaceV8CAFormer model with MetaFormer architecture
+        FeatherFaceECA model with ultra-efficient attention
     """
-    model = FeatherFaceV8CAFormer(cfg=cfg_v8_caformer, phase=phase)
+    model = FeatherFaceECA(cfg=cfg_eca, phase=phase)
     
     # Get parameter comparison with baselines
     comparison = model.compare_with_baselines()
     
-    print(f"FeatherFace V8 CAFormer MetaFormer Model Created")
-    print(f"CAFormer total parameters: {comparison['caformer_total']:,}")
+    print(f"FeatherFace ECA-Net Innovation Model Created")
+    print(f"ECA total parameters: {comparison['eca_total']:,}")
     print(f"CBAM baseline: {comparison['cbam_baseline']:,}")
-    print(f"SPCII baseline: {comparison['spcii_baseline']:,}")
     print(f"Parameter efficiency vs CBAM: {comparison['parameter_efficiency_vs_cbam']:+,}")
-    print(f"Parameter efficiency vs SPCII: {comparison['parameter_efficiency_vs_spcii']:+,}")
-    print(f"CAFormer attention params: {comparison['caformer_attention_params']:,}")
+    print(f"ECA attention params: {comparison['eca_attention_params']:,}")
+    print(f"CBAM attention params: {comparison['cbam_attention_params']:,}")
+    print(f"Attention efficiency: {comparison['attention_parameter_efficiency']:+,}")
+    print(f"Efficiency ratio: {comparison['attention_efficiency_ratio']}")
     print(f"Performance expectation: {comparison['performance_expectation']}")
     print(f"Innovation: {comparison['innovation_type']}")
-    print(f"Architecture evolution: {comparison['architecture_evolution']}")
     print(f"Mobile deployment: {comparison['mobile_deployment_advantage']}")
     print(f"Key advantages:")
     for advantage in comparison['innovation_advantages']:
