@@ -2,13 +2,13 @@
 """
 FeatherFace CBAM Baseline Training Script
 
-This script trains the CBAM baseline model for scientific comparison with ECA-Net.
+This script trains the CBAM baseline model for scientific comparison with ODConv.
 Uses cfg_cbam_paper_exact configuration to achieve 488,664 parameters.
 
 Scientific Foundation:
 - CBAM: Convolutional Block Attention Module (Woo et al. ECCV 2018)
 - Target: 92.7% Easy, 90.7% Medium, 78.3% Hard WIDERFace AP
-- Parameters: 488,664 (baseline for ECA-Net comparison)
+- Parameters: 488,664 (baseline for ODConv comparison)
 """
 
 from __future__ import print_function

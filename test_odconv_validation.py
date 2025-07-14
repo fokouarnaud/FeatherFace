@@ -22,8 +22,7 @@ sys.path.append(str(PROJECT_ROOT))
 
 from models.odconv import ODConv2d
 from models.featherface_odconv import FeatherFaceODConv
-from models.retinaface import RetinaFace
-from data.config import cfg_odconv, cfg_mnet
+from data.config import cfg_odconv
 
 warnings.filterwarnings('ignore')
 

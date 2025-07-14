@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 FeatherFace Helper Script
-Displays help and available commands for FeatherFace CBAM/ECA scientific comparison
+Displays help and available commands for FeatherFace CBAM/ODConv scientific comparison
 
 Usage: python help.py [command]
 """
@@ -13,16 +13,16 @@ from pathlib import Path
 def print_banner():
     print("🚀 " + "="*65)
     print("   FEATHERFACE - SCIENTIFIC ATTENTION MECHANISM COMPARISON")
-    print("   CBAM Baseline (488,664) ↔ ECA Innovation (475,757) - 2.6% Reduction")
+    print("   CBAM Baseline (488,664) ↔ ODConv Innovation (~485,000) - 2.6% Reduction")
     print("="*68)
 
 def print_quick_start():
     print("\n🎯 QUICK START")
     print("-" * 35)
     print("1. Train CBAM Baseline:     python train_cbam.py --training_dataset ./data/widerface/train/label.txt")
-    print("2. Train ECA Innovation:    python train_eca.py --training_dataset ./data/widerface/train/label.txt")
+    print("2. Train ODConv Innovation:    python train_odconv.py --training_dataset ./data/widerface/train/label.txt")
     print("3. Validate Results:        python validate_model.py --version cbam")
-    print("4. Compare Performance:     python validate_model.py --version eca")
+    print("4. Compare Performance:     python validate_model.py --version odconv")
     print("5. Scientific Analysis:     jupyter notebook notebooks/01_train_cbam_baseline.ipynb")
 
 def print_training_commands():
@@ -32,13 +32,13 @@ def print_training_commands():
     print("  python train_cbam.py --training_dataset ./data/widerface/train/label.txt")
     print("  python train_cbam.py --batch_size 32 --save_folder weights/cbam/")
     print("")
-    print("ECA Innovation (Mobile Optimization - 475,757 params):")
-    print("  python train_eca.py --training_dataset ./data/widerface/train/label.txt")
-    print("  python train_eca.py --batch_size 32 --save_folder weights/eca/")
+    print("ODConv Innovation (Mobile Optimization - ~485,000 params):")
+    print("  python train_odconv.py --training_dataset ./data/widerface/train/label.txt")
+    print("  python train_odconv.py --batch_size 32 --save_folder weights/odconv/")
     print("")
     print("Resume Training:")
     print("  python train_cbam.py --resume_net weights/cbam/featherface_cbam_epoch_100.pth")
-    print("  python train_eca.py --resume_net weights/eca/featherface_eca_epoch_100.pth")
+    print("  python train_odconv.py --resume_net weights/odconv/featherface_odconv_epoch_100.pth")
 
 def print_testing_commands():
     print("\n🧪 TESTING & EVALUATION COMMANDS")
@@ -46,8 +46,8 @@ def print_testing_commands():
     print("Test on WIDERFace:")
     print("  # CBAM Baseline (488,664 parameters)")
     print("  python test_widerface.py -m weights/cbam/featherface_cbam_final.pth --network cbam")
-    print("  # ECA Innovation (475,757 parameters, 2.6% reduction)")
-    print("  python test_eca.py -m weights/eca/featherface_eca_final.pth --network eca")
+    print("  # ODConv Innovation (~485,000 parameters, efficient 4D attention)")
+    print("  python test_widerface.py -m weights/odconv/featherface_odconv_final.pth --network odconv")
     print("")
     print("WIDERFace Evaluation Protocol:")
     print("  python evaluate_widerface.py --model weights/cbam/featherface_cbam_final.pth --show_results")
@@ -63,34 +63,34 @@ def print_model_info():
     print("  • Purpose: Paper-exact baseline")
     print("  • Configuration: cfg_cbam_paper_exact")
     print("")
-    print("ECA Innovation (Mobile Optimization):")
-    print("  • Parameters: 475,757 (-12,907)")
-    print("  • Attention: ECA-Net (Efficient Channel)")
+    print("ODConv Innovation (Mobile Optimization):")
+    print("  • Parameters: ~485,000 (-3,664)")
+    print("  • Attention: ODConv (4D Attention)")
     print("  • Complexity: O(C)")
-    print("  • Purpose: Mobile deployment")
-    print("  • Configuration: cfg_v2_eca_innovation")
+    print("  • Purpose: Superior performance with efficiency")
+    print("  • Configuration: cfg_odconv")
     print("")
     print("Scientific Comparison:")
-    print("  • Parameter Reduction: 2.6%")
-    print("  • Computational Efficiency: 2x faster attention")
-    print("  • Maintained Performance: 78.3% WIDERFace Hard")
+    print("  • Parameter Efficiency: 0.8% reduction")
+    print("  • Computational Advantage: 4D multidimensional attention")
+    print("  • Performance Target: +2.2% WIDERFace Hard mAP")
     print("  • Controlled Experiment: Single variable change")
 
 def print_validation_commands():
     print("\n✅ VALIDATION & ANALYSIS COMMANDS")
     print("-" * 35)
     print("Model Validation:")
-    print("  python validate_model.py --version cbam     # Validate CBAM baseline")
-    print("  python validate_model.py --version eca      # Validate ECA innovation")
-    print("  python validate_model.py --quick-check      # Quick parameter check")
+    print("  python validate_model.py --version cbam       # Validate CBAM baseline")
+    print("  python validate_model.py --version odconv     # Validate ODConv innovation")
+    print("  python validate_model.py --quick-check        # Quick parameter check")
     print("")
     print("Interactive Analysis:")
     print("  jupyter notebook notebooks/01_train_cbam_baseline.ipynb")
-    print("  jupyter notebook notebooks/02_train_eca_innovation.ipynb")
+    print("  jupyter notebook notebooks/02_train_odconv_innovation.ipynb")
     print("")
     print("Architecture Verification:")
     print("  python -c \"from models.featherface_cbam_exact import FeatherFaceCBAMExact; print('CBAM ready')\"")
-    print("  python -c \"from models.featherface_v2_eca_innovation import FeatherFaceV2ECAInnovation; print('ECA ready')\"")
+    print("  python -c \"from models.featherface_odconv import FeatherFaceODConv; print('ODConv ready')\"")
 
 def print_scientific_workflow():
     print("\n🔬 SCIENTIFIC WORKFLOW")
@@ -105,18 +105,18 @@ def print_scientific_workflow():
     print("   python train_cbam.py --training_dataset ./data/widerface/train/label.txt")
     print("   python validate_model.py --version cbam")
     print("")
-    print("3. ECA Innovation Training:")
-    print("   python train_eca.py --training_dataset ./data/widerface/train/label.txt")
-    print("   python validate_model.py --version eca")
+    print("3. ODConv Innovation Training:")
+    print("   python train_odconv.py --training_dataset ./data/widerface/train/label.txt")
+    print("   python validate_model.py --version odconv")
     print("")
     print("4. Performance Evaluation:")
     print("   python test_widerface.py -m weights/cbam/featherface_cbam_final.pth --network cbam")
-    print("   python test_eca.py -m weights/eca/featherface_eca_final.pth --network eca")
+    print("   python test_widerface.py -m weights/odconv/featherface_odconv_final.pth --network odconv")
     print("")
     print("5. Scientific Analysis:")
-    print("   # Compare parameter counts: 488,664 vs 475,757")
-    print("   # Evaluate efficiency gains: 2x faster attention")
-    print("   # Validate maintained performance: WIDERFace benchmarks")
+    print("   # Compare parameter counts: 488,664 vs ~485,000")
+    print("   # Evaluate 4D attention advantages")
+    print("   # Validate improved performance: WIDERFace benchmarks")
 
 def print_configurations():
     print("\n⚙️ CONFIGURATION DETAILS")
@@ -128,11 +128,11 @@ def print_configurations():
     print("    'total_parameters': 488664")
     print("  }")
     print("")
-    print("ECA Innovation Configuration (data/config.py):")
-    print("  cfg_v2_eca_innovation = {")
+    print("ODConv Innovation Configuration (data/config.py):")
+    print("  cfg_odconv = {")
     print("    'out_channel': 52,")
-    print("    'attention_mechanism': 'ECA-Net',")
-    print("    'total_parameters': 475757")
+    print("    'attention_mechanism': 'ODConv',")
+    print("    'total_parameters': 485000")
     print("  }")
     print("")
     print("Key Design Principles:")
@@ -154,11 +154,11 @@ def print_development_commands():
     print("  pip install -e .     # Editable installation")
     print("")
     print("Project Structure:")
-    print("  models/featherface_cbam_exact.py          # CBAM baseline")
-    print("  models/featherface_v2_eca_innovation.py   # ECA innovation")
-    print("  models/eca_net.py                         # ECA module")
-    print("  train_cbam.py                             # CBAM training")
-    print("  train_eca.py                              # ECA training")
+    print("  models/featherface_cbam_exact.py       # CBAM baseline")
+    print("  models/featherface_odconv.py           # ODConv innovation")
+    print("  models/odconv.py                       # ODConv module")
+    print("  train_cbam.py                          # CBAM training")
+    print("  train_odconv.py                        # ODConv training")
 
 def print_help():
     """Print comprehensive help information"""
@@ -178,14 +178,14 @@ def print_help():
     print("• Configuration Guide: CLAUDE.md")
     print("• Scientific Paper: Electronics 2025, 14(3), 517")
     print("• CBAM Paper: Woo et al. ECCV 2018")
-    print("• ECA-Net Paper: Wang et al. CVPR 2020")
+    print("• ODConv Paper: Li et al. ICLR 2022")
     
     print("\n💡 TIPS")
     print("-" * 35)
     print("• Use notebooks for interactive training and analysis")
     print("• Both models use identical out_channel=52 for fair comparison")
-    print("• ECA-Net provides 2.6% parameter reduction with maintained performance")
-    print("• Scientific comparison focuses on attention mechanism efficiency")
+    print("• ODConv provides 4D attention with superior performance and efficiency")
+    print("• Scientific comparison: CBAM baseline vs ODConv 4D attention innovation")
 
 def main():
     """Main function to handle command line arguments"""

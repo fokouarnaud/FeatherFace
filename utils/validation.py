@@ -465,7 +465,7 @@ def quick_model_validation(model: nn.Module,
 
 def validate_model_compatibility(model1: nn.Module, model2: nn.Module,
                                 test_inputs: Optional[List[torch.Tensor]] = None) -> Dict[str, Any]:
-    """Validate compatibility between two models (e.g., CBAM baseline and ECA innovation)"""
+    """Validate compatibility between two models (e.g., CBAM baseline and ODConv innovation)"""
     results = {
         'compatible': True,
         'errors': [],

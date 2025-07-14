@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 FeatherFace WIDERFace Evaluation Script
-Scientific comparison between CBAM baseline and ECA innovation
+Scientific comparison between CBAM baseline and ODConv innovation
 
 Usage:
     python evaluate_widerface.py --model weights/cbam/featherface_cbam_final.pth --network cbam
-    python evaluate_widerface.py --model weights/eca/featherface_eca_final.pth --network eca
+    python evaluate_widerface.py --model weights/odconv/featherface_odconv_final.pth --network odconv
 """
 
 import os
@@ -17,7 +17,7 @@ from pathlib import Path
 def parse_args():
     parser = argparse.ArgumentParser(description='Evaluate FeatherFace on WIDERFace dataset')
     parser.add_argument('--model', required=True, help='Path to trained model')
-    parser.add_argument('--network', default='cbam', choices=['cbam', 'eca'], help='Network architecture: cbam (baseline) or eca (innovation)')
+    parser.add_argument('--network', default='cbam', choices=['cbam', 'odconv'], help='Network architecture: cbam (baseline) or odconv (innovation)')
     parser.add_argument('--confidence_threshold', default=0.02, type=float)
     parser.add_argument('--nms_threshold', default=0.4, type=float)
     parser.add_argument('--dataset_folder', default='./data/widerface/val/images/')
@@ -32,9 +32,9 @@ def main():
     print("🚀 FeatherFace WIDERFace Evaluation")
     print("=" * 50)
     print(f"Model: {args.model}")
-    print(f"Network: {args.network} ({'CBAM baseline' if args.network == 'cbam' else 'ECA innovation'})")
-    print(f"Architecture: {'FeatherFaceCBAMExact' if args.network == 'cbam' else 'FeatherFaceV2ECAInnovation'}")
-    print(f"Expected params: {'488,664' if args.network == 'cbam' else '475,757'}")
+    print(f"Network: {args.network} ({'CBAM baseline' if args.network == 'cbam' else 'ODConv innovation'})")
+    print(f"Architecture: {'FeatherFaceCBAMExact' if args.network == 'cbam' else 'FeatherFaceODConv'}")
+    print(f"Expected params: {'488,664' if args.network == 'cbam' else '~485,000'}")
     print(f"Dual attention: 6 {args.network.upper()} modules (3 backbone + 3 BiFPN)")
     print("=" * 50)
     
@@ -100,10 +100,10 @@ def main():
     
     print(f"\n💾 Results saved to: {args.save_folder}")
     print(f"\n✅ Scientific Evaluation Complete:")
-    print(f"   Model: {args.network} ({'CBAM baseline' if args.network == 'cbam' else 'ECA innovation'})")
-    print(f"   Parameters: {'488,664' if args.network == 'cbam' else '475,757'}")
+    print(f"   Model: {args.network} ({'CBAM baseline' if args.network == 'cbam' else 'ODConv innovation'})")
+    print(f"   Parameters: {'488,664' if args.network == 'cbam' else '~485,000'}")
     print(f"   Attention: 6 {args.network.upper()} modules (dual application)")
-    print(f"   Foundation: {'Woo et al. ECCV 2018' if args.network == 'cbam' else 'Wang et al. CVPR 2020'}")
+    print(f"   Foundation: {'Woo et al. ECCV 2018' if args.network == 'cbam' else 'Li et al. ICLR 2022'}")
     
     return 0
     print("📋 To run evaluation manually:")

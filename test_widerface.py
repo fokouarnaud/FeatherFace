@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
 FeatherFace WIDERFace Testing Script
-Adapted for CBAM baseline and ECA innovation models with dual attention architecture
+Adapted for CBAM baseline and ODConv innovation models with dual attention architecture
 
 Scientific evaluation on WIDERFace dataset for both:
 - CBAM Baseline (488,664 parameters): 6 CBAM modules (3 backbone + 3 BiFPN)
-- ECA Innovation (475,757 parameters): 6 ECA modules (3 backbone + 3 BiFPN)
+- ODConv Innovation (~485,000 parameters): 6 ODConv modules (3 backbone + 3 BiFPN)
 
 Usage:
     python test_widerface.py -m weights/cbam/featherface_cbam_final.pth --network cbam
-    python test_widerface.py -m weights/eca/featherface_eca_final.pth --network eca
+    python test_widerface.py -m weights/odconv/featherface_odconv_final.pth --network odconv
 """
 
 from __future__ import print_function
@@ -18,12 +18,12 @@ import argparse
 import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
-from data import cfg_cbam_paper_exact, cfg_v2_eca_innovation
+from data import cfg_cbam_paper_exact, cfg_odconv
 from layers.functions.prior_box import PriorBox
 from utils.nms.py_cpu_nms import py_cpu_nms
 import cv2
 from models.featherface_cbam_exact import FeatherFaceCBAMExact
-from models.featherface_v2_eca_innovation import FeatherFaceV2ECAInnovation
+from models.featherface_odconv import FeatherFaceODConv
 from utils.box_utils import decode, decode_landm
 from utils.timer import Timer
 import time
@@ -36,8 +36,8 @@ def str2bool(v):
 parser = argparse.ArgumentParser(description='FeatherFace WIDERFace Test')
 parser.add_argument('-m', '--trained_model', default='./weights/cbam/featherface_cbam_final.pth',
                     type=str, help='Trained state_dict file path to open')
-parser.add_argument('--network', default='cbam', choices=['cbam', 'eca'], 
-                    help='Network architecture: cbam (baseline) or eca (innovation)')
+parser.add_argument('--network', default='cbam', choices=['cbam', 'odconv'], 
+                    help='Network architecture: cbam (baseline) or odconv (innovation)')
 parser.add_argument('--dataset_folder', default='./data/widerface/val/images/', type=str, help='dataset path')
 parser.add_argument('--confidence_threshold', default=0.02, type=float, help='confidence_threshold')
 parser.add_argument('--top_k', default=5000, type=int, help='top_k')
@@ -106,19 +106,19 @@ if __name__ == '__main__':
         print("🔬 Testing CBAM Baseline (488,664 parameters)")
         print("   Architecture: 6 CBAM modules (3 backbone + 3 BiFPN)")
         print("   Scientific foundation: Woo et al. ECCV 2018")
-    elif args.network == 'eca':
-        cfg = cfg_v2_eca_innovation
-        print("🚀 Testing ECA Innovation (475,757 parameters)")
-        print("   Architecture: 6 ECA modules (3 backbone + 3 BiFPN)")
-        print("   Scientific foundation: Wang et al. CVPR 2020")
+    elif args.network == 'odconv':
+        cfg = cfg_odconv
+        print("🚀 Testing ODConv Innovation (~485,000 parameters)")
+        print("   Architecture: 6 ODConv modules (3 backbone + 3 BiFPN)")
+        print("   Scientific foundation: Li et al. ICLR 2022")
     else:
         raise ValueError(f"Unknown network: {args.network}")
 
     # net and model
     if args.network == 'cbam':
         net = FeatherFaceCBAMExact(cfg=cfg, phase='test')
-    elif args.network == 'eca':
-        net = FeatherFaceV2ECAInnovation(cfg=cfg, phase='test')
+    elif args.network == 'odconv':
+        net = FeatherFaceODConv(cfg=cfg, phase='test')
     
     net = load_model(net, args.trained_model, args.cpu)
     net.eval()
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     
     # Verify model parameter count
     total_params = sum(p.numel() for p in net.parameters())
-    expected_params = 488664 if args.network == 'cbam' else 475757
+    expected_params = 488664 if args.network == 'cbam' else 485000
     print(f'✓ Model loaded: {total_params:,} parameters (expected: {expected_params:,})')
     if abs(total_params - expected_params) > 100:
         print(f'⚠️  Warning: Parameter count mismatch by {total_params - expected_params:+,}')
