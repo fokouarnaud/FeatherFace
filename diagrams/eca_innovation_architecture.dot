@@ -26,6 +26,18 @@ digraph ECAInnovation {
         stage3 [label="Stage 3\nP5/32", fillcolor="#FFCC80"];
     }
     
+    // Backbone ECA Attention
+    subgraph cluster_backbone_eca {
+        label="Backbone ECA Attention";
+        style=filled;
+        fillcolor="#E3F2FD";
+        color="#2196F3";
+        
+        backbone_eca1 [label="ECA\n64 ch\nk=3", fillcolor="#BBDEFB"];
+        backbone_eca2 [label="ECA\n128 ch\nk=5", fillcolor="#BBDEFB"];
+        backbone_eca3 [label="ECA\n256 ch\nk=5", fillcolor="#BBDEFB"];
+    }
+    
     // Feature Pyramid Network
     subgraph cluster_fpn {
         label="BiFPN Feature Pyramid";
@@ -39,16 +51,16 @@ digraph ECAInnovation {
         p5_out [label="P5 Features\nout_channel=52", fillcolor="#A5D6A7"];
     }
     
-    // ECA-Net Attention (Innovation)
-    subgraph cluster_eca {
-        label="ECA-Net Attention Innovation";
+    // BiFPN ECA Attention (Innovation)
+    subgraph cluster_bifpn_eca {
+        label="BiFPN ECA Attention Innovation";
         style=filled;
         fillcolor="#E3F2FD";
         color="#2196F3";
         
-        eca_attention [label="ECA-Net Attention\nEfficient Channel\nO(C) complexity", fillcolor="#BBDEFB"];
-        eca_module [label="ECA Module\nAdaptive Kernel\nNo Dimensionality\nReduction", fillcolor="#90CAF9"];
-        local_conv [label="Local 1D Conv\nk = f(C)", fillcolor="#64B5F6"];
+        bifpn_eca1 [label="ECA\n52 ch\nP3\nk=3", fillcolor="#BBDEFB"];
+        bifpn_eca2 [label="ECA\n52 ch\nP4\nk=3", fillcolor="#BBDEFB"];
+        bifpn_eca3 [label="ECA\n52 ch\nP5\nk=3", fillcolor="#BBDEFB"];
     }
     
     // SSH Detection Heads
@@ -97,24 +109,25 @@ digraph ECAInnovation {
     mobilenet -> stage2;
     mobilenet -> stage3;
     
-    stage1 -> bifpn;
-    stage2 -> bifpn;
-    stage3 -> bifpn;
+    stage1 -> backbone_eca1;
+    stage2 -> backbone_eca2;
+    stage3 -> backbone_eca3;
+    
+    backbone_eca1 -> bifpn;
+    backbone_eca2 -> bifpn;
+    backbone_eca3 -> bifpn;
     
     bifpn -> p3_out;
     bifpn -> p4_out;
     bifpn -> p5_out;
     
-    p3_out -> eca_attention;
-    p4_out -> eca_attention;
-    p5_out -> eca_attention;
+    p3_out -> bifpn_eca1;
+    p4_out -> bifpn_eca2;
+    p5_out -> bifpn_eca3;
     
-    eca_attention -> eca_module;
-    eca_module -> local_conv;
-    
-    local_conv -> ssh1;
-    local_conv -> ssh2;
-    local_conv -> ssh3;
+    bifpn_eca1 -> ssh1;
+    bifpn_eca2 -> ssh2;
+    bifpn_eca3 -> ssh3;
     
     ssh1 -> cs1;
     ssh2 -> cs2;

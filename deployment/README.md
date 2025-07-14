@@ -81,20 +81,23 @@ classifications, bbox_regressions, landmarks = outputs
 ## 🔬 Scientific Foundation
 
 ### CBAM Baseline (Woo et al. ECCV 2018)
-1. **Channel Attention**: Global average/max pooling with MLP
-2. **Spatial Attention**: 7×7 convolution after channel attention
-3. **Sequential Application**: Channel then spatial attention
-4. **Complexity**: O(C²) computational complexity
-5. **Citations**: 7,000+ research citations
-6. **Foundation**: Proven attention mechanism baseline
+1. **Dual Application**: Applied to backbone features (64,128,256 ch) + BiFPN features (52 ch)
+2. **Channel Attention**: Global average/max pooling with MLP
+3. **Spatial Attention**: 7×7 convolution after channel attention
+4. **Total Modules**: 6 CBAM modules (3 backbone + 3 BiFPN)
+5. **Complexity**: O(C²) computational complexity
+6. **Citations**: 7,000+ research citations
+7. **Foundation**: Proven attention mechanism baseline
 
 ### ECA Innovation (Wang et al. CVPR 2020)
-1. **Efficient Channel Attention**: 1D convolution instead of MLP
-2. **Local Cross-Channel Interaction**: K-nearest neighbors approach
-3. **Parameter Efficiency**: Only ~22 parameters per layer
-4. **Complexity**: O(C) computational complexity  
-5. **Citations**: 1,500+ research citations
-6. **Mobile Optimization**: 2x faster than CBAM
+1. **Dual Application**: Applied to backbone features (64,128,256 ch) + BiFPN features (52 ch)
+2. **Efficient Channel Attention**: 1D convolution instead of MLP
+3. **Local Cross-Channel Interaction**: K-nearest neighbors approach
+4. **Total Modules**: 6 ECA modules (3 backbone + 3 BiFPN)
+5. **Parameter Efficiency**: Only ~22 parameters total per model
+6. **Complexity**: O(C) computational complexity  
+7. **Citations**: 1,500+ research citations
+8. **Mobile Optimization**: 2x faster than CBAM
 
 ## 🛠️ Deployment Options
 

@@ -26,6 +26,18 @@ digraph CBamBaseline {
         stage3 [label="Stage 3\nP5/32", fillcolor="#FFCC80"];
     }
     
+    // Backbone CBAM Attention
+    subgraph cluster_backbone_cbam {
+        label="Backbone CBAM Attention";
+        style=filled;
+        fillcolor="#FDE7F3";
+        color="#E91E63";
+        
+        backbone_cbam1 [label="CBAM\n64 ch", fillcolor="#F8BBD9"];
+        backbone_cbam2 [label="CBAM\n128 ch", fillcolor="#F8BBD9"];
+        backbone_cbam3 [label="CBAM\n256 ch", fillcolor="#F8BBD9"];
+    }
+    
     // Feature Pyramid Network
     subgraph cluster_fpn {
         label="BiFPN Feature Pyramid";
@@ -39,16 +51,16 @@ digraph CBamBaseline {
         p5_out [label="P5 Features\nout_channel=52", fillcolor="#A5D6A7"];
     }
     
-    // CBAM Attention
-    subgraph cluster_cbam {
-        label="CBAM Attention Mechanism";
+    // BiFPN CBAM Attention
+    subgraph cluster_bifpn_cbam {
+        label="BiFPN CBAM Attention";
         style=filled;
         fillcolor="#FDE7F3";
         color="#E91E63";
         
-        cbam_attention [label="CBAM Attention\nChannel + Spatial\nO(C²) complexity", fillcolor="#F8BBD9"];
-        channel_att [label="Channel\nAttention", fillcolor="#F48FB1"];
-        spatial_att [label="Spatial\nAttention", fillcolor="#F48FB1"];
+        bifpn_cbam1 [label="CBAM\n52 ch\nP3", fillcolor="#F8BBD9"];
+        bifpn_cbam2 [label="CBAM\n52 ch\nP4", fillcolor="#F8BBD9"];
+        bifpn_cbam3 [label="CBAM\n52 ch\nP5", fillcolor="#F8BBD9"];
     }
     
     // SSH Detection Heads
@@ -97,27 +109,25 @@ digraph CBamBaseline {
     mobilenet -> stage2;
     mobilenet -> stage3;
     
-    stage1 -> bifpn;
-    stage2 -> bifpn;
-    stage3 -> bifpn;
+    stage1 -> backbone_cbam1;
+    stage2 -> backbone_cbam2;
+    stage3 -> backbone_cbam3;
+    
+    backbone_cbam1 -> bifpn;
+    backbone_cbam2 -> bifpn;
+    backbone_cbam3 -> bifpn;
     
     bifpn -> p3_out;
     bifpn -> p4_out;
     bifpn -> p5_out;
     
-    p3_out -> cbam_attention;
-    p4_out -> cbam_attention;
-    p5_out -> cbam_attention;
+    p3_out -> bifpn_cbam1;
+    p4_out -> bifpn_cbam2;
+    p5_out -> bifpn_cbam3;
     
-    cbam_attention -> channel_att;
-    cbam_attention -> spatial_att;
-    
-    channel_att -> ssh1;
-    spatial_att -> ssh1;
-    channel_att -> ssh2;
-    spatial_att -> ssh2;
-    channel_att -> ssh3;
-    spatial_att -> ssh3;
+    bifpn_cbam1 -> ssh1;
+    bifpn_cbam2 -> ssh2;
+    bifpn_cbam3 -> ssh3;
     
     ssh1 -> cs1;
     ssh2 -> cs2;

@@ -38,16 +38,18 @@ python train_eca.py --training_dataset ./data/widerface/train/label.txt
 
 ### CBAM Baseline (Scientific Foundation)
 ```
-Input → MobileNet-0.25 → BiFPN → CBAM Attention → SSH → Detection Heads
-                                      ↓
-                           Channel + Spatial Attention (488,664 params)
+Input → MobileNet-0.25 → CBAM Attention₁ → BiFPN → CBAM Attention₂ → SSH → Channel Shuffle → Detection Heads
+                               ↓                        ↓                                    ↓
+                        Backbone CBAM (3×)      BiFPN CBAM (3×)              Class/Bbox/Landmark
+                        64,128,256 channels      52 channels each             (488,664 params)
 ```
 
 ### ECA-Net Innovation (Mobile Optimization)
 ```
-Input → MobileNet-0.25 → BiFPN → ECA-Net Attention → SSH → Detection Heads
-                                      ↓
-                          Efficient Channel Attention (475,757 params)
+Input → MobileNet-0.25 → ECA-Net Attention₁ → BiFPN → ECA-Net Attention₂ → SSH → Channel Shuffle → Detection Heads
+                               ↓                          ↓                                      ↓
+                        Backbone ECA (3×)        BiFPN ECA (3×)                Class/Bbox/Landmark
+                        64,128,256 channels      52 channels each               (475,757 params)
 ```
 
 ## 🔬 Scientific Foundation
