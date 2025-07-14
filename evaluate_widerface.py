@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 FeatherFace WIDERFace Evaluation Script
-Simplifié pour une exécution facile depuis la racine du projet
+Scientific comparison between CBAM baseline and ECA innovation
 
 Usage:
-    python evaluate_widerface.py --model weights/mobilenet0.25_Final.pth --network mobile0.25
-    python evaluate_widerface.py --model weights/v2/model_v2.pth --network mobile0.25 --version v2
+    python evaluate_widerface.py --model weights/cbam/featherface_cbam_final.pth --network cbam
+    python evaluate_widerface.py --model weights/eca/featherface_eca_final.pth --network eca
 """
 
 import os
@@ -17,8 +17,7 @@ from pathlib import Path
 def parse_args():
     parser = argparse.ArgumentParser(description='Evaluate FeatherFace on WIDERFace dataset')
     parser.add_argument('--model', required=True, help='Path to trained model')
-    parser.add_argument('--network', default='mobile0.25', help='Network architecture')
-    parser.add_argument('--version', default='v1', choices=['v1', 'v2'], help='Model version')
+    parser.add_argument('--network', default='cbam', choices=['cbam', 'eca'], help='Network architecture: cbam (baseline) or eca (innovation)')
     parser.add_argument('--confidence_threshold', default=0.02, type=float)
     parser.add_argument('--nms_threshold', default=0.4, type=float)
     parser.add_argument('--dataset_folder', default='./data/widerface/val/images/')
@@ -33,8 +32,8 @@ def main():
     print("🚀 FeatherFace WIDERFace Evaluation")
     print("=" * 50)
     print(f"Model: {args.model}")
-    print(f"Version: {args.version}")
-    print(f"Network: {args.network}")
+    print(f"Network: {args.network} ({'CBAM baseline' if args.network == 'cbam' else 'ECA innovation'})")
+    print(f"Expected params: {'488,664' if args.network == 'cbam' else '475,757'}")
     print("=" * 50)
     
     # Vérifier que le modèle existe

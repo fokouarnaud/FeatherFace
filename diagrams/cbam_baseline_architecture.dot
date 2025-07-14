@@ -1,0 +1,150 @@
+digraph CBamBaseline {
+    // Graph configuration
+    rankdir=LR;
+    node [shape=box, style=filled, fontname="Arial", fontsize=10];
+    edge [fontname="Arial", fontsize=9];
+    
+    // Title
+    label="FeatherFace CBAM Baseline Architecture (488,664 parameters)";
+    labelloc="t";
+    fontsize=14;
+    fontname="Arial Bold";
+    
+    // Input
+    input [label="Input Image\n640×640×3", fillcolor="#E8F4FD", color="#1E88E5"];
+    
+    // Backbone
+    subgraph cluster_backbone {
+        label="MobileNetV1-0.25 Backbone";
+        style=filled;
+        fillcolor="#FFF3E0";
+        color="#F57C00";
+        
+        mobilenet [label="MobileNetV1-0.25\n213,072 params\n(43.6%)", fillcolor="#FFE0B2"];
+        stage1 [label="Stage 1\nP3/8", fillcolor="#FFCC80"];
+        stage2 [label="Stage 2\nP4/16", fillcolor="#FFCC80"];
+        stage3 [label="Stage 3\nP5/32", fillcolor="#FFCC80"];
+    }
+    
+    // Feature Pyramid Network
+    subgraph cluster_fpn {
+        label="BiFPN Feature Pyramid";
+        style=filled;
+        fillcolor="#E8F5E8";
+        color="#4CAF50";
+        
+        bifpn [label="BiFPN\n77,916 params\n(15.9%)", fillcolor="#C8E6C8"];
+        p3_out [label="P3 Features\nout_channel=52", fillcolor="#A5D6A7"];
+        p4_out [label="P4 Features\nout_channel=52", fillcolor="#A5D6A7"];
+        p5_out [label="P5 Features\nout_channel=52", fillcolor="#A5D6A7"];
+    }
+    
+    // CBAM Attention
+    subgraph cluster_cbam {
+        label="CBAM Attention Mechanism";
+        style=filled;
+        fillcolor="#FDE7F3";
+        color="#E91E63";
+        
+        cbam_attention [label="CBAM Attention\nChannel + Spatial\nO(C²) complexity", fillcolor="#F8BBD9"];
+        channel_att [label="Channel\nAttention", fillcolor="#F48FB1"];
+        spatial_att [label="Spatial\nAttention", fillcolor="#F48FB1"];
+    }
+    
+    // SSH Detection Heads
+    subgraph cluster_ssh {
+        label="SSH Detection Heads";
+        style=filled;
+        fillcolor="#EDE7F6";
+        color="#673AB7";
+        
+        ssh1 [label="SSH1\n64,185 params\n(13.1%)", fillcolor="#D1C4E9"];
+        ssh2 [label="SSH2\n64,185 params\n(13.1%)", fillcolor="#D1C4E9"];
+        ssh3 [label="SSH3\n64,185 params\n(13.1%)", fillcolor="#D1C4E9"];
+    }
+    
+    // Channel Shuffle
+    subgraph cluster_shuffle {
+        label="Channel Shuffle Optimization";
+        style=filled;
+        fillcolor="#F3E5F5";
+        color="#9C27B0";
+        
+        cs1 [label="CS1\n0 params", fillcolor="#E1BEE7"];
+        cs2 [label="CS2\n0 params", fillcolor="#E1BEE7"];
+        cs3 [label="CS3\n0 params", fillcolor="#E1BEE7"];
+    }
+    
+    // Output Heads
+    subgraph cluster_outputs {
+        label="Detection Outputs";
+        style=filled;
+        fillcolor="#FFF8E1";
+        color="#FF9800";
+        
+        class_head [label="Classification\n684 params\n(0.1%)", fillcolor="#FFECB3"];
+        bbox_head [label="BBox Regression\n1,368 params\n(0.3%)", fillcolor="#FFECB3"];
+        landmark_head [label="Landmarks\n3,420 params\n(0.7%)", fillcolor="#FFECB3"];
+    }
+    
+    // Final Outputs
+    output [label="Face Detection\nResults", fillcolor="#FFCDD2", color="#F44336"];
+    
+    // Connections
+    input -> mobilenet;
+    
+    mobilenet -> stage1;
+    mobilenet -> stage2;
+    mobilenet -> stage3;
+    
+    stage1 -> bifpn;
+    stage2 -> bifpn;
+    stage3 -> bifpn;
+    
+    bifpn -> p3_out;
+    bifpn -> p4_out;
+    bifpn -> p5_out;
+    
+    p3_out -> cbam_attention;
+    p4_out -> cbam_attention;
+    p5_out -> cbam_attention;
+    
+    cbam_attention -> channel_att;
+    cbam_attention -> spatial_att;
+    
+    channel_att -> ssh1;
+    spatial_att -> ssh1;
+    channel_att -> ssh2;
+    spatial_att -> ssh2;
+    channel_att -> ssh3;
+    spatial_att -> ssh3;
+    
+    ssh1 -> cs1;
+    ssh2 -> cs2;
+    ssh3 -> cs3;
+    
+    cs1 -> class_head;
+    cs1 -> bbox_head;
+    cs1 -> landmark_head;
+    cs2 -> class_head;
+    cs2 -> bbox_head;
+    cs2 -> landmark_head;
+    cs3 -> class_head;
+    cs3 -> bbox_head;
+    cs3 -> landmark_head;
+    
+    class_head -> output;
+    bbox_head -> output;
+    landmark_head -> output;
+    
+    // Scientific details
+    subgraph cluster_details {
+        label="Scientific Foundation";
+        style=filled;
+        fillcolor="#F5F5F5";
+        color="#757575";
+        
+        details [label="CBAM Baseline\n• Total: 488,664 parameters\n• CBAM: Woo et al. ECCV 2018\n• Configuration: cfg_cbam_paper_exact\n• Purpose: Scientific baseline", 
+                fillcolor="#EEEEEE", shape=note];
+    }
+}

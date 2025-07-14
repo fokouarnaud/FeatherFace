@@ -1,0 +1,158 @@
+digraph ECAInnovation {
+    // Graph configuration
+    rankdir=LR;
+    node [shape=box, style=filled, fontname="Arial", fontsize=10];
+    edge [fontname="Arial", fontsize=9];
+    
+    // Title
+    label="FeatherFace ECA-Net Innovation Architecture (475,757 parameters)";
+    labelloc="t";
+    fontsize=14;
+    fontname="Arial Bold";
+    
+    // Input
+    input [label="Input Image\n640×640×3", fillcolor="#E8F4FD", color="#1E88E5"];
+    
+    // Backbone
+    subgraph cluster_backbone {
+        label="MobileNetV1-0.25 Backbone";
+        style=filled;
+        fillcolor="#FFF3E0";
+        color="#F57C00";
+        
+        mobilenet [label="MobileNetV1-0.25\n213,072 params\n(44.8%)", fillcolor="#FFE0B2"];
+        stage1 [label="Stage 1\nP3/8", fillcolor="#FFCC80"];
+        stage2 [label="Stage 2\nP4/16", fillcolor="#FFCC80"];
+        stage3 [label="Stage 3\nP5/32", fillcolor="#FFCC80"];
+    }
+    
+    // Feature Pyramid Network
+    subgraph cluster_fpn {
+        label="BiFPN Feature Pyramid";
+        style=filled;
+        fillcolor="#E8F5E8";
+        color="#4CAF50";
+        
+        bifpn [label="BiFPN\n77,916 params\n(16.4%)", fillcolor="#C8E6C8"];
+        p3_out [label="P3 Features\nout_channel=52", fillcolor="#A5D6A7"];
+        p4_out [label="P4 Features\nout_channel=52", fillcolor="#A5D6A7"];
+        p5_out [label="P5 Features\nout_channel=52", fillcolor="#A5D6A7"];
+    }
+    
+    // ECA-Net Attention (Innovation)
+    subgraph cluster_eca {
+        label="ECA-Net Attention Innovation";
+        style=filled;
+        fillcolor="#E3F2FD";
+        color="#2196F3";
+        
+        eca_attention [label="ECA-Net Attention\nEfficient Channel\nO(C) complexity", fillcolor="#BBDEFB"];
+        eca_module [label="ECA Module\nAdaptive Kernel\nNo Dimensionality\nReduction", fillcolor="#90CAF9"];
+        local_conv [label="Local 1D Conv\nk = f(C)", fillcolor="#64B5F6"];
+    }
+    
+    // SSH Detection Heads
+    subgraph cluster_ssh {
+        label="SSH Detection Heads";
+        style=filled;
+        fillcolor="#EDE7F6";
+        color="#673AB7";
+        
+        ssh1 [label="SSH1\n64,185 params\n(13.5%)", fillcolor="#D1C4E9"];
+        ssh2 [label="SSH2\n64,185 params\n(13.5%)", fillcolor="#D1C4E9"];
+        ssh3 [label="SSH3\n64,185 params\n(13.5%)", fillcolor="#D1C4E9"];
+    }
+    
+    // Channel Shuffle
+    subgraph cluster_shuffle {
+        label="Channel Shuffle Optimization";
+        style=filled;
+        fillcolor="#F3E5F5";
+        color="#9C27B0";
+        
+        cs1 [label="CS1\n0 params", fillcolor="#E1BEE7"];
+        cs2 [label="CS2\n0 params", fillcolor="#E1BEE7"];
+        cs3 [label="CS3\n0 params", fillcolor="#E1BEE7"];
+    }
+    
+    // Output Heads
+    subgraph cluster_outputs {
+        label="Detection Outputs";
+        style=filled;
+        fillcolor="#FFF8E1";
+        color="#FF9800";
+        
+        class_head [label="Classification\n684 params\n(0.1%)", fillcolor="#FFECB3"];
+        bbox_head [label="BBox Regression\n1,368 params\n(0.3%)", fillcolor="#FFECB3"];
+        landmark_head [label="Landmarks\n3,420 params\n(0.7%)", fillcolor="#FFECB3"];
+    }
+    
+    // Final Outputs
+    output [label="Face Detection\nResults", fillcolor="#FFCDD2", color="#F44336"];
+    
+    // Connections
+    input -> mobilenet;
+    
+    mobilenet -> stage1;
+    mobilenet -> stage2;
+    mobilenet -> stage3;
+    
+    stage1 -> bifpn;
+    stage2 -> bifpn;
+    stage3 -> bifpn;
+    
+    bifpn -> p3_out;
+    bifpn -> p4_out;
+    bifpn -> p5_out;
+    
+    p3_out -> eca_attention;
+    p4_out -> eca_attention;
+    p5_out -> eca_attention;
+    
+    eca_attention -> eca_module;
+    eca_module -> local_conv;
+    
+    local_conv -> ssh1;
+    local_conv -> ssh2;
+    local_conv -> ssh3;
+    
+    ssh1 -> cs1;
+    ssh2 -> cs2;
+    ssh3 -> cs3;
+    
+    cs1 -> class_head;
+    cs1 -> bbox_head;
+    cs1 -> landmark_head;
+    cs2 -> class_head;
+    cs2 -> bbox_head;
+    cs2 -> landmark_head;
+    cs3 -> class_head;
+    cs3 -> bbox_head;
+    cs3 -> landmark_head;
+    
+    class_head -> output;
+    bbox_head -> output;
+    landmark_head -> output;
+    
+    // Innovation highlights
+    subgraph cluster_innovation {
+        label="Innovation Highlights";
+        style=filled;
+        fillcolor="#E8F5E8";
+        color="#4CAF50";
+        
+        innovation [label="ECA-Net Innovation\n• Parameter Reduction: -12,907 (-2.6%)\n• Efficiency: 2x faster attention\n• Complexity: O(C) vs O(C²)\n• Mobile Optimized: No dim reduction", 
+                   fillcolor="#C8E6C8", shape=note];
+    }
+    
+    // Scientific details
+    subgraph cluster_details {
+        label="Scientific Foundation";
+        style=filled;
+        fillcolor="#F5F5F5";
+        color="#757575";
+        
+        details [label="ECA Innovation\n• Total: 475,757 parameters\n• ECA-Net: Wang et al. CVPR 2020\n• Configuration: cfg_v2_eca_innovation\n• Purpose: Mobile deployment", 
+                fillcolor="#EEEEEE", shape=note];
+    }
+}

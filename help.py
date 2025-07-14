@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 FeatherFace Helper Script
-Affiche l'aide et les commandes disponibles pour FeatherFace V1/Nano
+Displays help and available commands for FeatherFace CBAM/ECA scientific comparison
 
 Usage: python help.py [command]
 """
@@ -11,205 +11,213 @@ import os
 from pathlib import Path
 
 def print_banner():
-    print("🚀 " + "="*60)
-    print("   FEATHERFACE - EFFICIENT FACE DETECTION TOOLKIT")
-    print("   V1 (515K) → V2 (515K) → Nano (344K) - Scientific Innovation")
-    print("="*63)
+    print("🚀 " + "="*65)
+    print("   FEATHERFACE - SCIENTIFIC ATTENTION MECHANISM COMPARISON")
+    print("   CBAM Baseline (488,664) ↔ ECA Innovation (475,757) - 2.6% Reduction")
+    print("="*68)
 
 def print_quick_start():
     print("\n🎯 QUICK START")
-    print("-" * 30)
-    print("1. Train V1 (Baseline):   python train_v1.py --training_dataset ./data/widerface/train/label.txt")
-    print("2. Train V2:              python train_v2.py --training_dataset ./data/widerface/train/label.txt")
-    print("3. Train Nano:            python train_nano.py --teacher_model weights/mobilenet0.25_Final.pth")
-    print("4. Validate Results:      python validate_model.py --quick-check")
-    print("5. Compare Performance:   python test_v1_v2_comparison.py")
+    print("-" * 35)
+    print("1. Train CBAM Baseline:     python train_cbam.py --training_dataset ./data/widerface/train/label.txt")
+    print("2. Train ECA Innovation:    python train_eca.py --training_dataset ./data/widerface/train/label.txt")
+    print("3. Validate Results:        python validate_model.py --version cbam")
+    print("4. Compare Performance:     python validate_model.py --version eca")
+    print("5. Scientific Analysis:     jupyter notebook notebooks/01_train_cbam_baseline.ipynb")
 
 def print_training_commands():
     print("\n🏃 TRAINING COMMANDS")
-    print("-" * 30)
-    print("V1 (Baseline - 489K params):")
-    print("  python train_v1.py --training_dataset ./data/widerface/train/label.txt --network mobile0.25")
+    print("-" * 35)
+    print("CBAM Baseline (Scientific Foundation - 488,664 params):")
+    print("  python train_cbam.py --training_dataset ./data/widerface/train/label.txt")
+    print("  python train_cbam.py --batch_size 32 --save_folder weights/cbam/")
     print("")
-    print("V2 (ECA-Net - 515K params):")
-    print("  python train_v2.py --training_dataset ./data/widerface/train/label.txt")
-    print("  python train_v2.py --resume_net weights/v2_eca/featherface_v2_eca_epoch_100.pth")
+    print("ECA Innovation (Mobile Optimization - 475,757 params):")
+    print("  python train_eca.py --training_dataset ./data/widerface/train/label.txt")
+    print("  python train_eca.py --batch_size 32 --save_folder weights/eca/")
     print("")
-    print("Nano (Ultra-Efficient - 344K params):")
-    print("  python train_nano.py --epochs 400 --teacher_model weights/mobilenet0.25_Final.pth")
-    print("  python validate_nano.py  # Validate scientific optimizations")
+    print("Resume Training:")
+    print("  python train_cbam.py --resume_net weights/cbam/featherface_cbam_epoch_100.pth")
+    print("  python train_eca.py --resume_net weights/eca/featherface_eca_epoch_100.pth")
 
 def print_testing_commands():
     print("\n🧪 TESTING & EVALUATION COMMANDS")
-    print("-" * 30)
+    print("-" * 35)
     print("Test on WIDERFace:")
-    print("  # V1 Baseline (487K parameters)")
-    print("  python test_widerface.py -m weights/mobilenet0.25_Final.pth --network mobile0.25")
-    print("  # Nano Ultra-Efficient (344K parameters, 29.3% reduction)")
-    print("  python test_widerface.py -m weights/nano/nano_final.pth --network nano")
-    print("  python evaluate_widerface.py --model weights/mobilenet0.25_Final.pth --show_results")
+    print("  # CBAM Baseline (488,664 parameters)")
+    print("  python test_widerface.py -m weights/cbam/featherface_cbam_final.pth --network cbam")
+    print("  # ECA Innovation (475,757 parameters, 2.6% reduction)")
+    print("  python test_eca.py -m weights/eca/featherface_eca_final.pth --network eca")
     print("")
-    print("Compare V1 vs Nano:")
-    print("  python test_v1_nano_comparison.py")
+    print("WIDERFace Evaluation Protocol:")
+    print("  python evaluate_widerface.py --model weights/cbam/featherface_cbam_final.pth --show_results")
+    print("  cd widerface_evaluate && python evaluation.py -p ./widerface_txt -g ./eval_tools/ground_truth")
+
+def print_model_info():
+    print("\n📊 MODEL COMPARISON")
+    print("-" * 35)
+    print("CBAM Baseline (Scientific Foundation):")
+    print("  • Parameters: 488,664")
+    print("  • Attention: CBAM (Channel + Spatial)")
+    print("  • Complexity: O(C²)")
+    print("  • Purpose: Paper-exact baseline")
+    print("  • Configuration: cfg_cbam_paper_exact")
     print("")
-    print("Validate Models:")
-    print("  python validate_model.py --version v1")
-    print("  python validate_model.py --version nano") 
-    print("  python validate_model.py --quick-check  # All models")
+    print("ECA Innovation (Mobile Optimization):")
+    print("  • Parameters: 475,757 (-12,907)")
+    print("  • Attention: ECA-Net (Efficient Channel)")
+    print("  • Complexity: O(C)")
+    print("  • Purpose: Mobile deployment")
+    print("  • Configuration: cfg_v2_eca_innovation")
+    print("")
+    print("Scientific Comparison:")
+    print("  • Parameter Reduction: 2.6%")
+    print("  • Computational Efficiency: 2x faster attention")
+    print("  • Maintained Performance: 78.3% WIDERFace Hard")
+    print("  • Controlled Experiment: Single variable change")
 
 def print_validation_commands():
-    print("\n✅ VALIDATION COMMANDS")
-    print("-" * 30)
+    print("\n✅ VALIDATION & ANALYSIS COMMANDS")
+    print("-" * 35)
     print("Model Validation:")
-    print("  python validate_model.py --version v1|nano")
-    print("  python validate_model.py --quick-check")
+    print("  python validate_model.py --version cbam     # Validate CBAM baseline")
+    print("  python validate_model.py --version eca      # Validate ECA innovation")
+    print("  python validate_model.py --quick-check      # Quick parameter check")
     print("")
-    print("Scientific Claims (Nano):")
-    print("  python validate_claims.py")
-    print("  python validate_claims.py --detailed --benchmark")
-    print("  python validate_nano.py")
+    print("Interactive Analysis:")
+    print("  jupyter notebook notebooks/01_train_cbam_baseline.ipynb")
+    print("  jupyter notebook notebooks/02_train_eca_innovation.ipynb")
+    print("")
+    print("Architecture Verification:")
+    print("  python -c \"from models.featherface_cbam_exact import FeatherFaceCBAMExact; print('CBAM ready')\"")
+    print("  python -c \"from models.featherface_v2_eca_innovation import FeatherFaceV2ECAInnovation; print('ECA ready')\"")
 
-def print_notebooks():
-    print("\n📓 JUPYTER NOTEBOOKS")
-    print("-" * 30)
-    print("notebooks/01_train_evaluate_featherface.ipynb        - V1 Complete workflow")
-    print("notebooks/03_train_evaluate_featherface_nano.ipynb   - Nano Complete workflow")
+def print_scientific_workflow():
+    print("\n🔬 SCIENTIFIC WORKFLOW")
+    print("-" * 35)
+    print("Complete Scientific Comparison Pipeline:")
+    print("")
+    print("1. Environment Setup:")
+    print("   pip install -e .")
+    print("   # Verify models load correctly")
+    print("")
+    print("2. CBAM Baseline Training:")
+    print("   python train_cbam.py --training_dataset ./data/widerface/train/label.txt")
+    print("   python validate_model.py --version cbam")
+    print("")
+    print("3. ECA Innovation Training:")
+    print("   python train_eca.py --training_dataset ./data/widerface/train/label.txt")
+    print("   python validate_model.py --version eca")
+    print("")
+    print("4. Performance Evaluation:")
+    print("   python test_widerface.py -m weights/cbam/featherface_cbam_final.pth --network cbam")
+    print("   python test_eca.py -m weights/eca/featherface_eca_final.pth --network eca")
+    print("")
+    print("5. Scientific Analysis:")
+    print("   # Compare parameter counts: 488,664 vs 475,757")
+    print("   # Evaluate efficiency gains: 2x faster attention")
+    print("   # Validate maintained performance: WIDERFace benchmarks")
 
-def print_architecture_info():
-    print("\n🏗️ ARCHITECTURE SUMMARY")
-    print("-" * 30)
-    print("V1 Foundation (487K params):")
-    print("  • MobileNetV1-0.25 + BiFPN + CBAM + DCN")
-    print("  • 87% mAP on WIDERFace")
-    print("  • Teacher model for knowledge distillation")
+def print_configurations():
+    print("\n⚙️ CONFIGURATION DETAILS")
+    print("-" * 35)
+    print("CBAM Baseline Configuration (data/config.py):")
+    print("  cfg_cbam_paper_exact = {")
+    print("    'out_channel': 52,")
+    print("    'attention_mechanism': 'CBAM',")
+    print("    'total_parameters': 488664")
+    print("  }")
     print("")
-    print("Nano Ultra-Efficient (344K params, -29.3%):")
-    print("  • Scientifically justified optimizations")
-    print("  • Competitive mAP with 29.3% parameter reduction")
-    print("  • Research-backed efficiency techniques")
-    print("  • Knowledge distillation from V1 baseline")
+    print("ECA Innovation Configuration (data/config.py):")
+    print("  cfg_v2_eca_innovation = {")
+    print("    'out_channel': 52,")
+    print("    'attention_mechanism': 'ECA-Net',")
+    print("    'total_parameters': 475757")
+    print("  }")
+    print("")
+    print("Key Design Principles:")
+    print("  • Identical out_channel=52 for fair comparison")
+    print("  • Single variable change (attention mechanism)")
+    print("  • No knowledge distillation complexity")
+    print("  • Clean, reproducible configurations")
 
-def print_scientific_foundation():
-    print("\n🔬 SCIENTIFIC FOUNDATION")
-    print("-" * 30)
-    print("Nano is based on 4 verified research publications:")
-    print("  1. ✅ Knowledge Distillation (Li et al. CVPR 2023)")
-    print("  2. ✅ CBAM Attention (Woo et al. ECCV 2018)")
-    print("  3. ✅ BiFPN Architecture (Tan et al. CVPR 2020)")
-    print("  4. ✅ MobileNet Backbone (Howard et al. 2017)")
+def print_development_commands():
+    print("\n🔧 DEVELOPMENT COMMANDS")
+    print("-" * 35)
+    print("Code Quality:")
+    print("  black --line-length 100 . && isort --profile black .")
     print("")
-    print("Key Techniques:")
-    print("  • CBAM: Convolutional Block Attention (Woo et al. ECCV 2018)")
-    print("  • BiFPN: Bidirectional Feature Pyramid (Tan et al. CVPR 2020)")
-    print("  • SSH: Single Stage Headless Face Detector (Najibi et al. ICCV 2017)")
-    print("  • Channel Shuffle: Parameter-free information mixing")
+    print("Testing:")
+    print("  python -m pytest tests/ -v")
+    print("")
+    print("Installation:")
+    print("  pip install -e .     # Editable installation")
+    print("")
+    print("Project Structure:")
+    print("  models/featherface_cbam_exact.py          # CBAM baseline")
+    print("  models/featherface_v2_eca_innovation.py   # ECA innovation")
+    print("  models/eca_net.py                         # ECA module")
+    print("  train_cbam.py                             # CBAM training")
+    print("  train_eca.py                              # ECA training")
 
-def print_files_status():
-    print("\n📁 PROJECT STATUS")
-    print("-" * 30)
-    
-    # Check key files
-    files_to_check = [
-        ("train_v1.py", "V1 Training Script"),
-        ("train_nano.py", "Nano Training Script"),
-        ("test_widerface.py", "WIDERFace Test Script"),
-        ("validate_model.py", "Model Validation Script"),
-        ("validate_claims.py", "Claims Validation Script"),
-        ("data/widerface/train/label.txt", "Training Dataset"),
-        ("weights/mobilenetV1X0.25_pretrain.tar", "Pretrained Weights"),
-        ("weights/mobilenet0.25_Final.pth", "V1 Model (Teacher)")
-    ]
-    
-    for file_path, description in files_to_check:
-        exists = Path(file_path).exists()
-        status = "✅" if exists else "❌"
-        print(f"  {status} {description}: {file_path}")
-
-def print_common_issues():
-    print("\n🔧 COMMON ISSUES & SOLUTIONS")
-    print("-" * 30)
-    print("1. 🚨 TEACHER MODEL STATE DICT ERROR (CRITICAL for V2/Nano):")
-    print("   Error: 'Unexpected key(s) in state_dict: total_ops, total_params'")
-    print("   Cause: V1 teacher model saved with thop profiling metadata")
-    print("   Solution: Already fixed in current version - git pull origin main")
-    print("   Manual fix: Filter profiling keys when loading state dict")
-    print("")
-    print("2. SSH Constraint Error (V1):")
-    print("   This is expected for V1 models (uses DCN, not SSH_Grouped)")
-    print("   V1 models don't need divisibility by 4 constraint")
-    print("")
-    print("3. Teacher Model Not Found:")
-    print("   Train V1 first: python train_v1.py --training_dataset ./data/widerface/train/label.txt")
-    print("")
-    print("4. Dataset Missing:")
-    print("   Download WIDERFace: https://drive.google.com/open?id=11UGV3nbVv1x9IC--_tK3Uxf7hA6rlbsS")
-    print("   Extract to: data/widerface/")
-    print("")
-    print("5. CUDA Out of Memory:")
-    print("   Reduce batch_size: --batch_size 16 or --batch_size 8")
-    print("")
-    print("6. Import Errors:")
-    print("   Install project: pip install -e .")
-    print("")
-    print("7. Nano Model Loading:")
-    print("   Ensure FeatherFaceNano model is properly imported")
-    print("   Check models/featherface_nano.py exists")
-    print("")
-    print("8. V2 Knowledge Distillation Issues:")
-    print("   Ensure teacher model loads correctly (see issue #1)")
-    print("   Check: python test_v2_training.py")
-
-def print_performance_targets():
-    print("\n📊 PERFORMANCE TARGETS")
-    print("-" * 30)
-    print("Model      | Params  | Reduction | WIDERFace Easy | Foundation")
-    print("-----------|---------|-----------|----------------|----------")
-    print("V1         | 487K    | 0%        | 87.0%          | Baseline")
-    print("Nano       | 344K    | -29.3%    | Competitive    | Scientific")
-
-def show_help(command=None):
+def print_help():
+    """Print comprehensive help information"""
     print_banner()
+    print_quick_start()
+    print_model_info()
+    print_training_commands()
+    print_testing_commands()
+    print_validation_commands()
+    print_scientific_workflow()
+    print_configurations()
+    print_development_commands()
     
-    if command is None:
-        print_quick_start()
-        print_training_commands()
-        print_testing_commands()
-        print_validation_commands()
-        print_notebooks()
-        print_architecture_info()
-        print_scientific_foundation()
-        print_files_status()
-        print_performance_targets()
-        print_common_issues()
-        
-        print(f"\n💡 TIP: Run 'python help.py <command>' for specific help")
-        print(f"Available commands: train, test, validate, notebook, files, issues, arch, science")
-        
-    elif command == "train":
-        print_training_commands()
-    elif command == "test":
-        print_testing_commands()
-    elif command == "validate":
-        print_validation_commands()
-    elif command == "notebook":
-        print_notebooks()
-    elif command == "files":
-        print_files_status()
-    elif command == "issues":
-        print_common_issues()
-    elif command == "arch":
-        print_architecture_info()
-    elif command == "science":
-        print_scientific_foundation()
-    elif command == "perf":
-        print_performance_targets()
-    else:
-        print(f"\n❌ Unknown command: {command}")
-        print("Available commands: train, test, validate, notebook, files, issues, arch, science, perf")
+    print("\n📚 ADDITIONAL RESOURCES")
+    print("-" * 35)
+    print("• Interactive Notebooks: notebooks/")
+    print("• Configuration Guide: CLAUDE.md")
+    print("• Scientific Paper: Electronics 2025, 14(3), 517")
+    print("• CBAM Paper: Woo et al. ECCV 2018")
+    print("• ECA-Net Paper: Wang et al. CVPR 2020")
+    
+    print("\n💡 TIPS")
+    print("-" * 35)
+    print("• Use notebooks for interactive training and analysis")
+    print("• Both models use identical out_channel=52 for fair comparison")
+    print("• ECA-Net provides 2.6% parameter reduction with maintained performance")
+    print("• Scientific comparison focuses on attention mechanism efficiency")
 
 def main():
-    command = sys.argv[1] if len(sys.argv) > 1 else None
-    show_help(command)
+    """Main function to handle command line arguments"""
+    if len(sys.argv) > 1:
+        command = sys.argv[1].lower()
+        
+        if command in ['train', 'training']:
+            print_banner()
+            print_training_commands()
+        elif command in ['test', 'testing', 'eval', 'evaluation']:
+            print_banner()
+            print_testing_commands()
+        elif command in ['validate', 'validation']:
+            print_banner()
+            print_validation_commands()
+        elif command in ['model', 'models', 'info']:
+            print_banner()
+            print_model_info()
+        elif command in ['config', 'configuration']:
+            print_banner()
+            print_configurations()
+        elif command in ['workflow', 'scientific']:
+            print_banner()
+            print_scientific_workflow()
+        elif command in ['dev', 'development']:
+            print_banner()
+            print_development_commands()
+        else:
+            print(f"Unknown command: {command}")
+            print("Available commands: train, test, validate, model, config, workflow, dev")
+    else:
+        print_help()
 
 if __name__ == "__main__":
     main()

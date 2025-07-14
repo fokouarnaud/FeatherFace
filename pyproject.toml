@@ -5,13 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "featherface"
 version = "2.0.0"
-description = "FeatherFace V2: Optimized lightweight face detection with 0.25M parameters"
+description = "FeatherFace: CBAM vs ECA-Net scientific comparison for lightweight face detection (~475K-488K parameters)"
 readme = "README.md"
 requires-python = ">=3.7"
 license = {text = "MIT"}
 authors = [
     {name = "Original: dohun-mat"},
-    {name = "V2: fokouarnaud"}
+    {name = "Scientific Comparison: fokouarnaud"}
 ]
 
 dependencies = [
