@@ -119,44 +119,36 @@ class ODConv2d(nn.Module):
         
         # === Attention Mechanism Components ===
         
-        # 1. Spatial Attention: αˢ ∈ ℝᴴₖˣᵂₖ
+        # 1. Spatial Attention: αˢ ∈ ℝᴴₖˣᵂₖ (simplified)
         # Learn spatial importance across kernel locations
         self.attention_spatial = nn.Sequential(
             nn.AdaptiveAvgPool2d(1),                    # Global spatial pooling
-            nn.Conv2d(in_channels, self.attention_channels, 1), # Channel reduction
-            nn.ReLU(inplace=True),
-            nn.Conv2d(self.attention_channels, kernel_size * kernel_size, 1), # Spatial attention
+            nn.Conv2d(in_channels, kernel_size * kernel_size, 1), # Direct spatial attention
             nn.Sigmoid()
         )
         
-        # 2. Input Channel Attention: αⁱ ∈ ℝᶜⁱ  
+        # 2. Input Channel Attention: αⁱ ∈ ℝᶜⁱ (simplified)
         # Learn input channel-wise importance
         self.attention_channel_in = nn.Sequential(
             nn.AdaptiveAvgPool2d(1),
-            nn.Conv2d(in_channels, self.attention_channels, 1),
-            nn.ReLU(inplace=True), 
-            nn.Conv2d(self.attention_channels, in_channels, 1),
+            nn.Conv2d(in_channels, in_channels, 1),     # Direct channel attention
             nn.Sigmoid()
         )
         
-        # 3. Output Channel Attention: αᵒ ∈ ℝᶜᵒ
+        # 3. Output Channel Attention: αᵒ ∈ ℝᶜᵒ (simplified)
         # Learn output channel-wise importance  
         self.attention_channel_out = nn.Sequential(
             nn.AdaptiveAvgPool2d(1),
-            nn.Conv2d(in_channels, self.attention_channels, 1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(self.attention_channels, out_channels, 1), 
+            nn.Conv2d(in_channels, out_channels, 1),   # Direct output attention
             nn.Sigmoid()
         )
         
-        # 4. Kernel Attention: αᵏ ∈ ℝᴷ (K=1 for efficiency)
+        # 4. Kernel Attention: αᵏ ∈ ℝᴷ (K=1 for efficiency, simplified)
         # Learn kernel-wise importance (simplified for mobile deployment)
         if kernel_num > 1:
             self.attention_kernel = nn.Sequential(
                 nn.AdaptiveAvgPool2d(1),
-                nn.Conv2d(in_channels, self.attention_channels, 1),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(self.attention_channels, kernel_num, 1),
+                nn.Conv2d(in_channels, kernel_num, 1),      # Direct kernel attention
                 nn.Sigmoid()
             )
         else:
@@ -284,8 +276,13 @@ class ODConv2d(nn.Module):
         x_grouped = x.view(1, batch_size * in_channels, height, width)
         
         # Weight: [B, C_out, C_in, H_k, W_k] → [B*C_out, C_in, H_k, W_k]
+        # Ensure correct dimensions before reshaping
+        attended_weight = attended_weight.contiguous()
         weight_grouped = attended_weight.view(
-            batch_size * self.out_channels, in_channels, self.kernel_size, self.kernel_size
+            batch_size * self.out_channels, 
+            in_channels // self.groups, 
+            self.kernel_size, 
+            self.kernel_size
         )
         
         # 3.2 Dynamic convolution with batch-specific kernels

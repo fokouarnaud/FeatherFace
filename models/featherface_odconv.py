@@ -37,7 +37,7 @@ import torchvision.models._utils as _utils
 from collections import OrderedDict
 
 from models.net import MobileNetV1, SSH, BiFPN, ChannelShuffle2
-from models.odconv import ODConv2d
+from models.odconv_simple import ODConv2d
 
 
 class ClassHead(nn.Module):
