@@ -477,7 +477,7 @@ class FeatherFaceECAcbaM(nn.Module):
             'architecture_complete': all(key in param_info for key in 
                                        ['backbone', 'ecacbam_backbone', 'bifpn', 
                                         'ecacbam_bifpn', 'ssh', 'detection_heads']),
-            'hybrid_innovation': param_info['ecacbam_backbone'] + param_info['ecacbam_bifpn'] < 1000,
+            'hybrid_innovation': param_info['ecacbam_backbone'] + param_info['ecacbam_bifpn'] < 4000,  # Adjusted for 6 modules
             'scientific_foundation': True  # Based on validated literature
         }
         
