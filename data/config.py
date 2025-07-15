@@ -53,6 +53,18 @@ cfg_cbam_paper_exact = {
         'architecture_role': 'Baseline for ODConv comparison',
     },
     
+    # Training configuration for CBAM baseline
+    'training_config': {
+        'training_dataset': './data/widerface/train/label.txt',
+        'network': 'cbam',
+        'num_workers': 8,
+        'save_folder': './weights/cbam/',
+        'resume_net': None,
+        'resume_epoch': 0,
+        'training_time_expected': '8-12 hours',
+        'convergence_epoch_expected': 300,
+    },
+    
     # Validation checks for CBAM baseline
     'validation_checks': {
         'parameter_count_exact': 488664,     # Within 36 of target
@@ -120,6 +132,22 @@ cfg_odconv = {
         'innovation_benefit': 'Multidimensional attention with proven 3.77-5.71% ImageNet gains',
         'controlled_experiment': 'Single variable change (CBAM → ODConv)',
         'literature_validation': 'Systematic literature review 2025',
+    },
+    
+    # Training configuration for ODConv innovation
+    'training_config': {
+        'training_dataset': './data/widerface/train/label.txt',
+        'network': 'odconv',
+        'num_workers': 8,
+        'save_folder': './weights/odconv/',
+        'resume_net': None,
+        'resume_epoch': 0,
+        'training_time_expected': '8-12 hours',
+        'convergence_epoch_expected': 300,
+        # ODConv specific training parameters
+        'attention_lr_multiplier': 2.0,
+        'log_attention': True,
+        'mobile_speedup_expected': '2x',
     },
     
     # Validation checks for ODConv innovation
