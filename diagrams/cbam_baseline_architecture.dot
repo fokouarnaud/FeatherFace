@@ -33,9 +33,9 @@ digraph CBamBaseline {
         fillcolor="#FDE7F3";
         color="#E91E63";
         
-        backbone_cbam1 [label="CBAM\n64 ch", fillcolor="#F8BBD9"];
-        backbone_cbam2 [label="CBAM\n128 ch", fillcolor="#F8BBD9"];
-        backbone_cbam3 [label="CBAM\n256 ch", fillcolor="#F8BBD9"];
+        backbone_cbam1 [label="CBAM\n64 ch\n2,164 params", fillcolor="#F8BBD9"];
+        backbone_cbam2 [label="CBAM\n128 ch\n2,208 params", fillcolor="#F8BBD9"];
+        backbone_cbam3 [label="CBAM\n256 ch\n2,296 params", fillcolor="#F8BBD9"];
     }
     
     // Feature Pyramid Network
@@ -45,7 +45,7 @@ digraph CBamBaseline {
         fillcolor="#E8F5E8";
         color="#4CAF50";
         
-        bifpn [label="BiFPN\n77,916 params\n(15.9%)", fillcolor="#C8E6C8"];
+        bifpn [label="BiFPN\n75,246 params\n(15.4%)", fillcolor="#C8E6C8"];
         p3_out [label="P3 Features\nout_channel=52", fillcolor="#A5D6A7"];
         p4_out [label="P4 Features\nout_channel=52", fillcolor="#A5D6A7"];
         p5_out [label="P5 Features\nout_channel=52", fillcolor="#A5D6A7"];
@@ -58,9 +58,9 @@ digraph CBamBaseline {
         fillcolor="#FDE7F3";
         color="#E91E63";
         
-        bifpn_cbam1 [label="CBAM\n52 ch\nP3", fillcolor="#F8BBD9"];
-        bifpn_cbam2 [label="CBAM\n52 ch\nP4", fillcolor="#F8BBD9"];
-        bifpn_cbam3 [label="CBAM\n52 ch\nP5", fillcolor="#F8BBD9"];
+        bifpn_cbam1 [label="CBAM\n52 ch\nP3\n2,152 params", fillcolor="#F8BBD9"];
+        bifpn_cbam2 [label="CBAM\n52 ch\nP4\n2,152 params", fillcolor="#F8BBD9"];
+        bifpn_cbam3 [label="CBAM\n52 ch\nP5\n2,152 params", fillcolor="#F8BBD9"];
     }
     
     // SSH Detection Heads
@@ -101,6 +101,63 @@ digraph CBamBaseline {
     
     // Final Outputs
     output [label="Face Detection\nResults", fillcolor="#FFCDD2", color="#F44336"];
+    
+    // CBAM Module Detail
+    subgraph cluster_cbam_detail {
+        label="CBAM Module Detail";
+        style=filled;
+        fillcolor="#F0F4FF";
+        color="#3F51B5";
+        
+        detail_input [label="Input Feature\nX ∈ ℝ^(B×C×H×W)", fillcolor="#E8EAF6", shape=ellipse];
+        
+        // Channel Attention Module (CAM)
+        subgraph cluster_cam {
+            label="Channel Attention Module (CAM)";
+            style=filled;
+            fillcolor="#FDE7F3";
+            
+            cam_gap [label="GAP", fillcolor="#F8BBD9"];
+            cam_gmp [label="GMP", fillcolor="#F8BBD9"];
+            cam_fc1 [label="FC\nC/16", fillcolor="#F8BBD9"];
+            cam_fc2 [label="FC\nC", fillcolor="#F8BBD9"];
+            cam_sigmoid [label="Sigmoid", fillcolor="#F8BBD9"];
+        }
+        
+        cam_intermediate [label="F₁ ∈ ℝ^(B×C×H×W)", fillcolor="#FFF9C4", shape=ellipse];
+        
+        // Spatial Attention Module (SAM)
+        subgraph cluster_sam {
+            label="Spatial Attention Module (SAM)";
+            style=filled;
+            fillcolor="#E3F2FD";
+            
+            sam_avgpool [label="AvgPool\n(Channel)", fillcolor="#BBDEFB"];
+            sam_maxpool [label="MaxPool\n(Channel)", fillcolor="#BBDEFB"];
+            sam_concat [label="Concat", fillcolor="#BBDEFB"];
+            sam_conv7x7 [label="Conv2D\n7×7", fillcolor="#BBDEFB"];
+            sam_sigmoid [label="Sigmoid", fillcolor="#BBDEFB"];
+        }
+        
+        detail_output [label="Output Feature\nY ∈ ℝ^(B×C×H×W)", fillcolor="#E8EAF6", shape=ellipse];
+        
+        // CBAM Detail Connections
+        detail_input -> cam_gap;
+        detail_input -> cam_gmp;
+        cam_gap -> cam_fc1;
+        cam_gmp -> cam_fc1;
+        cam_fc1 -> cam_fc2;
+        cam_fc2 -> cam_sigmoid;
+        cam_sigmoid -> cam_intermediate [label="Channel\nAttention"];
+        
+        cam_intermediate -> sam_avgpool;
+        cam_intermediate -> sam_maxpool;
+        sam_avgpool -> sam_concat;
+        sam_maxpool -> sam_concat;
+        sam_concat -> sam_conv7x7;
+        sam_conv7x7 -> sam_sigmoid;
+        sam_sigmoid -> detail_output [label="Spatial\nAttention"];
+    }
     
     // Connections
     input -> mobilenet;
@@ -146,15 +203,4 @@ digraph CBamBaseline {
     class_head -> output;
     bbox_head -> output;
     landmark_head -> output;
-    
-    // Scientific details
-    subgraph cluster_details {
-        label="Scientific Foundation";
-        style=filled;
-        fillcolor="#F5F5F5";
-        color="#757575";
-        
-        details [label="CBAM Baseline\n• Total: 488,664 parameters\n• CBAM: Woo et al. ECCV 2018\n• Configuration: cfg_cbam_paper_exact\n• Purpose: Scientific baseline", 
-                fillcolor="#EEEEEE", shape=note];
-    }
 }

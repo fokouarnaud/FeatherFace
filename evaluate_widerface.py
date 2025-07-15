@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
 FeatherFace WIDERFace Evaluation Script
-Scientific comparison between CBAM baseline and ODConv innovation
+Scientific evaluation for CBAM baseline model
 
 Usage:
     python evaluate_widerface.py --model weights/cbam/featherface_cbam_final.pth --network cbam
-    python evaluate_widerface.py --model weights/odconv/featherface_odconv_final.pth --network odconv
+
+Note: For ECA-CBAM hybrid evaluation, use evaluate script with test_eca_cbam.py
 """
 
 import os
@@ -18,12 +19,12 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent
 sys.path.append(str(PROJECT_ROOT))
 
-from data import cfg_cbam_paper_exact, cfg_odconv
+from data import cfg_cbam_paper_exact
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Evaluate FeatherFace on WIDERFace dataset')
     parser.add_argument('--model', required=True, help='Path to trained model')
-    parser.add_argument('--network', default='cbam', choices=['cbam', 'odconv'], help='Network architecture: cbam (baseline) or odconv (innovation)')
+    parser.add_argument('--network', default='cbam', choices=['cbam'], help='Network architecture: cbam (baseline only)')
     parser.add_argument('--confidence_threshold', default=0.02, type=float)
     parser.add_argument('--nms_threshold', default=0.4, type=float)
     parser.add_argument('--dataset_folder', default='./data/widerface/val/images/')
@@ -38,10 +39,10 @@ def main():
     print("🚀 FeatherFace WIDERFace Evaluation")
     print("=" * 50)
     print(f"Model: {args.model}")
-    print(f"Network: {args.network} ({'CBAM baseline' if args.network == 'cbam' else 'ODConv innovation'})")
-    print(f"Architecture: {'FeatherFaceCBAMExact' if args.network == 'cbam' else 'FeatherFaceODConv'}")
-    print(f"Expected params: {'488,664' if args.network == 'cbam' else '~485,000'}")
-    print(f"Dual attention: 6 {args.network.upper()} modules (3 backbone + 3 BiFPN)")
+    print(f"Network: {args.network} (CBAM baseline)")
+    print(f"Architecture: FeatherFaceCBAMExact")
+    print(f"Expected params: 488,664")
+    print(f"Attention: 6 CBAM modules (3 backbone + 3 BiFPN)")
     print("=" * 50)
     
     # Vérifier que le modèle existe
@@ -85,7 +86,7 @@ def main():
         return 1
     
     if args.show_results:
-        print("\n📈 Step 2: Computing mAP scores...")
+        print("\\n📈 Step 2: Computing mAP scores...")
         
         # Commande d'évaluation
         eval_cmd = [
@@ -97,27 +98,28 @@ def main():
         try:
             result = subprocess.run(eval_cmd, check=True, capture_output=True, text=True)
             print("✅ Evaluation completed!")
-            print("\n📊 Results:")
+            print("\\n📊 Results:")
             print(result.stdout)
         except subprocess.CalledProcessError as e:
             print(f"⚠️  Evaluation script failed: {e}")
             print("You can run evaluation manually:")
             print(f"cd widerface_evaluate && python evaluation.py -p {args.save_folder} -g ./eval_tools/ground_truth")
     
-    print(f"\n💾 Results saved to: {args.save_folder}")
-    print(f"\n✅ Scientific Evaluation Complete:")
-    print(f"   Model: {args.network} ({'CBAM baseline' if args.network == 'cbam' else 'ODConv innovation'})")
-    if args.network == 'cbam':
-        param_count = f"{cfg_cbam_paper_exact['paper_baseline_performance']['total_parameters']:,}"
-    else:
-        param_count = f"~{cfg_odconv['performance_targets']['total_parameters']:,}"
+    print(f"\\n💾 Results saved to: {args.save_folder}")
+    print(f"\\n✅ Scientific Evaluation Complete:")
+    print(f"   Model: {args.network} (CBAM baseline)")
+    param_count = f"{cfg_cbam_paper_exact['paper_baseline_performance']['total_parameters']:,}"
     print(f"   Parameters: {param_count}")
-    print(f"   Attention: 6 {args.network.upper()} modules (dual application)")
-    print(f"   Foundation: {'Woo et al. ECCV 2018' if args.network == 'cbam' else 'Li et al. ICLR 2022'}")
+    print(f"   Attention: 6 CBAM modules (dual application)")
+    print(f"   Foundation: Woo et al. ECCV 2018")
     
     print("📋 To run evaluation manually:")
     print("  cd widerface_evaluate")
     print(f"  python evaluation.py -p {args.save_folder} -g ./eval_tools/ground_truth")
+    
+    print("\\n🔗 For ECA-CBAM hybrid evaluation:")
+    print("  python test_eca_cbam.py -m weights/eca_cbam/featherface_eca_cbam_final.pth --network eca_cbam")
+    print("  cd widerface_evaluate && python evaluation.py -p ./widerface_txt -g ./eval_tools/ground_truth")
     
     return 0
 

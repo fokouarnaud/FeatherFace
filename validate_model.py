@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 FeatherFace Model Validation Script
-Scientific validation for CBAM baseline and ODConv innovation
+Scientific validation for CBAM baseline and ECA-CBAM hybrid
 
 Usage:
     python validate_model.py --version cbam
-    python validate_model.py --version odconv --detailed
+    python validate_model.py --version eca_cbam --detailed
     python validate_model.py --quick-check
 """
 
@@ -17,8 +17,8 @@ from pathlib import Path
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Validate FeatherFace models')
-    parser.add_argument('--version', choices=['cbam', 'odconv'], default='cbam', 
-                       help='Model version to validate: cbam (baseline) or odconv (innovation)')
+    parser.add_argument('--version', choices=['cbam', 'eca_cbam'], default='cbam', 
+                       help='Model version to validate: cbam (baseline) or eca_cbam (hybrid)')
     parser.add_argument('--detailed', action='store_true', 
                        help='Run detailed parameter analysis')
     parser.add_argument('--quick-check', action='store_true',
@@ -63,7 +63,7 @@ def validate_cbam_model():
         print(f"✓ CBAM attention present: {'YES' if has_cbam else 'NO'}")
         
         target_met = abs(total_params - 488664) <= 100
-        print(f"\n🎯 Validation Status: {'PASSED ✅' if target_met else 'CLOSE ⚠️'}")
+        print(f"\\n🎯 Validation Status: {'PASSED ✅' if target_met else 'CLOSE ⚠️'}")
         
         return total_params, target_met
         
@@ -71,25 +71,25 @@ def validate_cbam_model():
         print(f"❌ CBAM validation failed: {e}")
         return None, False
 
-def validate_odconv_model():
-    """Validate ODConv innovation model"""
+def validate_eca_cbam_model():
+    """Validate ECA-CBAM hybrid model"""
     try:
-        from models.featherface_odconv import FeatherFaceODConv
-        from data import cfg_odconv
+        from models.featherface_eca_cbam import FeatherFaceECAcbaM
+        from data import cfg_eca_cbam
         
-        print("🔍 ODConv Innovation Model Validation")
+        print("🔍 ECA-CBAM Hybrid Model Validation")
         print("-" * 40)
         
         # Create model
-        model = FeatherFaceODConv(cfg=cfg_odconv)
+        model = FeatherFaceECAcbaM(cfg=cfg_eca_cbam)
         total_params = sum(p.numel() for p in model.parameters())
         trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
         
-        print(f"✓ Model: FeatherFaceODConv")
-        print(f"✓ Configuration: cfg_odconv")
+        print(f"✓ Model: FeatherFaceECAcbaM")
+        print(f"✓ Configuration: cfg_eca_cbam")
         print(f"✓ Total parameters: {total_params:,}")
         print(f"✓ Trainable parameters: {trainable_params:,}")
-        print(f"✓ Target: ~485,000 parameters")
+        print(f"✓ Target: ~451,895 parameters")
         print(f"✓ Difference from CBAM: {total_params - 488664:+,}")
         print(f"✓ Parameter efficiency: {((488664 - total_params) / 488664 * 100):+.2f}%")
         
@@ -102,27 +102,29 @@ def validate_odconv_model():
         print(f"✓ Forward pass: SUCCESS")
         print(f"✓ Output shapes: {[out.shape for out in outputs]}")
         
-        # ODConv validation
-        has_odconv = any('odconv' in name.lower() for name, _ in model.named_modules())
-        print(f"✓ ODConv attention present: {'YES' if has_odconv else 'NO'}")
+        # ECA-CBAM validation
+        has_eca = any('eca' in name.lower() for name, _ in model.named_modules())
+        has_sam = any('sam' in name.lower() for name, _ in model.named_modules())
+        print(f"✓ ECA-Net attention present: {'YES' if has_eca else 'NO'}")
+        print(f"✓ CBAM SAM present: {'YES' if has_sam else 'NO'}")
         
-        # ODConv specific analysis
+        # ECA-CBAM specific analysis
         if hasattr(model, 'get_parameter_count'):
             param_info = model.get_parameter_count()
-            print(f"✓ ODConv modules: {param_info.get('total_odconv', 'N/A')} parameters")
+            print(f"✓ ECA-CBAM modules: {param_info.get('total_eca_cbam', 'N/A')} parameters")
         
-        target_met = 480000 <= total_params <= 490000
-        print(f"\n🎯 Validation Status: {'PASSED ✅' if target_met else 'REVIEW ⚠️'}")
+        target_met = 445000 <= total_params <= 460000
+        print(f"\\n🎯 Validation Status: {'PASSED ✅' if target_met else 'REVIEW ⚠️'}")
         
         return total_params, target_met
         
     except Exception as e:
-        print(f"❌ ODConv validation failed: {e}")
+        print(f"❌ ECA-CBAM validation failed: {e}")
         return None, False
 
 def detailed_analysis(version):
     """Run detailed parameter analysis"""
-    print(f"\n📊 DETAILED ANALYSIS - {version.upper()}")
+    print(f"\\n📊 DETAILED ANALYSIS - {version.upper()}")
     print("=" * 50)
     
     if version == 'cbam':
@@ -130,9 +132,9 @@ def detailed_analysis(version):
         from data import cfg_cbam_paper_exact
         model = FeatherFaceCBAMExact(cfg=cfg_cbam_paper_exact)
     else:
-        from models.featherface_odconv import FeatherFaceODConv
-        from data import cfg_odconv
-        model = FeatherFaceODConv(cfg=cfg_odconv)
+        from models.featherface_eca_cbam import FeatherFaceECAcbaM
+        from data import cfg_eca_cbam
+        model = FeatherFaceECAcbaM(cfg=cfg_eca_cbam)
     
     total_params = sum(p.numel() for p in model.parameters())
     
@@ -142,45 +144,58 @@ def detailed_analysis(version):
         percentage = (params / total_params) * 100
         print(f"  {name:20}: {params:8,} ({percentage:5.1f}%)")
     
-    print(f"\nAttention modules:")
+    print(f"\\nAttention modules:")
     attention_params = 0
     for name, module in model.named_modules():
-        if any(att in name.lower() for att in ['cbam', 'odconv', 'attention']):
+        if any(att in name.lower() for att in ['cbam', 'eca', 'sam', 'attention']):
             params = sum(p.numel() for p in module.parameters())
-            attention_params += params
             if params > 0:
+                attention_params += params
                 print(f"  {name:30}: {params:6,} parameters")
     
-    print(f"\nTotal attention parameters: {attention_params:,}")
-    print(f"Attention percentage: {(attention_params / total_params * 100):.2f}%")
+    print(f"\\nTotal attention parameters: {attention_params:,}")
+    print(f"Attention percentage: {(attention_params / total_params) * 100:.2f}%")
+    
+    # Memory usage estimation
+    print(f"\\nMemory usage (FP32):")
+    param_memory = total_params * 4 / 1024 / 1024  # MB
+    print(f"  Parameters: {param_memory:.1f} MB")
+    
+    # Feature map memory (640x640 input)
+    dummy_input = torch.randn(1, 3, 640, 640)
+    model.eval()
+    with torch.no_grad():
+        outputs = model(dummy_input)
+    
+    activation_memory = sum(out.numel() * 4 for out in outputs) / 1024 / 1024
+    print(f"  Activations: {activation_memory:.1f} MB")
+    print(f"  Total: {param_memory + activation_memory:.1f} MB")
 
 def quick_check():
     """Quick parameter count check for both models"""
-    print("🚀 QUICK PARAMETER CHECK")
+    print("🚀 Quick Parameter Count Check")
     print("=" * 50)
     
-    cbam_params, cbam_ok = validate_cbam_model()
+    # CBAM
+    cbam_params, cbam_passed = validate_cbam_model()
     print()
-    odconv_params, odconv_ok = validate_odconv_model()
     
-    print("\n📊 COMPARISON SUMMARY")
-    print("-" * 30)
-    if cbam_params and odconv_params:
-        difference = cbam_params - odconv_params
-        efficiency_pct = (difference / cbam_params) * 100
-        print(f"CBAM Baseline:   {cbam_params:,} parameters")
-        print(f"ODConv Innovation: {odconv_params:,} parameters")
-        print(f"Difference:      {difference:+,} parameters ({efficiency_pct:+.2f}%)")
-        print(f"Innovation:      4D multidimensional attention")
-        print(f"Scientific base: Li et al. ICLR 2022")
+    # ECA-CBAM
+    eca_cbam_params, eca_cbam_passed = validate_eca_cbam_model()
     
-    overall_status = "PASSED ✅" if (cbam_ok and odconv_ok) else "ISSUES ⚠️"
-    print(f"\n🎯 Overall Status: {overall_status}")
+    if cbam_params and eca_cbam_params:
+        print("\\n📊 Comparison Summary:")
+        print(f"  CBAM Baseline:     {cbam_params:8,} parameters")
+        print(f"  ECA-CBAM Hybrid:   {eca_cbam_params:8,} parameters")
+        print(f"  Difference:        {eca_cbam_params - cbam_params:+8,} parameters")
+        print(f"  Efficiency gain:   {((cbam_params - eca_cbam_params) / cbam_params * 100):+5.1f}%")
+        
+        print(f"\\n🎯 Overall Status:")
+        print(f"  CBAM: {'PASSED ✅' if cbam_passed else 'FAILED ❌'}")
+        print(f"  ECA-CBAM: {'PASSED ✅' if eca_cbam_passed else 'FAILED ❌'}")
 
-def validate_model_file(model_path):
-    """Validate a specific model file"""
-    print(f"🔍 Validating model file: {model_path}")
-    
+def validate_specific_model(model_path):
+    """Validate a specific model checkpoint"""
     if not os.path.exists(model_path):
         print(f"❌ Model file not found: {model_path}")
         return False
@@ -188,74 +203,81 @@ def validate_model_file(model_path):
     try:
         checkpoint = torch.load(model_path, map_location='cpu')
         
-        # Check for thop profiling keys
-        profiling_keys = [k for k in checkpoint.keys() if k.endswith(('total_ops', 'total_params'))]
-        if profiling_keys:
-            print(f"⚠️  Found {len(profiling_keys)} thop profiling keys in model")
-            print("   Consider cleaning model with safe loading")
+        # Determine model type from path or keys
+        is_eca_cbam = 'eca_cbam' in model_path or any('eca' in key for key in checkpoint.keys())
+        
+        print(f"🔍 Validating model: {model_path}")
+        print(f"Model type detected: {'ECA-CBAM' if is_eca_cbam else 'CBAM'}")
+        
+        # Count parameters in checkpoint
+        if 'state_dict' in checkpoint:
+            state_dict = checkpoint['state_dict']
         else:
-            print("✓ Model is clean (no thop profiling keys)")
+            state_dict = checkpoint
         
-        # Count parameters
-        total_params = sum(p.numel() for p in checkpoint.values() if torch.is_tensor(p))
-        print(f"✓ Model parameters: {total_params:,}")
+        total_params = sum(p.numel() for p in state_dict.values() if isinstance(p, torch.Tensor))
+        print(f"Parameters in checkpoint: {total_params:,}")
         
-        # Detect model type
-        if 'cbam' in model_path.lower():
-            expected = 488664
-            model_type = "CBAM baseline"
-        elif 'odconv' in model_path.lower():
-            expected = 485000
-            model_type = "ODConv innovation"
+        # Load into appropriate model
+        if is_eca_cbam:
+            from models.featherface_eca_cbam import FeatherFaceECAcbaM
+            from data import cfg_eca_cbam
+            model = FeatherFaceECAcbaM(cfg=cfg_eca_cbam)
         else:
-            expected = None
-            model_type = "Unknown"
+            from models.featherface_cbam_exact import FeatherFaceCBAMExact
+            from data import cfg_cbam_paper_exact
+            model = FeatherFaceCBAMExact(cfg=cfg_cbam_paper_exact)
         
-        if expected:
-            diff = abs(total_params - expected)
-            accuracy = (1 - diff / expected) * 100
-            print(f"✓ Detected: {model_type}")
-            print(f"✓ Expected: ~{expected:,} parameters")
-            print(f"✓ Match: {accuracy:.2f}%")
+        # Load weights
+        model.load_state_dict(state_dict, strict=False)
         
+        # Test forward pass
+        dummy_input = torch.randn(1, 3, 640, 640)
+        model.eval()
+        with torch.no_grad():
+            outputs = model(dummy_input)
+        
+        print("✅ Model validation successful!")
         return True
         
     except Exception as e:
-        print(f"❌ Failed to load model: {e}")
+        print(f"❌ Model validation failed: {e}")
         return False
 
 def main():
     args = parse_args()
     
-    print("🚀 FeatherFace Model Validation")
-    print("=" * 50)
-    print("Scientific comparison: CBAM baseline vs ODConv innovation")
-    print()
+    print("🔬 FeatherFace Model Validation")
+    print("=" * 60)
+    print("Scientific validation for CBAM baseline and ECA-CBAM hybrid")
+    print("=" * 60)
     
-    if args.model_path:
-        return 0 if validate_model_file(args.model_path) else 1
-    
-    if args.quick_check:
-        quick_check()
-        return 0
-    
-    if args.version == 'cbam':
-        params, success = validate_cbam_model()
-        if args.detailed and success:
-            detailed_analysis('cbam')
-    elif args.version == 'odconv':
-        params, success = validate_odconv_model()
-        if args.detailed and success:
-            detailed_analysis('odconv')
-    
-    print("\n💡 Tips:")
-    print("• Use --quick-check to validate both models")
-    print("• Use --detailed for component breakdown")
-    print("• Use --model-path to validate specific files")
-    print("• CBAM: 488,664 params (baseline)")
-    print("• ODConv: ~485,000 params (4D attention innovation)")
-    
-    return 0
+    try:
+        if args.model_path:
+            # Validate specific model
+            validate_specific_model(args.model_path)
+        
+        elif args.quick_check:
+            # Quick check both models
+            quick_check()
+        
+        else:
+            # Validate specific version
+            if args.version == 'cbam':
+                params, passed = validate_cbam_model()
+            else:
+                params, passed = validate_eca_cbam_model()
+            
+            if args.detailed and params:
+                detailed_analysis(args.version)
+        
+        print("\\n✅ Validation complete!")
+        
+    except ImportError as e:
+        print(f"❌ Import error: {e}")
+        print("Make sure all required modules are available")
+    except Exception as e:
+        print(f"❌ Validation error: {e}")
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()

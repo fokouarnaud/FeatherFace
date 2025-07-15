@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
 FeatherFace WIDERFace Testing Script
-Adapted for CBAM baseline and ODConv innovation models with dual attention architecture
+Adapted for CBAM baseline model with attention architecture
 
-Scientific evaluation on WIDERFace dataset for both:
+Scientific evaluation on WIDERFace dataset for CBAM baseline:
 - CBAM Baseline (488,664 parameters): 6 CBAM modules (3 backbone + 3 BiFPN)
-- ODConv Innovation (~485,000 parameters): 6 ODConv modules (3 backbone + 3 BiFPN)
+
+Note: For ECA-CBAM hybrid testing, use test_eca_cbam.py
 
 Usage:
     python test_widerface.py -m weights/cbam/featherface_cbam_final.pth --network cbam
-    python test_widerface.py -m weights/odconv/featherface_odconv_final.pth --network odconv
 """
 
 from __future__ import print_function
@@ -18,12 +18,11 @@ import argparse
 import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
-from data import cfg_cbam_paper_exact, cfg_odconv
+from data import cfg_cbam_paper_exact
 from layers.functions.prior_box import PriorBox
 from utils.nms.py_cpu_nms import py_cpu_nms
 import cv2
 from models.featherface_cbam_exact import FeatherFaceCBAMExact
-from models.featherface_odconv import FeatherFaceODConv
 from utils.box_utils import decode, decode_landm
 from utils.timer import Timer
 import time
@@ -36,8 +35,8 @@ def str2bool(v):
 parser = argparse.ArgumentParser(description='FeatherFace WIDERFace Test')
 parser.add_argument('-m', '--trained_model', default='./weights/cbam/featherface_cbam_final.pth',
                     type=str, help='Trained state_dict file path to open')
-parser.add_argument('--network', default='cbam', choices=['cbam', 'odconv'], 
-                    help='Network architecture: cbam (baseline) or odconv (innovation)')
+parser.add_argument('--network', default='cbam', choices=['cbam'], 
+                    help='Network architecture: cbam (baseline only)')
 parser.add_argument('--dataset_folder', default='./data/widerface/val/images/', type=str, help='dataset path')
 parser.add_argument('--confidence_threshold', default=0.02, type=float, help='confidence_threshold')
 parser.add_argument('--top_k', default=5000, type=int, help='top_k')
@@ -67,7 +66,7 @@ def check_keys(model, pretrained_state_dict):
 
 def remove_prefix(state_dict, prefix):
     """Remove module prefix from state dict keys"""
-    print('remove prefix \'{}\''.format(prefix))
+    print('remove prefix \\'{}\\''.format(prefix))
     def f(x): return x.split(prefix, 1)[-1] if x.startswith(prefix) else x
     return {f(key): value for key, value in state_dict.items()}
 
@@ -100,33 +99,22 @@ def load_model(model, pretrained_path, load_to_cpu):
 if __name__ == '__main__':
     torch.set_grad_enabled(False)
 
-    # Select configuration and model based on network type
-    if args.network == 'cbam':
-        cfg = cfg_cbam_paper_exact
-        print("🔬 Testing CBAM Baseline (488,664 parameters)")
-        print("   Architecture: 6 CBAM modules (3 backbone + 3 BiFPN)")
-        print("   Scientific foundation: Woo et al. ECCV 2018")
-    elif args.network == 'odconv':
-        cfg = cfg_odconv
-        print("🚀 Testing ODConv Innovation (~485,000 parameters)")
-        print("   Architecture: 6 ODConv modules (3 backbone + 3 BiFPN)")
-        print("   Scientific foundation: Li et al. ICLR 2022")
-    else:
-        raise ValueError(f"Unknown network: {args.network}")
+    # Use CBAM configuration
+    cfg = cfg_cbam_paper_exact
+    print("🔬 Testing CBAM Baseline (488,664 parameters)")
+    print("   Architecture: 6 CBAM modules (3 backbone + 3 BiFPN)")
+    print("   Scientific foundation: Woo et al. ECCV 2018")
+    print("   Note: For ECA-CBAM hybrid testing, use test_eca_cbam.py")
 
     # net and model
-    if args.network == 'cbam':
-        net = FeatherFaceCBAMExact(cfg=cfg, phase='test')
-    elif args.network == 'odconv':
-        net = FeatherFaceODConv(cfg=cfg, phase='test')
-    
+    net = FeatherFaceCBAMExact(cfg=cfg, phase='test')
     net = load_model(net, args.trained_model, args.cpu)
     net.eval()
     print('Finished loading model!')
     
     # Verify model parameter count
     total_params = sum(p.numel() for p in net.parameters())
-    expected_params = 488664 if args.network == 'cbam' else 485000
+    expected_params = 488664
     print(f'✓ Model loaded: {total_params:,} parameters (expected: {expected_params:,})')
     if abs(total_params - expected_params) > 100:
         print(f'⚠️  Warning: Parameter count mismatch by {total_params - expected_params:+,}')
@@ -230,8 +218,8 @@ if __name__ == '__main__':
                 os.makedirs(dirname)
             with open(save_name, "w") as fd:
                 bboxs = dets
-                file_name = os.path.basename(save_name)[:-4] + "\n"
-                bboxs_num = str(len(bboxs)) + "\n"
+                file_name = os.path.basename(save_name)[:-4] + "\\n"
+                bboxs_num = str(len(bboxs)) + "\\n"
                 fd.write(file_name)
                 fd.write(bboxs_num)
                 for box in bboxs:
@@ -240,18 +228,20 @@ if __name__ == '__main__':
                     w = int(box[2]) - int(box[0])
                     h = int(box[3]) - int(box[1])
                     confidence = str(box[4])
-                    line = str(x) + " " + str(y) + " " + str(w) + " " + str(h) + " " + confidence + " \n"
+                    line = str(x) + " " + str(y) + " " + str(w) + " " + str(h) + " " + confidence + " \\n"
                     fd.write(line)
 
         print('im_detect: {:d}/{:d} forward_pass_time: {:.4f}s misc: {:.4f}s'.format(i + 1, num_images, _t['forward_pass'].average_time, _t['misc'].average_time))
 
     # Print final statistics
-    print(f'\n🎯 {args.network.upper()} Testing Complete!')
+    print(f'\\n🎯 CBAM Baseline Testing Complete!')
     print(f'   Model: {args.trained_model}')
     print(f'   Parameters: {total_params:,}')
-    print(f'   Attention modules: 6 ({args.network.upper()}: 3 backbone + 3 BiFPN)')
+    print(f'   Attention modules: 6 (CBAM: 3 backbone + 3 BiFPN)')
     print(f'   Images processed: {num_images}')
     print(f'   Average inference time: {_t["forward_pass"].average_time:.4f}s')
     print(f'   Results saved to: {args.save_folder}')
-    print(f'\n📊 Next step: Run evaluation with:')
-    print(f'   python evaluate_widerface.py --model {args.trained_model} --network {args.network} --show_results')
+    print(f'\\n📊 Next step: Run evaluation with:')
+    print(f'   python evaluate_widerface.py --model {args.trained_model} --network cbam --show_results')
+    print(f'\\n🔗 For ECA-CBAM hybrid testing:')
+    print(f'   python test_eca_cbam.py -m weights/eca_cbam/featherface_eca_cbam_final.pth --network eca_cbam')
