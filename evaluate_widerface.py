@@ -14,6 +14,12 @@ import subprocess
 import argparse
 from pathlib import Path
 
+# Add project root to path
+PROJECT_ROOT = Path(__file__).parent
+sys.path.append(str(PROJECT_ROOT))
+
+from data import cfg_cbam_paper_exact, cfg_odconv
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Evaluate FeatherFace on WIDERFace dataset')
     parser.add_argument('--model', required=True, help='Path to trained model')
@@ -101,11 +107,14 @@ def main():
     print(f"\n💾 Results saved to: {args.save_folder}")
     print(f"\n✅ Scientific Evaluation Complete:")
     print(f"   Model: {args.network} ({'CBAM baseline' if args.network == 'cbam' else 'ODConv innovation'})")
-    print(f"   Parameters: {'488,664' if args.network == 'cbam' else '~485,000'}")
+    if args.network == 'cbam':
+        param_count = f"{cfg_cbam_paper_exact['paper_baseline_performance']['total_parameters']:,}"
+    else:
+        param_count = f"~{cfg_odconv['performance_targets']['total_parameters']:,}"
+    print(f"   Parameters: {param_count}")
     print(f"   Attention: 6 {args.network.upper()} modules (dual application)")
     print(f"   Foundation: {'Woo et al. ECCV 2018' if args.network == 'cbam' else 'Li et al. ICLR 2022'}")
     
-    return 0
     print("📋 To run evaluation manually:")
     print("  cd widerface_evaluate")
     print(f"  python evaluation.py -p {args.save_folder} -g ./eval_tools/ground_truth")

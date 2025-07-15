@@ -22,7 +22,8 @@ sys.path.append(str(PROJECT_ROOT))
 
 from models.odconv import ODConv2d
 from models.featherface_odconv import FeatherFaceODConv
-from data.config import cfg_odconv
+from models.featherface_cbam_exact import FeatherFaceCBAMExact
+from data import cfg_odconv, cfg_cbam_paper_exact
 
 warnings.filterwarnings('ignore')
 
@@ -162,7 +163,7 @@ class TestODConvValidation(unittest.TestCase):
         
         # Créer les deux modèles
         model_odconv = FeatherFaceODConv(cfg=cfg_odconv, phase='train')
-        model_cbam = RetinaFace(cfg=cfg_mnet, phase='train')
+        model_cbam = FeatherFaceCBAMExact(cfg=cfg_cbam_paper_exact)
         
         # Compter paramètres
         params_odconv = sum(p.numel() for p in model_odconv.parameters())

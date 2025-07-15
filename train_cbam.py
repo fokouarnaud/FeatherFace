@@ -29,26 +29,29 @@ import numpy as np
 
 def parse_args():
     """Parse command line arguments"""
+    # Get centralized training configuration
+    training_cfg = cfg_cbam_paper_exact['training_config']
+    
     parser = argparse.ArgumentParser(description='FeatherFace CBAM Baseline Training')
     
-    # Dataset arguments
-    parser.add_argument('--training_dataset', default='./data/widerface/train/label.txt', 
+    # Dataset arguments (use centralized config as defaults)
+    parser.add_argument('--training_dataset', default=training_cfg['training_dataset'], 
                        help='Training dataset directory')
-    parser.add_argument('--num_workers', default=4, type=int, 
+    parser.add_argument('--num_workers', default=training_cfg['num_workers'], type=int, 
                        help='Number of workers used in dataloading')
     
-    # Model arguments
-    parser.add_argument('--network', default='cbam', 
+    # Model arguments (use centralized config as defaults)
+    parser.add_argument('--network', default=training_cfg['network'], 
                        help='Network version: cbam for CBAM baseline')
-    parser.add_argument('--resume_net', default=None, 
+    parser.add_argument('--resume_net', default=training_cfg['resume_net'], 
                        help='Resume net for retraining')
-    parser.add_argument('--resume_epoch', default=0, type=int, 
+    parser.add_argument('--resume_epoch', default=training_cfg['resume_epoch'], type=int, 
                        help='Resume iter for retraining')
     
-    # Training arguments
-    parser.add_argument('-b', '--batch_size', default=32, type=int, 
+    # Training arguments (use centralized config as defaults)
+    parser.add_argument('-b', '--batch_size', default=cfg_cbam_paper_exact['batch_size'], type=int, 
                        help='Batch size for training')
-    parser.add_argument('--lr', '--learning-rate', default=1e-3, type=float, 
+    parser.add_argument('--lr', '--learning-rate', default=cfg_cbam_paper_exact['lr'], type=float, 
                        help='Initial learning rate')
     parser.add_argument('--momentum', default=0.9, type=float, 
                        help='Momentum value for optim')
@@ -56,7 +59,7 @@ def parse_args():
                        help='Weight decay for SGD')
     parser.add_argument('--gamma', default=0.1, type=float, 
                        help='Gamma update for SGD')
-    parser.add_argument('--save_folder', default='./weights/cbam/', 
+    parser.add_argument('--save_folder', default=training_cfg['save_folder'], 
                        help='Directory for saving checkpoint models')
     
     return parser.parse_args()
@@ -147,11 +150,17 @@ def main():
     dataset = WiderFaceDetection(args.training_dataset, preproc(cfg['image_size'], cfg['rgb_mean']))
     
     # Learning rate scheduling
-    def adjust_learning_rate(optimizer, epoch, initial_lr, gamma, stepsize):
-        """Sets the learning rate"""
-        lr = initial_lr * (gamma ** (epoch // stepsize))
+    def adjust_learning_rate(optimizer, epoch, initial_lr, gamma, decay_epochs):
+        """Adjust learning rate based on epoch"""
+        lr = initial_lr
+        for decay_epoch in decay_epochs:
+            if epoch >= decay_epoch:
+                lr *= gamma
+        
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
+        
+        return lr
     
     print('Loading Dataset...')
     data_loader = data.DataLoader(dataset, args.batch_size,
@@ -162,19 +171,25 @@ def main():
     
     # Training loop
     net.train()
-    epoch = 0 + args.resume_epoch
     print('Training FeatherFace CBAM baseline on:', dataset.name)
     print('Using the specified args:')
     print(args)
     
-    step_index = 0
-    for iteration in range(cfg['max_epoch']):
-        if iteration in cfg['lr_steps']:
-            step_index += 1
-            adjust_learning_rate(optimizer, iteration, args.lr, args.gamma, cfg['lr_steps'][step_index-1])
+    # Use decay epochs from config
+    decay_epochs = cfg['lr_steps']
+    best_loss = float('inf')
+    
+    for epoch in range(args.resume_epoch, cfg['max_epoch']):
+        # Adjust learning rate
+        current_lr = adjust_learning_rate(optimizer, epoch, args.lr, args.gamma, decay_epochs)
         
-        load_t0 = time.time()
+        print(f"\n🔄 Epoch {epoch}/{cfg['max_epoch']} | LR: {current_lr:.2e}")
+        
+        epoch_loss = 0.0
+        epoch_start_time = time.time()
+        
         for batch_idx, (images, targets) in enumerate(data_loader):
+            # Move to device
             if torch.cuda.is_available():
                 images = images.cuda()
                 targets = [ann.cuda() for ann in targets]
@@ -182,27 +197,41 @@ def main():
                 images = images
                 targets = [ann for ann in targets]
             
-            # Forward
-            t0 = time.time()
+            # Forward pass
             out = net(images)
             
-            # Backprop
-            optimizer.zero_grad()
+            # Compute loss
             loss_l, loss_c, loss_landm = criterion(out, priors, targets)
             loss = cfg['loc_weight'] * loss_l + loss_c + loss_landm
+            
+            # Backward pass
+            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            t1 = time.time()
             
-            if batch_idx % 10 == 0:
-                print(f'Epoch:{epoch} || epochiter: {batch_idx}/{len(data_loader)} || Loss: {loss.item():.4f} || LR: {optimizer.param_groups[0]["lr"]:.6f} || Batchtime: {t1-t0:.4f} s')
+            epoch_loss += loss.item()
+            
+            # Verbose logging
+            if batch_idx % 50 == 0:
+                print(f'Epoch: {epoch} | Batch: {batch_idx}/{len(data_loader)} | '
+                      f'Loss: {loss.item():.4f} | Loc: {loss_l.item():.4f} | '
+                      f'Cls: {loss_c.item():.4f} | Landm: {loss_landm.item():.4f}')
         
-        load_t1 = time.time()
-        epoch += 1
+        epoch_time = time.time() - epoch_start_time
+        avg_loss = epoch_loss / len(data_loader)
         
-        # Save checkpoint every 10 epochs
-        if epoch % 10 == 0:
-            save_name = os.path.join(args.save_folder, f'featherface_cbam_epoch_{epoch}.pth')
+        print(f'📈 Epoch {epoch} completed: Avg Loss: {avg_loss:.4f} | Time: {epoch_time:.2f}s')
+        
+        # Save checkpoint every 10 epochs or if best model
+        if epoch % 10 == 0 or avg_loss < best_loss:
+            if avg_loss < best_loss:
+                best_loss = avg_loss
+                save_name = f"featherface_cbam_best.pth"
+                print(f"🎉 New best model! Loss: {best_loss:.4f}")
+            else:
+                save_name = f"featherface_cbam_epoch_{epoch}.pth"
+            
+            save_path = os.path.join(args.save_folder, save_name)
             
             # Clean state dict before saving (remove any thop profiling keys)
             state_dict = net.state_dict() if not isinstance(net, torch.nn.DataParallel) else net.module.state_dict()
@@ -211,8 +240,8 @@ def main():
                 if not (key.endswith('total_ops') or key.endswith('total_params')):
                     clean_state_dict[key] = value
             
-            torch.save(clean_state_dict, save_name)
-            print(f'Saved checkpoint: {save_name}')
+            torch.save(clean_state_dict, save_path)
+            print(f'Saved checkpoint: {save_path}')
     
     # Save final model
     final_save_name = os.path.join(args.save_folder, 'featherface_cbam_final.pth')

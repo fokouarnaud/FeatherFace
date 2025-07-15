@@ -46,26 +46,30 @@ import numpy as np
 
 def parse_args():
     """Parse command line arguments for ODConv training"""
+    # Get centralized training configuration
+    training_cfg = cfg_odconv['training_config']
+    odconv_cfg = cfg_odconv['odconv_config']
+    
     parser = argparse.ArgumentParser(description='FeatherFace ODConv Training')
     
-    # Dataset arguments
-    parser.add_argument('--training_dataset', default='./data/widerface/train/label.txt', 
+    # Dataset arguments (use centralized config as defaults)
+    parser.add_argument('--training_dataset', default=training_cfg['training_dataset'], 
                        help='Training dataset directory')
-    parser.add_argument('--num_workers', default=4, type=int, 
+    parser.add_argument('--num_workers', default=training_cfg['num_workers'], type=int, 
                        help='Number of workers used in dataloading')
     
-    # Model arguments  
-    parser.add_argument('--network', default='odconv', 
+    # Model arguments (use centralized config as defaults)
+    parser.add_argument('--network', default=training_cfg['network'], 
                        help='Network version: odconv for ODConv innovation')
-    parser.add_argument('--resume_net', default=None, 
+    parser.add_argument('--resume_net', default=training_cfg['resume_net'], 
                        help='Resume net for retraining')
-    parser.add_argument('--resume_epoch', default=0, type=int, 
+    parser.add_argument('--resume_epoch', default=training_cfg['resume_epoch'], type=int, 
                        help='Resume iter for retraining')
     
-    # Training arguments
-    parser.add_argument('-b', '--batch_size', default=32, type=int, 
+    # Training arguments (use centralized config as defaults)
+    parser.add_argument('-b', '--batch_size', default=cfg_odconv['batch_size'], type=int, 
                        help='Batch size for training')
-    parser.add_argument('--lr', '--learning_rate', default=1e-3, type=float, 
+    parser.add_argument('--lr', '--learning_rate', default=cfg_odconv['lr'], type=float, 
                        help='Initial learning rate')
     parser.add_argument('--momentum', default=0.9, type=float, 
                        help='Momentum value for optim')
@@ -73,35 +77,35 @@ def parse_args():
                        help='Weight decay for SGD')
     parser.add_argument('--gamma', default=0.1, type=float, 
                        help='Gamma update for SGD')
-    parser.add_argument('--num_epochs', default=350, type=int, 
+    parser.add_argument('--num_epochs', default=cfg_odconv['epoch'], type=int, 
                        help='Maximum epoch to train')
     
-    # ODConv specific arguments
-    parser.add_argument('--odconv_reduction', default=0.0625, type=float,
+    # ODConv specific arguments (use centralized config as defaults)
+    parser.add_argument('--odconv_reduction', default=odconv_cfg['reduction'], type=float,
                        help='ODConv reduction ratio for attention mechanisms')
-    parser.add_argument('--odconv_kernel_num', default=1, type=int,
+    parser.add_argument('--odconv_kernel_num', default=odconv_cfg['kernel_num'], type=int,
                        help='Number of kernels in ODConv (1 for efficiency)')
-    parser.add_argument('--odconv_temperature', default=31, type=int,
+    parser.add_argument('--odconv_temperature', default=odconv_cfg['temperature'], type=int,
                        help='Temperature for ODConv attention softmax')
     
-    # Output arguments
-    parser.add_argument('--save_folder', default='./weights/odconv/', 
+    # Output arguments (use centralized config as defaults)
+    parser.add_argument('--save_folder', default=training_cfg['save_folder'], 
                        help='Directory for saving checkpoint models')
     parser.add_argument('--save_frequency', default=10, type=int,
                        help='Save model every N epochs')
     
-    # System arguments
-    parser.add_argument('--gpu_train', default=True, type=bool, 
+    # System arguments (use centralized config as defaults)
+    parser.add_argument('--gpu_train', default=cfg_odconv['gpu_train'], type=bool, 
                        help='Use GPU for training')
-    parser.add_argument('--ngpu', default=1, type=int, 
+    parser.add_argument('--ngpu', default=cfg_odconv['ngpu'], type=int, 
                        help='Number of GPUs to use')
     parser.add_argument('--seed', default=42, type=int,
                        help='Random seed for reproducibility')
     
-    # Monitoring arguments
+    # Monitoring arguments (use centralized config as defaults)
     parser.add_argument('--verbose', default=True, type=bool,
                        help='Verbose logging including ODConv attention analysis')
-    parser.add_argument('--log_attention', default=False, type=bool,
+    parser.add_argument('--log_attention', default=training_cfg['log_attention'], type=bool,
                        help='Log ODConv attention weights for analysis')
     
     return parser.parse_args()

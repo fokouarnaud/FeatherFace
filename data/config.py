@@ -16,8 +16,10 @@ cfg_cbam_paper_exact = {
     'batch_size': 32,
     'ngpu': 1,
     'epoch': 350,
+    'max_epoch': 350,  # Maximum training epochs
     'decay1': 190,
     'decay2': 220,
+    'lr_steps': [190, 220],  # Learning rate decay steps
     'image_size': 640,
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
@@ -25,6 +27,10 @@ cfg_cbam_paper_exact = {
     'out_channel': 52,  # EXACT: Achieves 488,664 parameters (only -36 from paper target!)
     'lr': 1e-3,
     'optim': 'adamw',
+    
+    # Standard face detection configuration
+    'num_classes': 2,  # Background + Face
+    'rgb_mean': [104, 117, 123],  # Standard face detection RGB mean values
     
     # CBAM attention configuration (paper baseline)
     'attention_mechanism': 'CBAM',
@@ -89,8 +95,10 @@ cfg_odconv = {
     'batch_size': 32,
     'ngpu': 1,
     'epoch': 350,
+    'max_epoch': 350,  # Maximum training epochs
     'decay1': 190,
     'decay2': 220,
+    'lr_steps': [190, 220],  # Learning rate decay steps
     'image_size': 640,
     'pretrain': True,
     'return_layers': {'stage1': 1, 'stage2': 2, 'stage3': 3},
@@ -98,6 +106,10 @@ cfg_odconv = {
     'out_channel': 52,  # IDENTICAL to CBAM baseline for controlled comparison
     'lr': 1e-3,
     'optim': 'adamw',
+    
+    # Standard face detection configuration
+    'num_classes': 2,  # Background + Face
+    'rgb_mean': [104, 117, 123],  # Standard face detection RGB mean values
     
     # ODConv innovation configuration
     'attention_mechanism': 'ODConv',
@@ -158,6 +170,11 @@ cfg_odconv = {
         'multidim_optimization': True,            # 4D attention verified
         'literature_supported': True,             # Scientific literature validated
     }
+}
+
+# Legacy configuration for compatibility with MultiBoxLoss
+cfg_mnet = {
+    'gpu_train': True,  # GPU training enabled (used by MultiBoxLoss)
 }
 
 # Available configurations for scientific comparison:

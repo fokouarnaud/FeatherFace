@@ -30,7 +30,7 @@ def validate_cbam_model():
     """Validate CBAM baseline model"""
     try:
         from models.featherface_cbam_exact import FeatherFaceCBAMExact
-        from data.config import cfg_cbam_paper_exact
+        from data import cfg_cbam_paper_exact
         
         print("🔍 CBAM Baseline Model Validation")
         print("-" * 40)
@@ -42,11 +42,12 @@ def validate_cbam_model():
         
         print(f"✓ Model: FeatherFaceCBAMExact")
         print(f"✓ Configuration: cfg_cbam_paper_exact")
+        cbam_target = cfg_cbam_paper_exact['paper_baseline_performance']['total_parameters']
         print(f"✓ Total parameters: {total_params:,}")
         print(f"✓ Trainable parameters: {trainable_params:,}")
-        print(f"✓ Target: 488,664 parameters")
-        print(f"✓ Difference: {total_params - 488664:+,}")
-        print(f"✓ Accuracy: {((1 - abs(total_params - 488664) / 488664) * 100):.2f}%")
+        print(f"✓ Target: {cbam_target:,} parameters")
+        print(f"✓ Difference: {total_params - cbam_target:+,}")
+        print(f"✓ Accuracy: {((1 - abs(total_params - cbam_target) / cbam_target) * 100):.2f}%")
         
         # Test forward pass
         dummy_input = torch.randn(1, 3, 640, 640)
@@ -74,7 +75,7 @@ def validate_odconv_model():
     """Validate ODConv innovation model"""
     try:
         from models.featherface_odconv import FeatherFaceODConv
-        from data.config import cfg_odconv
+        from data import cfg_odconv
         
         print("🔍 ODConv Innovation Model Validation")
         print("-" * 40)
@@ -126,11 +127,11 @@ def detailed_analysis(version):
     
     if version == 'cbam':
         from models.featherface_cbam_exact import FeatherFaceCBAMExact
-        from data.config import cfg_cbam_paper_exact
+        from data import cfg_cbam_paper_exact
         model = FeatherFaceCBAMExact(cfg=cfg_cbam_paper_exact)
     else:
         from models.featherface_odconv import FeatherFaceODConv
-        from data.config import cfg_odconv
+        from data import cfg_odconv
         model = FeatherFaceODConv(cfg=cfg_odconv)
     
     total_params = sum(p.numel() for p in model.parameters())

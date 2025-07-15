@@ -25,7 +25,8 @@ sys.path.append(str(PROJECT_ROOT))
 
 from models.odconv import ODConv2d
 from models.featherface_odconv import FeatherFaceODConv
-from data.config import cfg_odconv
+from models.featherface_cbam_exact import FeatherFaceCBAMExact
+from data import cfg_odconv, cfg_cbam_paper_exact
 
 def print_header():
     """Affiche header de validation"""
@@ -155,7 +156,7 @@ def validate_model_architectures():
         
         # Comparaison paramètres
         print("Comparing with CBAM baseline...")
-        model_cbam = RetinaFace(cfg=cfg_mnet, phase='train')
+        model_cbam = FeatherFaceCBAMExact(cfg=cfg_cbam_paper_exact)
         
         params_odconv = sum(p.numel() for p in model_odconv.parameters())
         params_cbam = sum(p.numel() for p in model_cbam.parameters())
