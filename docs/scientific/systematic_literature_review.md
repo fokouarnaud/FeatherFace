@@ -4,7 +4,7 @@
 
 Cette revue de littérature systématique analyse l'évolution des mécanismes d'attention en vision par ordinateur, avec un focus sur la détection de visages et l'optimisation mobile, menée en juillet 2025. L'objectif était d'identifier l'approche d'attention optimale pour améliorer FeatherFace, en se basant sur des critères scientifiques rigoureux et des sources vérifiées.
 
-**Conclusion principale :** L'approche hybride ECA-CBAM a été sélectionnée comme mécanisme d'attention optimal, combinant l'efficacité paramétrique d'ECA-Net (Wang et al. CVPR 2020) avec l'attention spatiale critique de CBAM SAM (Woo et al. ECCV 2018) pour la détection de visages. Cette approche parallel hybrid offre une réduction de 99% des paramètres d'attention canal tout en préservant les capacités de localisation spatiale.
+**Conclusion principale :** L'approche hybride ECA-CBAM a été sélectionnée comme mécanisme d'attention optimal, combinant l'efficacité paramétrique d'ECA-Net (Wang et al. CVPR 2020) avec l'attention spatiale critique de CBAM SAM (Woo et al. ECCV 2018) pour la détection de visages. Cette approche hybrid attention module offre une réduction de 99% des paramètres d'attention canal tout en préservant les capacités de localisation spatiale.
 
 ## 1. Méthodologie de Recherche
 
@@ -31,7 +31,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 - "CBAM" + "spatial attention module"
 - "face detection" + "attention mechanism"
 - "mobile optimization" + "parameter efficiency"
-- "parallel hybrid attention" + "hybrid"
+- "hybrid attention module" + "hybrid"
 - "channel attention" + "spatial attention"
 
 **Période de recherche :** Janvier 2017 - Juillet 2025
@@ -113,7 +113,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 
 ---
 
-#### **Parallel Hybrid Attention Validation (2024)**
+#### **Hybrid Attention Module Validation (2024)**
 **Source :** Frontiers in Neurorobotics (2024). https://doi.org/10.3389/fnbot.2024.1391791
 
 **Principe :** Interaction spatiale-canal pour amélioration représentationnelle
@@ -320,7 +320,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 3. **Fondement théorique solide :**
    - ECA-Net: Wang et al. CVPR 2020 (2000+ citations)
    - CBAM: Woo et al. ECCV 2018 (7000+ citations)
-   - Parallel Hybrid: Littérature 2023-2024
+   - Hybrid Attention Module: Littérature 2023-2024
 
 4. **Applicabilité à FeatherFace :**
    - Compatible avec architecture CNN existante
@@ -343,7 +343,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 - Efficacité paramétrique: ECA-Net 22 vs 2000 paramètres CBAM CAM (Wang et al. CVPR 2020)
 - Préservation performance: CBAM SAM maintenu (Woo et al. ECCV 2018)
 - Validation empirique: Face detection CBAM 98.73% (ACM AIFE 2024)
-- Interaction scientifique: Parallel Hybrid validé (Wang et al. 2024)
+- Interaction scientifique: Hybrid Attention Module validé (Wang et al. 2024)
 
 ### 6.3 Alternatives Considérées
 
@@ -370,7 +370,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
    - Préservation CBAM SAM intégrale
    - Tests unitaires et validation architecture
 
-2. **Phase 2 : Parallel Hybrid Interaction**
+2. **Phase 2 : Hybrid Attention Module Interaction**
    - Interaction synergique ECA-Net + CBAM SAM
    - Optimisation poids interaction
    - Validation efficacité computationnelle

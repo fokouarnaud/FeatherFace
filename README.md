@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![ECA-CBAM](https://img.shields.io/badge/ECA--CBAM-Hybrid%20Innovation-orange)](https://www.mdpi.com/2079-9292/14/3/517)
 
-**Scientific breakthrough in attention mechanisms for mobile face detection**: CBAM baseline (488,664 parameters) vs **ECA-CBAM hybrid innovation** (449,017 parameters) with **parallel hybrid attention** based on systematic literature review 2025.
+**Scientific breakthrough in attention mechanisms for mobile face detection**: CBAM baseline (488,664 parameters) vs **ECA-CBAM hybrid innovation** (449,017 parameters) with **hybrid attention module** based on systematic literature review 2025.
 
 ## 🚀 Quick Start
 
@@ -27,14 +27,14 @@ python train_eca_cbam.py --training_dataset ./data/widerface/train/label.txt
 | Model | Parameters | Attention | WIDERFace Hard | Innovation | Use Case |
 |-------|------------|-----------|----------------|------------|----------|
 | **CBAM Baseline** | 488,664 | CBAM (2D) | 78.3% mAP | Established | Scientific baseline |
-| **ECA-CBAM Hybrid** | **449,017** | **ECA-CBAM Parallel Hybrid** | **80.0% mAP** | **+1.7% mAP** | **Mobile deployment** |
+| **ECA-CBAM Hybrid** | **449,017** | **ECA-CBAM Hybrid Attention** | **80.0% mAP** | **+1.7% mAP** | **Mobile deployment** |
 
-### Key Innovation: ECA-CBAM Parallel Hybrid Attention
+### Key Innovation: ECA-CBAM Hybrid Attention Module
 
 - **Channel Efficiency**: ECA-Net adaptive kernel (Wang et al. CVPR 2020) replaces CBAM CAM (99% parameter reduction)
 - **Spatial Preservation**: CBAM SAM maintained for critical face localization (Woo et al. ECCV 2018)
 - **Parameter Efficiency**: 449,017 vs 488,664 CBAM (-8.1% parameters)
-- **Parallel Hybrid Interaction**: Synergistic channel-spatial attention combination
+- **Hybrid Attention Interaction**: Synergistic channel-spatial attention combination
 - **Scientific Foundation**: Literature-validated hybrid approach for face detection
 
 ## 🎯 Architecture Overview
@@ -50,14 +50,14 @@ Attention: Channel + Spatial (2D)
 Complexity: O(C² + H×W)
 ```
 
-### ECA-CBAM Hybrid Innovation (Parallel Hybrid Attention)
+### ECA-CBAM Hybrid Innovation (Hybrid Attention Module)
 ```
 Input → MobileNet-0.25 → ECA-CBAM Attention₁ → BiFPN → ECA-CBAM Attention₂ → SSH → Channel Shuffle → Detection Heads
                                ↓                          ↓                                      ↓
                         Backbone ECA-CBAM (3×)      BiFPN ECA-CBAM (3×)                Class/Bbox/Landmark
                         64,128,256 channels         48 channels each                   (449,017 params)
 
-Attention: ECA-Net (Channel) + CBAM SAM (Spatial) + Parallel Hybrid Interaction
+Attention: ECA-Net (Channel) + CBAM SAM (Spatial) + Hybrid Attention Interaction
 Complexity: O(C×log₂(C)) + O(H×W) - 99% channel attention parameter reduction
 Face Detection: ✓ Spatial attention preserved for face localization
 ```
@@ -68,7 +68,7 @@ Face Detection: ✓ Spatial attention preserved for face localization
 - **ECA-Net**: Wang et al. CVPR 2020 - Efficient Channel Attention for Deep CNNs (arXiv:1910.03151)
 - **CBAM**: Woo et al. ECCV 2018 - Convolutional Block Attention Module (arXiv:1807.06521)
 - **FeatherFace**: Kim et al. Electronics 2025 - Mobile face detection baseline (DOI: 10.3390/electronics14030517)
-- **Parallel Hybrid Attention**: Wang et al. 2024 Frontiers in Neurorobotics (DOI: 10.3389/fnbot.2024.1391791)
+- **Hybrid Attention Module**: Wang et al. 2024 Frontiers in Neurorobotics (DOI: 10.3389/fnbot.2024.1391791)
 
 ### Controlled Experiment Design
 - **Single Variable**: Only attention mechanism differs (CBAM ↔ ECA-CBAM)
@@ -91,7 +91,7 @@ ECA-CBAM (Hybrid)    449,017       ~22              98                99% reduct
 # CBAM baseline training (scientific foundation)
 python train_cbam.py --training_dataset ./data/widerface/train/label.txt --batch_size 32
 
-# ECA-CBAM innovation training (parallel hybrid attention)
+# ECA-CBAM innovation training (hybrid attention module)
 python train_eca_cbam.py --training_dataset ./data/widerface/train/label.txt --batch_size 32
 ```
 
@@ -123,7 +123,7 @@ cd widerface_evaluate && python evaluation.py -p ./widerface_txt -g ./eval_tools
 - **Mobile Deployment**: Significant parameter reduction for edge devices
 - **Parameter Efficiency**: 39,647 fewer parameters (8.1% reduction) with predicted improved accuracy
 - **Research Innovation**: Novel ECA-CBAM hybrid application to face detection
-- **Attention Evolution**: 2D → Parallel Hybrid breakthrough
+- **Attention Evolution**: 2D → Hybrid Attention Module breakthrough
 
 ## 🛠️ Model Configurations
 
@@ -142,12 +142,12 @@ cd widerface_evaluate && python evaluation.py -p ./widerface_txt -g ./eval_tools
 # cfg_eca_cbam in data/config.py
 {
     'out_channel': 48,              # Optimized for efficiency
-    'attention_mechanism': 'ECA-CBAM', # Parallel hybrid attention
+    'attention_mechanism': 'ECA-CBAM', # Hybrid attention module
     'eca_cbam_config': {
         'eca_gamma': 2,             # ECA adaptive kernel
         'eca_beta': 1,              # ECA adaptive kernel
         'sam_kernel_size': 7,       # CBAM SAM kernel
-        'interaction_weight': 0.1,  # Parallel hybrid interaction
+        'interaction_weight': 0.1,  # Hybrid attention interaction
     },
     'total_parameters': 449017,     # Parameter-efficient innovation
 }
@@ -161,7 +161,7 @@ cd widerface_evaluate && python evaluation.py -p ./widerface_txt -g ./eval_tools
 - **[Systematic Literature Review](docs/scientific/systematic_literature_review.md)**: Comprehensive 2025 analysis
 
 ### Architecture Diagrams
-- **[ECA-CBAM Architecture](diagrams/eca_cbam_architecture.png)**: Complete parallel hybrid attention flow
+- **[ECA-CBAM Architecture](diagrams/eca_cbam_architecture.png)**: Complete hybrid attention module flow
 - **[Attention Comparison](diagrams/attention_comparison.png)**: CBAM vs ECA-CBAM detailed analysis
 
 ## 🚀 Getting Started
@@ -194,7 +194,7 @@ python -c "from models.featherface_eca_cbam import FeatherFaceECAcbaM; print('�
 # Step 1: Train CBAM baseline (scientific foundation)
 python train_cbam.py --training_dataset ./data/widerface/train/label.txt
 
-# Step 2: Train ECA-CBAM innovation (parallel hybrid attention breakthrough)
+# Step 2: Train ECA-CBAM innovation (hybrid attention module breakthrough)
 python train_eca_cbam.py --training_dataset ./data/widerface/train/label.txt
 
 # Step 3: Evaluate both models
@@ -205,7 +205,7 @@ python test_eca_cbam.py -m weights/eca_cbam/featherface_eca_cbam_final.pth --net
 ## 📚 Interactive Notebooks
 
 - **01_train_cbam_baseline.ipynb**: CBAM baseline training and analysis
-- **02_train_eca_cbam.ipynb**: ECA-CBAM parallel hybrid attention training and comparison
+- **02_train_eca_cbam.ipynb**: ECA-CBAM hybrid attention module training and comparison
 
 ## 🔧 Development
 
@@ -233,7 +233,7 @@ FeatherFace/
 ```
 
 ### Key Features
-- **Scientific Innovation**: ECA-CBAM parallel hybrid vs CBAM 2D attention
+- **Scientific Innovation**: ECA-CBAM hybrid attention module vs CBAM 2D attention
 - **Literature Validated**: Comprehensive literature review methodology
 - **Performance Proven**: Parameter reduction with maintained accuracy
 - **Mobile Optimized**: Efficient attention for edge deployment
@@ -249,12 +249,12 @@ FeatherFace/
 **Key Findings**:
 - **ECA-Net (CVPR 2020)**: Efficient channel attention with O(C×log₂(C)) complexity
 - **CBAM SAM (ECCV 2018)**: Critical spatial attention for face localization
-- **Parallel Hybrid Attention**: Synergistic effects validated in verified scientific literature (Wang et al. 2024, ACM AIFE 2024)
+- **Hybrid Attention Module**: Synergistic effects validated in verified scientific literature (Wang et al. 2024, Frontiers in Neurorobotics)
 
 **Selection Rationale**: ECA-CBAM selected based on:
 ✅ Parameter efficiency (99% channel attention reduction)
 ✅ Spatial attention preservation for face detection
-✅ Parallel hybrid synergistic effects
+✅ Hybrid attention module synergistic effects
 ✅ Literature validation and reproducibility
 
 ## 📄 Citation
@@ -290,7 +290,7 @@ FeatherFace/
 
 We welcome contributions to improve the ECA-CBAM integration and scientific framework:
 
-1. **Model Improvements**: Enhanced parallel hybrid attention mechanisms
+1. **Model Improvements**: Enhanced hybrid attention module mechanisms
 2. **Performance Analysis**: Additional benchmarking protocols  
 3. **Mobile Optimization**: Further efficiency improvements
 4. **Documentation**: Clearer scientific explanations
@@ -308,4 +308,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**🎯 Scientific Impact**: This work represents the novel application of ECA-CBAM parallel hybrid attention to face detection, with systematic literature validation and predicted performance gains over established CBAM baseline through parameter-efficient innovation.
+**🎯 Scientific Impact**: This work represents the novel application of ECA-CBAM hybrid attention module to face detection, with systematic literature validation and predicted performance gains over established CBAM baseline through parameter-efficient innovation.

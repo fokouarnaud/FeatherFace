@@ -319,7 +319,7 @@ class ECAcbaM(nn.Module):
         self.sam = SpatialAttention()
         
     def forward(self, x):
-        # Parallel hybrid architecture
+        # Hybrid attention module architecture
         channel_map = self.eca.get_attention_map(x)  # M_c
         spatial_map = self.sam.get_attention_map(x)  # M_s
         
@@ -491,14 +491,14 @@ class FeatherFaceECAcbaM(nn.Module):
 
 ---
 
-## 9. Mécanismes d'Attention Parallel Hybrid
+## 9. Mécanismes d'Attention Hybride (Hybrid Attention Module)
 
 ### 9.1 Définition et Concept Théorique
 
-**Attention Parallel Hybrid** fait référence à une approche avancée qui intègre plusieurs mécanismes d'attention de manière complémentaire pour améliorer la représentation des caractéristiques dans les tâches de vision par ordinateur.
+**Hybrid Attention Module** fait référence à une approche avancée qui intègre plusieurs mécanismes d'attention de manière complémentaire pour améliorer la représentation des caractéristiques dans les tâches de vision par ordinateur.
 
 **Principe Fondamental :**
-L'attention parallel hybrid dépasse les limitations des mécanismes d'attention uniques en combinant différents types d'attention (channel, spatial, temporel) pour capturer des dépendances complexes que chaque mécanisme individuellement ne peut pas saisir.
+Le hybrid attention module dépasse les limitations des mécanismes d'attention uniques en combinant différents types d'attention (channel, spatial, temporel) pour capturer des dépendances complexes que chaque mécanisme individuellement ne peut pas saisir.
 
 ### 9.2 Fondements Scientifiques
 
@@ -510,7 +510,7 @@ Selon Wang et al. dans *Frontiers in Neurorobotics* (2024), "les méthodes actue
 
 **Source :** Frontiers in Neurorobotics (2024). Hybrid attention mechanisms for enhanced feature learning in deep neural networks. https://doi.org/10.3389/fnbot.2024.1391791
 
-### 9.3 Types d'Attention Parallel Hybrid
+### 9.3 Types d'Attention Hybride (Hybrid Attention Module)
 
 **1. Attention Séquentielle (Sequential Attention) :**
 - Traitement étape par étape où chaque couche d'attention s'appuie sur la sortie précédente
@@ -531,7 +531,7 @@ Selon Wang et al. dans *Frontiers in Neurorobotics* (2024), "les méthodes actue
 
 ### 9.4 Validation Scientifique dans la Littérature
 
-**Validation Parallel Hybrid par Applications Analogues :**
+**Validation Hybrid Attention Module par Applications Analogues :**
 
 **Face Detection Validée (2024) :**
 L'étude "Research on Face Detection Based on CBAM Module and Improved YOLOv5 Algorithm in Smart Campus Security" (ACM AIFE 2024) démontre l'efficacité de CBAM pour la détection de visages avec 98.73% de précision.
@@ -543,7 +543,7 @@ Wang et al. démontrent l'importance de l'interaction spatiale-canal dans leur m
 
 **Source :** Frontiers in Neurorobotics (2024). https://doi.org/10.3389/fnbot.2024.1391791
 
-### 9.5 Pourquoi Parallel Hybrid pour la Détection de Visages ?
+### 9.5 Pourquoi Hybrid Attention Module pour la Détection de Visages ?
 
 **Justification Scientifique :**
 
@@ -555,16 +555,16 @@ Wang et al. démontrent l'importance de l'interaction spatiale-canal dans leur m
 2. **Complémentarité des Mécanismes :**
    - **ECA** : Efficacité channel attention sans réduction dimensionnelle
    - **SAM** : Localisation spatiale précise
-   - **Parallel Hybrid** : Interaction optimale entre les deux
+   - **Hybrid Attention Module** : Interaction optimale entre les deux
 
 3. **Performance Prouvée :**
    - +2.08% amélioration top-one error rate (ResNet-50)
    - Applications réussies en medical imaging, remote sensing
    - Validation sur multiples datasets
 
-### 9.6 Formulation Mathématique Parallel Hybrid
+### 9.6 Formulation Mathématique Hybrid Attention Module
 
-**Attention Parallel Hybrid ECA-CBAM :**
+**Hybrid Attention Module ECA-CBAM :**
 
 ```
 Définition générale :
@@ -587,7 +587,7 @@ F_combined = F_c ⊗ F_s                   // Matrix interaction
 Output = F_combined + X                  // Residual connection
 ```
 
-### 9.7 Avantages Parallel Hybrid pour FeatherFace
+### 9.7 Avantages Hybrid Attention Module pour FeatherFace
 
 **Avantages Techniques :**
 
@@ -611,16 +611,16 @@ Output = F_combined + X                  // Residual connection
 - Réduction 5.9% paramètres vs CBAM complet
 - Amélioration robustesse spatial-channel
 
-### 9.8 Implémentation Parallel Hybrid
+### 9.8 Implémentation Hybrid Attention Module
 
 **Code d'Implémentation :**
 
 ```python
 class ParallelHybridECAcbaM(nn.Module):
     """
-    Parallel Hybrid ECA-CBAM Attention
+    Hybrid Attention Module ECA-CBAM
     
-    Implémente l'attention parallel hybrid avec traitement
+    Implémente le hybrid attention module avec traitement
     parallèle et interaction matricielle selon Frontiers 2024.
     """
     
@@ -646,10 +646,10 @@ class ParallelHybridECAcbaM(nn.Module):
         return F_combined + x
 ```
 
-### 9.9 Conclusion Parallel Hybrid
+### 9.9 Conclusion Hybrid Attention Module
 
 **Justification Définitive :**
-L'approche parallel hybrid pour ECA-CBAM est scientifiquement validée et techniquement optimale pour la détection de visages car :
+L'approche hybrid attention module pour ECA-CBAM est scientifiquement validée et techniquement optimale pour la détection de visages car :
 
 ✅ **Littérature Validée** : Basée sur recherches 2020-2024 publiées dans journaux reconnus
 ✅ **Architecture Séquentielle Optimisée** : Traitement efficace ECA → SAM
@@ -657,7 +657,7 @@ L'approche parallel hybrid pour ECA-CBAM est scientifiquement validée et techni
 ✅ **Efficacité Paramétrique** : 5.9% réduction avec performance préservée
 ✅ **Robustesse** : Meilleure généralisation et stabilité
 
-L'attention parallel hybrid représente l'évolution naturelle des mécanismes d'attention, parfaitement adaptée aux exigences de la détection de visages moderne.
+Le hybrid attention module représente l'évolution naturelle des mécanismes d'attention, parfaitement adapté aux exigences de la détection de visages moderne.
 
 ---
 

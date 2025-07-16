@@ -123,10 +123,10 @@ cfg_eca_cbam = {
         'eca_gamma': 2,                    # ECA adaptive kernel gamma
         'eca_beta': 1,                     # ECA adaptive kernel beta
         'sam_kernel_size': 7,              # CBAM SAM kernel size
-        'interaction_weight': 0.1,         # Parallel hybrid interaction weight
+        'interaction_weight': 0.1,         # Hybrid attention module interaction weight
         'channel_attention': 'ECA-Net',    # Efficient channel attention
         'spatial_attention': 'CBAM-SAM',   # Spatial attention module
-        'parallel_hybrid': True,           # Parallel hybrid attention enabled
+        'hybrid_attention_module': True,   # Hybrid attention module enabled
     },
     
     # Performance targets (predicted improvement over CBAM)
@@ -169,7 +169,7 @@ cfg_eca_cbam = {
         'eca_cbam_hybrid_verified': True,        # Hybrid modules present
         'spatial_attention_preserved': True,     # CBAM SAM maintained
         'channel_attention_efficient': True,     # ECA-Net integration
-        'parallel_hybrid_enabled': True,         # Parallel hybrid attention
+        'hybrid_attention_module_enabled': True, # Hybrid attention module
         'innovation_validated': True,            # Scientific foundation verified
         'ready_for_training': True,              # Ready for training
     },

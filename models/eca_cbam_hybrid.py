@@ -101,7 +101,7 @@ class SpatialAttention(nn.Module):
     
     def get_spatial_mask(self, x: torch.Tensor) -> torch.Tensor:
         """
-        Generate spatial attention mask M_s for parallel hybrid architecture
+        Generate spatial attention mask M_s for hybrid attention module architecture
         
         Process:
         1. Channel-wise average and max pooling
@@ -342,7 +342,7 @@ class ECAcbaM(nn.Module):
                 'channel_mask_mean': torch.mean(channel_mask).item(),
                 'spatial_mask_mean': torch.mean(spatial_mask).item(),
                 'attention_summary': {
-                    'mechanism': 'Parallel Hybrid ECA-CBAM',
+                    'mechanism': 'Hybrid Attention Module ECA-CBAM',
                     'channel_attention': 'ECA-Net (efficient)',
                     'spatial_attention': 'CBAM SAM (localization)',
                     'architecture': 'Parallel processing with matrix interaction',

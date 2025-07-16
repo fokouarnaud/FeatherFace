@@ -321,7 +321,7 @@ validation_metrics = {
 
 **Publications potentielles :**
 - Conference paper : "ECA-CBAM Hybrid for Mobile Face Detection"
-- Workshop : "Parallel Hybrid Attention Mechanisms"
+- Workshop : "Hybrid Attention Module Mechanisms"
 - Journal extension : "Comprehensive Analysis ECA-CBAM Integration"
 
 ---

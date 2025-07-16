@@ -112,7 +112,7 @@ class ECAModule(nn.Module):
     
     def get_attention_mask(self, x: torch.Tensor) -> torch.Tensor:
         """
-        Generate channel attention mask M_c for parallel hybrid architecture
+        Generate channel attention mask M_c for hybrid attention module architecture
         
         Process:
         1. Global Average Pooling to aggregate spatial information
