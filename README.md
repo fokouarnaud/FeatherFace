@@ -3,7 +3,7 @@
 [![Paper](https://img.shields.io/badge/Paper-Electronics%202025-blue)](https://www.mdpi.com/2079-9292/14/3/517)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
-[![ECA-CBAM](https://img.shields.io/badge/ECA--CBAM-Hybrid%20Innovation-orange)](https://www.mdpi.com/2079-9292/14/3/517)
+
 
 **Scientific breakthrough in attention mechanisms for mobile face detection**: CBAM baseline (488,664 parameters) vs **ECA-CBAM hybrid innovation** (449,017 parameters) with **hybrid attention module** based on systematic literature review 2025.
 
