@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![ECA-CBAM](https://img.shields.io/badge/ECA--CBAM-Hybrid%20Innovation-orange)](https://www.mdpi.com/2079-9292/14/3/517)
 
-**Scientific breakthrough in attention mechanisms for mobile face detection**: CBAM baseline (488,664 parameters) vs **ECA-CBAM hybrid innovation** (460,000 parameters) with **parallel hybrid attention** based on systematic literature review 2025.
+**Scientific breakthrough in attention mechanisms for mobile face detection**: CBAM baseline (488,664 parameters) vs **ECA-CBAM hybrid innovation** (449,017 parameters) with **parallel hybrid attention** based on systematic literature review 2025.
 
 ## 🚀 Quick Start
 
@@ -27,13 +27,13 @@ python train_eca_cbam.py --training_dataset ./data/widerface/train/label.txt
 | Model | Parameters | Attention | WIDERFace Hard | Innovation | Use Case |
 |-------|------------|-----------|----------------|------------|----------|
 | **CBAM Baseline** | 488,664 | CBAM (2D) | 78.3% mAP | Established | Scientific baseline |
-| **ECA-CBAM Hybrid** | **460,000** | **ECA-CBAM Parallel Hybrid** | **80.0% mAP** | **+1.7% mAP** | **Mobile deployment** |
+| **ECA-CBAM Hybrid** | **449,017** | **ECA-CBAM Parallel Hybrid** | **80.0% mAP** | **+1.7% mAP** | **Mobile deployment** |
 
 ### Key Innovation: ECA-CBAM Parallel Hybrid Attention
 
 - **Channel Efficiency**: ECA-Net adaptive kernel (Wang et al. CVPR 2020) replaces CBAM CAM (99% parameter reduction)
 - **Spatial Preservation**: CBAM SAM maintained for critical face localization (Woo et al. ECCV 2018)
-- **Parameter Efficiency**: 460,000 vs 488,664 CBAM (-5.9% parameters)
+- **Parameter Efficiency**: 449,017 vs 488,664 CBAM (-8.1% parameters)
 - **Parallel Hybrid Interaction**: Synergistic channel-spatial attention combination
 - **Scientific Foundation**: Literature-validated hybrid approach for face detection
 
@@ -55,7 +55,7 @@ Complexity: O(C² + H×W)
 Input → MobileNet-0.25 → ECA-CBAM Attention₁ → BiFPN → ECA-CBAM Attention₂ → SSH → Channel Shuffle → Detection Heads
                                ↓                          ↓                                      ↓
                         Backbone ECA-CBAM (3×)      BiFPN ECA-CBAM (3×)                Class/Bbox/Landmark
-                        64,128,256 channels         48 channels each                   (460,000 params)
+                        64,128,256 channels         48 channels each                   (449,017 params)
 
 Attention: ECA-Net (Channel) + CBAM SAM (Spatial) + Parallel Hybrid Interaction
 Complexity: O(C×log₂(C)) + O(H×W) - 99% channel attention parameter reduction
@@ -81,7 +81,7 @@ Face Detection: ✓ Spatial attention preserved for face localization
 Attention Type       Parameters    Channel Params    Spatial Params    Efficiency
 ─────────────────────────────────────────────────────────────────────────────────
 CBAM (Baseline)      488,664       ~2,000           98                Standard
-ECA-CBAM (Hybrid)    460,000       ~22              98                99% reduction
+ECA-CBAM (Hybrid)    449,017       ~22              98                99% reduction
 ```
 
 ## 💻 Training & Evaluation
@@ -112,7 +112,7 @@ cd widerface_evaluate && python evaluation.py -p ./widerface_txt -g ./eval_tools
 ### Performance Targets (Conservative Estimates)
 | Metric | CBAM Baseline | ECA-CBAM Innovation | Improvement | Confidence |
 |--------|---------------|-------------------|-------------|------------|
-| **Parameters** | 488,664 | 460,000 | -28,664 (-5.9%) | High |
+| **Parameters** | 488,664 | 449,017 | -39,647 (-8.1%) | High |
 | **WIDERFace Easy** | 92.7% | **94.0%** | +1.3% | High |
 | **WIDERFace Medium** | 90.7% | **92.0%** | +1.3% | High |
 | **WIDERFace Hard** | 78.3% | **80.0%** | +1.7% | Moderate |
@@ -121,7 +121,7 @@ cd widerface_evaluate && python evaluation.py -p ./widerface_txt -g ./eval_tools
 
 ### Scientific Impact
 - **Mobile Deployment**: Significant parameter reduction for edge devices
-- **Parameter Efficiency**: 28,664 fewer parameters (5.9% reduction) with predicted improved accuracy
+- **Parameter Efficiency**: 39,647 fewer parameters (8.1% reduction) with predicted improved accuracy
 - **Research Innovation**: Novel ECA-CBAM hybrid application to face detection
 - **Attention Evolution**: 2D → Parallel Hybrid breakthrough
 
@@ -149,7 +149,7 @@ cd widerface_evaluate && python evaluation.py -p ./widerface_txt -g ./eval_tools
         'sam_kernel_size': 7,       # CBAM SAM kernel
         'interaction_weight': 0.1,  # Parallel hybrid interaction
     },
-    'total_parameters': 460000,     # Parameter-efficient innovation
+    'total_parameters': 449017,     # Parameter-efficient innovation
 }
 ```
 
@@ -215,7 +215,7 @@ FeatherFace/
 ├── data/config.py                    # Clean 2-model configurations
 ├── models/
 │   ├── featherface_cbam_exact.py          # CBAM baseline (488,664 params)
-│   ├── featherface_eca_cbam.py            # ECA-CBAM innovation (460,000 params)
+│   ├── featherface_eca_cbam.py            # ECA-CBAM innovation (449,017 params)
 │   ├── eca_cbam_hybrid.py                 # ECA-CBAM hybrid attention module
 │   └── net.py                             # Backbone components
 ├── train_cbam.py                     # CBAM training script
