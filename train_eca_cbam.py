@@ -404,7 +404,7 @@ def main():
     optimizer, scheduler = create_optimizer(model, cfg, args)
     
     # Create loss function
-    criterion = MultiBoxLoss(2, 0.5, True, 0, True, 7, 0.5, False, cfg['gpu_train'])
+    criterion = MultiBoxLoss(2, 0.5, True, 0, True, 7, 0.5, False)
     
     # Resume training if specified
     start_epoch = args.resume_epoch
