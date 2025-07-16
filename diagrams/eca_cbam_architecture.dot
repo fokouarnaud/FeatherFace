@@ -147,18 +147,21 @@ digraph ECAcbamArchitecture {
     bbox_head -> output;
     landmark_head -> output;
     
-    // ECA-CBAM Module Detail
+    // ECA-CBAM Hybrid Module Detail (Parallel Architecture)
     subgraph cluster_ecacbam_detail {
-        label="ECA-CBAM Hybrid Module Detail";
+        label="ECA-CBAM Hybrid Module Detail (Parallel Architecture)";
         style=filled;
         fillcolor="#F0F4FF";
         color="#3F51B5";
         
         detail_input [label="Input Feature\nX ∈ ℝ^(B×C×H×W)", fillcolor="#E8EAF6", shape=ellipse];
         
-        // ECA Channel Attention
+        // Parallel Processing Label
+        parallel_label [label="PARALLEL PROCESSING", fillcolor="#FFEB3B", shape=plaintext, fontsize=12, style=bold];
+        
+        // ECA Channel Attention Branch
         subgraph cluster_eca {
-            label="ECA Channel Attention";
+            label="ECA Channel Attention (22 params)";
             style=filled;
             fillcolor="#E8F5E8";
             
@@ -167,11 +170,11 @@ digraph ECAcbamArchitecture {
             eca_sigmoid [label="Sigmoid", fillcolor="#C8E6C8"];
         }
         
-        eca_intermediate [label="F₁ ∈ ℝ^(B×C×H×W)", fillcolor="#FFF9C4", shape=ellipse];
+        eca_output [label="ECA(X)\nℝ^(B×C×H×W)", fillcolor="#C8E6C8", shape=ellipse];
         
-        // CBAM SAM
+        // CBAM SAM Branch (Parallel)
         subgraph cluster_sam {
-            label="CBAM SAM";
+            label="CBAM SAM (98 params)";
             style=filled;
             fillcolor="#FDE7F3";
             
@@ -180,18 +183,43 @@ digraph ECAcbamArchitecture {
             sam_sigmoid [label="Sigmoid", fillcolor="#F8BBD9"];
         }
         
+        sam_output [label="SAM(X)\nℝ^(B×C×H×W)", fillcolor="#F8BBD9", shape=ellipse];
+        
+        // Cross Interaction Branch
+        cross_interaction [label="Cross\nInteraction\n30 params", fillcolor="#FFE0B2"];
+        interaction_output [label="I(X)", fillcolor="#FFE0B2", shape=ellipse];
+        
+        // Fusion
+        fusion [label="Hybrid Fusion\nECA(X) ⊙ SAM(X) ⊙ I(X)", fillcolor="#FFF3E0", shape=diamond];
+        residual [label="Residual\nX + α·Fused", fillcolor="#FFCDD2", shape=diamond];
+        
         detail_output [label="Output Feature\nY ∈ ℝ^(B×C×H×W)", fillcolor="#E8EAF6", shape=ellipse];
         
-        // ECA-CBAM Detail Connections
-        detail_input -> eca_gap;
+        // Parallel Processing Connections
+        detail_input -> eca_gap [label="Channel", color="#4CAF50"];
+        detail_input -> sam_pool [label="Spatial", color="#E91E63"];
+        detail_input -> cross_interaction [label="Interaction", color="#FF9800"];
+        
+        // ECA Branch
         eca_gap -> eca_conv1d;
         eca_conv1d -> eca_sigmoid;
-        eca_sigmoid -> eca_intermediate [label="Channel\nAttention"];
+        eca_sigmoid -> eca_output;
         
-        eca_intermediate -> sam_pool;
+        // SAM Branch
         sam_pool -> sam_conv7x7;
         sam_conv7x7 -> sam_sigmoid;
-        sam_sigmoid -> detail_output [label="Spatial\nAttention"];
+        sam_sigmoid -> sam_output;
+        
+        // Interaction Branch
+        cross_interaction -> interaction_output;
+        
+        // Fusion
+        eca_output -> fusion;
+        sam_output -> fusion;
+        interaction_output -> fusion;
+        fusion -> residual;
+        detail_input -> residual [label="Residual", style=dashed];
+        residual -> detail_output;
     }
     
 }

@@ -123,10 +123,10 @@ cfg_eca_cbam = {
         'eca_gamma': 2,                    # ECA adaptive kernel gamma
         'eca_beta': 1,                     # ECA adaptive kernel beta
         'sam_kernel_size': 7,              # CBAM SAM kernel size
-        'interaction_weight': 0.1,         # Cross-combined interaction weight
+        'interaction_weight': 0.1,         # Parallel hybrid interaction weight
         'channel_attention': 'ECA-Net',    # Efficient channel attention
         'spatial_attention': 'CBAM-SAM',   # Spatial attention module
-        'cross_combined': True,            # Cross-combined attention enabled
+        'parallel_hybrid': True,           # Parallel hybrid attention enabled
     },
     
     # Performance targets (predicted improvement over CBAM)
@@ -141,10 +141,10 @@ cfg_eca_cbam = {
     
     # Scientific innovation - ECA-CBAM hybrid
     'scientific_foundation': {
-        'attention_mechanism': 'ECA-CBAM Hybrid (Cross-Combined)',
+        'attention_mechanism': 'ECA-CBAM Hybrid (Parallel Architecture)',
         'eca_net_foundation': 'Wang et al. CVPR 2020',
         'cbam_sam_foundation': 'Woo et al. ECCV 2018',
-        'cross_combined_foundation': 'Literature 2023-2024',
+        'hybrid_attention_foundation': 'Wang et al. Complex Systems 2024 (DOI: 10.1007/s40747-024-01445-9)',
         'innovation_type': 'Channel efficiency + Spatial localization',
         'parameter_optimization': '99% reduction in channel attention parameters',
         'spatial_attention_preserved': 'CBAM SAM unchanged for face localization',
@@ -169,7 +169,7 @@ cfg_eca_cbam = {
         'eca_cbam_hybrid_verified': True,        # Hybrid modules present
         'spatial_attention_preserved': True,     # CBAM SAM maintained
         'channel_attention_efficient': True,     # ECA-Net integration
-        'cross_combined_enabled': True,          # Cross-combined attention
+        'parallel_hybrid_enabled': True,         # Parallel hybrid attention
         'innovation_validated': True,            # Scientific foundation verified
         'ready_for_training': True,              # Ready for training
     },

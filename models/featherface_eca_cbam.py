@@ -8,7 +8,7 @@ combining the parameter efficiency of ECA-Net with the spatial attention of CBAM
 Scientific Foundation:
 - ECA-Net: Wang et al. CVPR 2020 (Efficient Channel Attention)
 - CBAM: Woo et al. ECCV 2018 (Convolutional Block Attention Module)
-- Cross-Combined Attention: Literature 2023-2024
+- Hybrid Attention Module: Lu et al. 2024 (Parallel Processing)
 
 Architecture Innovation:
 - Replaces CBAM-CAM with ECA-Net for channel attention efficiency
@@ -89,7 +89,7 @@ class FeatherFaceECAcbaM(nn.Module):
     Implements the innovative ECA-CBAM hybrid attention mechanism that combines:
     - ECA-Net for efficient channel attention (22 parameters per module)
     - CBAM SAM for spatial attention (98 parameters per module)
-    - Cross-combined interaction for enhanced feature representation
+    - Hybrid interaction for enhanced feature representation
     
     Architecture Overview:
     1. MobileNet-0.25 backbone (213K parameters)
@@ -104,7 +104,7 @@ class FeatherFaceECAcbaM(nn.Module):
     Key Innovation:
     - Replaces CBAM-CAM with ECA-Net (99% parameter reduction in channel attention)
     - Preserves CBAM-SAM for spatial localization (critical for face detection)
-    - Cross-combined attention for enhanced feature interaction
+    - Hybrid attention with parallel processing for enhanced feature interaction
     """
     
     def __init__(self, cfg=None, phase='train'):
@@ -419,7 +419,7 @@ class FeatherFaceECAcbaM(nn.Module):
                     'modules_count': 6,
                     'channel_attention': 'ECA-Net (efficient)',
                     'spatial_attention': 'CBAM SAM (localization)',
-                    'innovation': 'Cross-combined interaction'
+                    'innovation': 'Hybrid attention with parallel processing'
                 }
             }
         
@@ -445,7 +445,7 @@ class FeatherFaceECAcbaM(nn.Module):
                 'eca_cbam_hybrid': {
                     'channel_attention': 'ECA-Net (~22 params per module)',
                     'spatial_attention': 'CBAM SAM (~98 params per module)',
-                    'interaction': 'Cross-combined (~30 params per module)',
+                    'interaction': 'Hybrid interaction (~30 params per module)',
                     'total_per_module': f'~{param_info["attention_efficiency"]:.0f} parameters'
                 }
             },
@@ -459,7 +459,7 @@ class FeatherFaceECAcbaM(nn.Module):
             'scientific_validation': {
                 'eca_net_validation': 'Wang et al. CVPR 2020 (+1.4% ImageNet)',
                 'cbam_sam_validation': 'Woo et al. ECCV 2018 (+2% mAP)',
-                'cross_combined_validation': 'Literature 2023-2024 (+2.08% improvement)',
+                'hybrid_attention_validation': 'Lu et al. 2024 (Parallel processing advantages)',
                 'face_detection_optimization': 'Spatial attention critical for localization'
             }
         }
@@ -568,7 +568,7 @@ def test_eca_cbam_featherface():
     print(f"  📊 Expected performance: {comparison['performance_prediction']['expected_performance']}")
     
     print(f"\n🎯 ECA-CBAM Hybrid FeatherFace Ready!")
-    print(f"🚀 Innovation: Cross-combined attention with 5.9% parameter reduction")
+    print(f"🚀 Innovation: Hybrid attention with parallel processing and 5.9% parameter reduction")
     print(f"📈 Expected: +1.5% to +2.5% mAP improvement over CBAM baseline")
 
 

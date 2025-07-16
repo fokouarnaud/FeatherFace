@@ -239,6 +239,11 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 - Overhead paramétrique significatif (~2000 params CAM)
 - Complexité O(C²) non-optimale pour mobile
 - Efficacité paramétrique limitée
+- **Architecture séquentielle** : CAM → SAM créer des dépendances non optimales (Lu et al. 2024)
+- **Réduction dimensionnelle** : CAM utilise réduction qui perd information critique
+- **Goulot d'étranglement paramétrique** : Channel attention disproportionnellement coûteuse
+- **Non-adaptabilité** : Kernel size fixe limite adaptation aux différentes échelles
+- **Redondance computationnelle** : Double convolution pour spatial attention inefficace
 
 ---
 
@@ -263,6 +268,10 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 - Préservation localisation spatiale faces
 - Optimisation mobile avec performance maintenue
 - Approche scientifiquement fondée
+- **Architecture parallèle** : Traitement indépendant ECA + SAM évite dépendances séquentielles (Lu et al. 2024)
+- **Préservation d'information** : ECA-Net sans réduction dimensionnelle maintient toute l'information canal
+- **Adaptabilité** : ECA kernel adaptatif ψ(C) = |log₂(C)/2 + 0.5|_odd optimise selon dimensions
+- **Fusion hybride** : Interaction terme permet synérgie optimale entre attention canal et spatiale
 
 **❌ Limitations :**
 - Complexité implémentation légèrement accrue

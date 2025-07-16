@@ -465,11 +465,11 @@ class FeatherFaceECAcbaM(nn.Module):
 
 ---
 
-## 9. Mécanismes d'Attention Cross-Combined (Attention Croisée Combinée)
+## 9. Mécanismes d'Attention Parallel Hybrid (Attention Croisée Combinée)
 
 ### 9.1 Définition et Concept Théorique
 
-**Attention Cross-Combined** fait référence à une approche avancée qui intègre plusieurs mécanismes d'attention de manière complémentaire pour améliorer la représentation des caractéristiques dans les tâches de vision par ordinateur.
+**Attention Parallel Hybrid** fait référence à une approche avancée qui intègre plusieurs mécanismes d'attention de manière complémentaire pour améliorer la représentation des caractéristiques dans les tâches de vision par ordinateur.
 
 **Principe Fondamental :**
 L'attention cross-combined dépasse les limitations des mécanismes d'attention uniques en combinant différents types d'attention (channel, spatial, temporel) pour capturer des dépendances complexes que chaque mécanisme individuellement ne peut pas saisir.
@@ -484,7 +484,7 @@ Selon Wang et al. dans *Complex & Intelligent Systems* (2024), "les méthodes ac
 
 **Source :** Wang, Y., Wang, W., Li, Y. et al. (2024). An attention mechanism module with spatial perception and channel information interaction. *Complex & Intelligent Systems*, 10, 5427–5444. https://doi.org/10.1007/s40747-024-01445-9
 
-### 9.3 Types d'Attention Cross-Combined
+### 9.3 Types d'Attention Parallel Hybrid
 
 **1. Attention Séquentielle (Sequential Attention) :**
 - Traitement étape par étape où chaque couche d'attention s'appuie sur la sortie précédente
@@ -505,7 +505,7 @@ Selon Wang et al. dans *Complex & Intelligent Systems* (2024), "les méthodes ac
 
 ### 9.4 Validation Scientifique dans la Littérature
 
-**Validation Cross-Combined par Applications Analogues :**
+**Validation Parallel Hybrid par Applications Analogues :**
 
 **Face Detection Validée (2024) :**
 L'étude "Research on Face Detection Based on CBAM Module and Improved YOLOv5 Algorithm in Smart Campus Security" (ACM AIFE 2024) démontre l'efficacité de CBAM pour la détection de visages avec 98.73% de précision.
@@ -517,7 +517,7 @@ Wang et al. démontrent l'importance de l'interaction spatiale-canal dans leur m
 
 **Source :** Wang, Y., Wang, W., Li, Y. et al. (2024). *Complex & Intelligent Systems*, 10, 5427–5444.
 
-### 9.5 Pourquoi Cross-Combined pour la Détection de Visages ?
+### 9.5 Pourquoi Parallel Hybrid pour la Détection de Visages ?
 
 **Justification Scientifique :**
 
@@ -529,16 +529,16 @@ Wang et al. démontrent l'importance de l'interaction spatiale-canal dans leur m
 2. **Complémentarité des Mécanismes :**
    - **ECA** : Efficacité channel attention sans réduction dimensionnelle
    - **SAM** : Localisation spatiale précise
-   - **Cross-Combined** : Interaction optimale entre les deux
+   - **Parallel Hybrid** : Interaction optimale entre les deux
 
 3. **Performance Prouvée :**
    - +2.08% amélioration top-one error rate (ResNet-50)
    - Applications réussies en medical imaging, remote sensing
    - Validation sur multiples datasets
 
-### 9.6 Formulation Mathématique Cross-Combined
+### 9.6 Formulation Mathématique Parallel Hybrid
 
-**Attention Cross-Combined ECA-CBAM :**
+**Attention Parallel Hybrid ECA-CBAM :**
 
 ```
 Définition générale :
@@ -560,7 +560,7 @@ I = InteractionTerm(F₁, F₂) = Cross-Correlation(F₁, F₂)
 Output = F₂ + λ × I
 ```
 
-### 9.7 Avantages Cross-Combined pour FeatherFace
+### 9.7 Avantages Parallel Hybrid pour FeatherFace
 
 **Avantages Techniques :**
 
@@ -584,14 +584,14 @@ Output = F₂ + λ × I
 - Réduction 5.9% paramètres vs CBAM complet
 - Amélioration robustesse spatial-channel
 
-### 9.8 Implémentation Cross-Combined
+### 9.8 Implémentation Parallel Hybrid
 
 **Code d'Implémentation :**
 
 ```python
 class CrossCombinedECAcbaM(nn.Module):
     """
-    Cross-Combined ECA-CBAM Attention
+    Parallel Hybrid ECA-CBAM Attention
     
     Implémente l'attention croisée combinée avec interaction
     entre mécanismes channel et spatial.
@@ -626,7 +626,7 @@ class CrossCombinedECAcbaM(nn.Module):
         return output
 ```
 
-### 9.9 Conclusion Cross-Combined
+### 9.9 Conclusion Parallel Hybrid
 
 **Justification Définitive :**
 L'approche cross-combined pour ECA-CBAM est scientifiquement validée et techniquement optimale pour la détection de visages car :
