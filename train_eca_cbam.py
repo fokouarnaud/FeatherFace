@@ -43,6 +43,7 @@ from data import cfg_eca_cbam, cfg_mnet
 from models.featherface_eca_cbam import FeatherFaceECAcbaM
 from data.wider_face import WiderFaceDetection, detection_collate
 from layers.modules import MultiBoxLoss
+from layers.functions.prior_box import PriorBox
 from data import preproc
 
 
@@ -222,7 +223,7 @@ def create_optimizer(model, cfg, args):
     return optimizer, scheduler
 
 
-def train_epoch(model, data_loader, criterion, optimizer, epoch, cfg, args, writer=None):
+def train_epoch(model, data_loader, criterion, priors, optimizer, epoch, cfg, args, writer=None):
     """Train for one epoch"""
     model.train()
     
@@ -242,7 +243,7 @@ def train_epoch(model, data_loader, criterion, optimizer, epoch, cfg, args, writ
         out = model(images)
         
         # Compute loss
-        loss_l, loss_c, loss_landm = criterion(out, targets)
+        loss_l, loss_c, loss_landm = criterion(out, priors, targets)
         loss = cfg['loc_weight'] * loss_l + loss_c + loss_landm
         
         # Backward pass
@@ -406,6 +407,13 @@ def main():
     # Create loss function
     criterion = MultiBoxLoss(2, 0.5, True, 0, True, 7, 0.5, False)
     
+    # Prior boxes
+    priorbox = PriorBox(cfg)
+    with torch.no_grad():
+        priors = priorbox.forward()
+        if args.gpu_train:
+            priors = priors.cuda()
+    
     # Resume training if specified
     start_epoch = args.resume_epoch
     if args.resume_net is not None:
@@ -427,7 +435,7 @@ def main():
         print(f"\n🔄 Epoch {epoch}/{args.max_epoch}")
         
         # Train epoch
-        avg_loss = train_epoch(model, data_loader, criterion, optimizer, epoch, cfg, args, writer)
+        avg_loss = train_epoch(model, data_loader, criterion, priors, optimizer, epoch, cfg, args, writer)
         
         # Update learning rate
         scheduler.step()
