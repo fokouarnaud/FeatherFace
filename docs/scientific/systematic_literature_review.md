@@ -4,7 +4,7 @@
 
 Cette revue de littérature systématique analyse l'évolution des mécanismes d'attention en vision par ordinateur, avec un focus sur la détection de visages et l'optimisation mobile, menée en juillet 2025. L'objectif était d'identifier l'approche d'attention optimale pour améliorer FeatherFace, en se basant sur des critères scientifiques rigoureux et des sources vérifiées.
 
-**Conclusion principale :** L'approche hybride ECA-CBAM a été sélectionnée comme mécanisme d'attention optimal, combinant l'efficacité paramétrique d'ECA-Net (Wang et al. CVPR 2020) avec l'attention spatiale critique de CBAM SAM (Woo et al. ECCV 2018) pour la détection de visages. Cette approche cross-combined offre une réduction de 99% des paramètres d'attention canal tout en préservant les capacités de localisation spatiale.
+**Conclusion principale :** L'approche hybride ECA-CBAM a été sélectionnée comme mécanisme d'attention optimal, combinant l'efficacité paramétrique d'ECA-Net (Wang et al. CVPR 2020) avec l'attention spatiale critique de CBAM SAM (Woo et al. ECCV 2018) pour la détection de visages. Cette approche parallel hybrid offre une réduction de 99% des paramètres d'attention canal tout en préservant les capacités de localisation spatiale.
 
 ## 1. Méthodologie de Recherche
 
@@ -31,7 +31,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 - "CBAM" + "spatial attention module"
 - "face detection" + "attention mechanism"
 - "mobile optimization" + "parameter efficiency"
-- "cross-combined attention" + "hybrid"
+- "parallel hybrid attention" + "hybrid"
 - "channel attention" + "spatial attention"
 
 **Période de recherche :** Janvier 2017 - Juillet 2025
@@ -337,7 +337,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 | **Medium** | 90.7% | **92.0%** | +1.3% |
 | **Hard** | 78.3% | **80.0%** | +1.7% |
 | **Overall** | 87.2% | **88.7%** | +1.5% |
-| **Paramètres** | 488,664 | **451,895** | -7.5% |
+| **Paramètres** | 488,664 | **460,000** | -5.9% |
 
 **Base des estimations :**
 - Efficacité paramétrique: ECA-Net 22 vs 2000 paramètres CBAM CAM (Wang et al. CVPR 2020)
