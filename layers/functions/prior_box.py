@@ -10,7 +10,16 @@ class PriorBox(object):
         self.min_sizes = cfg['min_sizes']
         self.steps = cfg['steps']
         self.clip = cfg['clip']
-        self.image_size = image_size
+        
+        # Use cfg image_size if not explicitly provided
+        if image_size is None:
+            if isinstance(cfg['image_size'], int):
+                self.image_size = [cfg['image_size'], cfg['image_size']]
+            else:
+                self.image_size = cfg['image_size']
+        else:
+            self.image_size = image_size
+            
         self.feature_maps = [[ceil(self.image_size[0]/step), ceil(self.image_size[1]/step)] for step in self.steps]
         self.name = "s"
         
