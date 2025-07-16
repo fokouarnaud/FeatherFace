@@ -42,8 +42,8 @@ sys.path.append('.')
 from data import cfg_eca_cbam, cfg_mnet
 from models.featherface_eca_cbam import FeatherFaceECAcbaM
 from data.wider_face import WiderFaceDetection, detection_collate
-from utils.multibox_loss import MultiBoxLoss
-from utils.augmentations import preproc
+from layers.modules import MultiBoxLoss
+from data import preproc
 
 
 def parse_args():
