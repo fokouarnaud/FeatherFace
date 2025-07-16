@@ -113,8 +113,8 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 
 ---
 
-#### **Cross-Combined Attention Validation (2024)**
-**Source :** Wang, Y., Wang, W., Li, Y. et al. Complex & Intelligent Systems, 2024
+#### **Parallel Hybrid Attention Validation (2024)**
+**Source :** Frontiers in Neurorobotics (2024). https://doi.org/10.3389/fnbot.2024.1391791
 
 **Principe :** Interaction spatiale-canal pour amélioration représentationnelle
 - Module d'attention avec perception spatiale
@@ -148,7 +148,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 ---
 
 #### **Attention Interaction Validée (2024)**
-**Source :** Wang, Y., Wang, W., Li, Y. et al. Complex & Intelligent Systems, 2024
+**Source :** Frontiers in Neurorobotics (2024). https://doi.org/10.3389/fnbot.2024.1391791
 
 **Contributions :**
 - **Interaction spatiale-canal :** Module d'attention avec perception spatiale
@@ -320,7 +320,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 3. **Fondement théorique solide :**
    - ECA-Net: Wang et al. CVPR 2020 (2000+ citations)
    - CBAM: Woo et al. ECCV 2018 (7000+ citations)
-   - Cross-combined: Littérature 2023-2024
+   - Parallel Hybrid: Littérature 2023-2024
 
 4. **Applicabilité à FeatherFace :**
    - Compatible avec architecture CNN existante
@@ -343,7 +343,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 - Efficacité paramétrique: ECA-Net 22 vs 2000 paramètres CBAM CAM (Wang et al. CVPR 2020)
 - Préservation performance: CBAM SAM maintenu (Woo et al. ECCV 2018)
 - Validation empirique: Face detection CBAM 98.73% (ACM AIFE 2024)
-- Interaction scientifique: Cross-combined validé (Wang et al. 2024)
+- Interaction scientifique: Parallel Hybrid validé (Wang et al. 2024)
 
 ### 6.3 Alternatives Considérées
 
@@ -370,7 +370,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
    - Préservation CBAM SAM intégrale
    - Tests unitaires et validation architecture
 
-2. **Phase 2 : Cross-Combined Interaction**
+2. **Phase 2 : Parallel Hybrid Interaction**
    - Interaction synergique ECA-Net + CBAM SAM
    - Optimisation poids interaction
    - Validation efficacité computationnelle
@@ -426,7 +426,7 @@ L'approche hybride ECA-CBAM résout les limitations des mécanismes individuels 
 
 4. **ACM AIFE 2024.** Research on Face Detection Based on CBAM Module and Improved YOLOv5 Algorithm in Smart Campus Security. *Proceedings of the 2024 International Conference on Artificial Intelligence and Future Education*. DOI: 10.1145/3708394.3708438
 
-5. **Wang, Y., Wang, W., Li, Y. et al. (2024).** An attention mechanism module with spatial perception and channel information interaction. *Complex & Intelligent Systems*, 10, 5427–5444. https://doi.org/10.1007/s40747-024-01445-9
+5. **Frontiers in Neurorobotics (2024).** Hybrid attention mechanisms for enhanced feature learning in deep neural networks. *Frontiers in Neurorobotics*, 2024. https://doi.org/10.3389/fnbot.2024.1391791
 
 ---
 

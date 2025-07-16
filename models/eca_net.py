@@ -110,21 +110,20 @@ class ECAModule(nn.Module):
         """Initialize 1D convolution weights using Xavier initialization"""
         nn.init.xavier_normal_(self.conv.weight)
     
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def get_attention_mask(self, x: torch.Tensor) -> torch.Tensor:
         """
-        Forward pass of ECA module
+        Generate channel attention mask M_c for parallel hybrid architecture
         
         Process:
         1. Global Average Pooling to aggregate spatial information
         2. 1D Convolution to capture local cross-channel interactions
         3. Sigmoid activation to generate attention weights
-        4. Feature recalibration by element-wise multiplication
         
         Args:
             x: Input tensor [B, C, H, W]
             
         Returns:
-            torch.Tensor: Attention-refined features [B, C, H, W]
+            torch.Tensor: Channel attention mask M_c [B, C, 1, 1]
         """
         batch_size, channels, height, width = x.size()
         
@@ -142,11 +141,32 @@ class ECAModule(nn.Module):
         
         # Step 4: Generate attention weights
         # Apply sigmoid activation: [B, 1, C] → [B, C, 1, 1]
-        y = self.sigmoid(y.transpose(-1, -2).unsqueeze(-1))
+        attention_mask = self.sigmoid(y.transpose(-1, -2).unsqueeze(-1))
+        
+        return attention_mask
+    
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass of ECA module
+        
+        Process:
+        1. Global Average Pooling to aggregate spatial information
+        2. 1D Convolution to capture local cross-channel interactions
+        3. Sigmoid activation to generate attention weights
+        4. Feature recalibration by element-wise multiplication
+        
+        Args:
+            x: Input tensor [B, C, H, W]
+            
+        Returns:
+            torch.Tensor: Attention-refined features [B, C, H, W]
+        """
+        # Get attention mask
+        attention_mask = self.get_attention_mask(x)
         
         # Step 5: Feature recalibration
         # Apply channel attention: [B, C, H, W] ⊙ [B, C, 1, 1] → [B, C, H, W]
-        return x * y.expand_as(x)
+        return x * attention_mask.expand_as(x)
     
     def get_parameter_count(self) -> dict:
         """

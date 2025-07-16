@@ -99,6 +99,37 @@ class SpatialAttention(nn.Module):
         """Initialize convolution weights using Xavier initialization"""
         nn.init.xavier_normal_(self.conv.weight)
     
+    def get_spatial_mask(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Generate spatial attention mask M_s for parallel hybrid architecture
+        
+        Process:
+        1. Channel-wise average and max pooling
+        2. Concatenate pooled features
+        3. 7x7 convolution to generate spatial attention map
+        4. Sigmoid activation
+        
+        Args:
+            x: Input tensor [B, C, H, W]
+            
+        Returns:
+            torch.Tensor: Spatial attention mask M_s [B, 1, H, W]
+        """
+        # Step 1: Channel-wise pooling
+        avg_out = torch.mean(x, dim=1, keepdim=True)  # [B, 1, H, W]
+        max_out, _ = torch.max(x, dim=1, keepdim=True)  # [B, 1, H, W]
+        
+        # Step 2: Concatenate pooled features
+        pooled = torch.cat([avg_out, max_out], dim=1)  # [B, 2, H, W]
+        
+        # Step 3: Spatial convolution
+        spatial_attention = self.conv(pooled)  # [B, 1, H, W]
+        
+        # Step 4: Sigmoid activation
+        spatial_mask = self.sigmoid(spatial_attention)  # [B, 1, H, W]
+        
+        return spatial_mask
+    
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Forward pass of spatial attention
@@ -116,21 +147,11 @@ class SpatialAttention(nn.Module):
         Returns:
             torch.Tensor: Spatially attended features [B, C, H, W]
         """
-        # Step 1: Channel-wise pooling
-        avg_out = torch.mean(x, dim=1, keepdim=True)  # [B, 1, H, W]
-        max_out, _ = torch.max(x, dim=1, keepdim=True)  # [B, 1, H, W]
-        
-        # Step 2: Concatenate pooled features
-        pooled = torch.cat([avg_out, max_out], dim=1)  # [B, 2, H, W]
-        
-        # Step 3: Spatial convolution
-        spatial_attention = self.conv(pooled)  # [B, 1, H, W]
-        
-        # Step 4: Sigmoid activation
-        spatial_attention = self.sigmoid(spatial_attention)  # [B, 1, H, W]
+        # Get spatial mask
+        spatial_mask = self.get_spatial_mask(x)
         
         # Step 5: Apply spatial attention
-        return x * spatial_attention
+        return x * spatial_mask
     
     def get_parameter_count(self) -> dict:
         """Get parameter count for analysis"""
@@ -195,40 +216,29 @@ class ECAcbaM(nn.Module):
         # CBAM Spatial Attention Module (localization)
         self.sam = SpatialAttention(kernel_size=spatial_kernel_size)
         
-        # Hybrid interaction module (minimal overhead)
-        self.cross_interaction = nn.Sequential(
-            nn.Conv2d(channels, channels // 32, 1),  # More aggressive reduction
-            nn.ReLU(inplace=True),
-            nn.Conv2d(channels // 32, 1, 1),  # Output single channel
-            nn.Sigmoid()
-        )
-        
-        # Interaction weight parameter
-        self.interaction_weight = nn.Parameter(torch.tensor(0.1))
+        # Pure parallel architecture: no additional interaction modules needed
         
         # Initialize weights
         self._initialize_weights()
     
     def _initialize_weights(self):
-        """Initialize hybrid interaction weights"""
-        for m in self.cross_interaction.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.xavier_normal_(m.weight)
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
+        """Initialize weights for ECA and SAM modules"""
+        # ECA and SAM modules initialize their own weights
+        pass
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Forward pass of ECA-CBAM hybrid attention
         
-        Parallel Architecture Process (Lu et al. Frontiers Neurorobotics 2024):
-        1. ECA channel attention: Applied to original input (parallel)
-        2. SAM spatial attention: Applied to original input (parallel)
-        3. Hybrid fusion: Element-wise combination preserving original features
-        4. Final output: Hybrid attended features with residual connection
+        Parallel Architecture Process (Frontiers Neurorobotics 2024):
+        1. Channel attention mask: M_c = σ(Conv1D(GAP(X), k=ψ(C)))
+        2. Spatial attention mask: M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))
+        3. Apply masks independently: F_c = X ⊙ M_c, F_s = X ⊙ M_s
+        4. Matrix interaction: F_combined = F_c ⊗ F_s
+        5. Residual connection: Output = F_combined + X
         
         Mathematical Flow (Parallel):
-        X → [ECA(X) || SAM(X)] → Fusion → Y = X + α·(ECA(X) ⊙ SAM(X))
+        X → [M_c || M_s] → [F_c || F_s] → F_combined → Y = F_combined + X
         
         Args:
             x: Input tensor [B, C, H, W]
@@ -236,22 +246,27 @@ class ECAcbaM(nn.Module):
         Returns:
             torch.Tensor: Hybrid attended features [B, C, H, W]
         """
-        # Step 1: Parallel Channel Attention (ECA on original input)
-        # Efficiently identify important channels without dimensionality reduction
-        eca_out = self.eca(x)  # [B, C, H, W] - Applied to original input
+        # Step 1: Get attention masks independently (parallel)
+        # M_c = σ(Conv1D(GAP(X), k=ψ(C)))
+        channel_mask = self.eca.get_attention_mask(x)  # [B, C, 1, 1]
         
-        # Step 2: Parallel Spatial Attention (SAM on original input)
-        # Localize important spatial regions for face detection
-        sam_out = self.sam(x)  # [B, C, H, W] - Applied to original input (PARALLEL!)
+        # M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))
+        spatial_mask = self.sam.get_spatial_mask(x)  # [B, 1, H, W]
         
-        # Step 3: Hybrid Fusion with Interaction Term
-        # Preserve original feature map while combining attention mechanisms
-        interaction = self.cross_interaction(x)  # [B, 1, H, W] - Interaction term
+        # Step 2: Apply masks independently to original input
+        # F_c = X ⊙ M_c
+        F_c = x * channel_mask  # [B, C, H, W]
         
-        # Step 4: Parallel Hybrid Fusion (Lu et al. 2024 approach)
-        # Combines channel and spatial attention while preserving original features
-        fused_attention = eca_out * sam_out  # Element-wise multiplication
-        output = x + self.interaction_weight * (fused_attention * interaction)
+        # F_s = X ⊙ M_s
+        F_s = x * spatial_mask  # [B, C, H, W]
+        
+        # Step 3: Matrix interaction
+        # F_combined = F_c ⊗ F_s (element-wise product)
+        F_combined = F_c * F_s  # [B, C, H, W]
+        
+        # Step 4: Residual connection
+        # Output = F_combined + X
+        output = F_combined + x
         
         return output
     
@@ -268,15 +283,14 @@ class ECAcbaM(nn.Module):
         # SAM parameters
         sam_params = self.sam.get_parameter_count()
         
-        # Cross-interaction parameters
-        interaction_params = sum(p.numel() for p in self.cross_interaction.parameters())
+        # No cross-interaction parameters in pure parallel architecture
+        interaction_params = 0
         
-        # Interaction weight parameter
-        weight_params = self.interaction_weight.numel()
+        # No interaction weight parameter in pure parallel architecture
+        weight_params = 0
         
         total_params = (eca_params['total_parameters'] + 
-                       sam_params['total_parameters'] + 
-                       interaction_params + weight_params)
+                       sam_params['total_parameters'])
         
         return {
             'total_parameters': total_params,
@@ -304,31 +318,34 @@ class ECAcbaM(nn.Module):
             dict: Attention analysis including patterns and statistics
         """
         with torch.no_grad():
-            # Parallel Architecture Analysis (Lu et al. 2024)
-            # ECA attention analysis (applied to original input)
-            eca_out = self.eca(x)
-            eca_weights = self.eca.get_attention_weights(x) if hasattr(self.eca, 'get_attention_weights') else None
+            # Parallel Architecture Analysis (Frontiers Neurorobotics 2024)
+            # Get attention masks independently
+            channel_mask = self.eca.get_attention_mask(x)  # [B, C, 1, 1]
+            spatial_mask = self.sam.get_spatial_mask(x)    # [B, 1, H, W]
             
-            # SAM attention analysis (applied to original input - PARALLEL!)
-            sam_out = self.sam(x)
+            # Apply masks independently
+            F_c = x * channel_mask  # [B, C, H, W]
+            F_s = x * spatial_mask  # [B, C, H, W]
             
-            # Cross-interaction analysis (applied to original input)
-            interaction = self.cross_interaction(x)
+            # Matrix interaction
+            F_combined = F_c * F_s  # [B, C, H, W]
             
             # Compute attention statistics
-            eca_mean = torch.mean(eca_out)
-            sam_mean = torch.mean(sam_out)
-            interaction_mean = torch.mean(interaction)
+            eca_mean = torch.mean(F_c)
+            sam_mean = torch.mean(F_s)
+            combined_mean = torch.mean(F_combined)
             
             return {
                 'eca_attention_mean': eca_mean.item(),
                 'sam_attention_mean': sam_mean.item(),
-                'interaction_mean': interaction_mean.item(),
-                'interaction_weight': self.interaction_weight.item(),
+                'combined_attention_mean': combined_mean.item(),
+                'channel_mask_mean': torch.mean(channel_mask).item(),
+                'spatial_mask_mean': torch.mean(spatial_mask).item(),
                 'attention_summary': {
+                    'mechanism': 'Parallel Hybrid ECA-CBAM',
                     'channel_attention': 'ECA-Net (efficient)',
                     'spatial_attention': 'CBAM SAM (localization)',
-                    'hybrid_interaction': 'Enhanced feature representation',
+                    'architecture': 'Parallel processing with matrix interaction',
                     'total_parameters': self.get_parameter_count()['total_parameters']
                 }
             }

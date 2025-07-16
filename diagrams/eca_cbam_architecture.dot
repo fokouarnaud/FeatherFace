@@ -1,11 +1,11 @@
 digraph ECAcbamArchitecture {
-    // Graph configuration - Landscape orientation like CBAM baseline
+    // Graph configuration - Landscape orientation
     rankdir=LR;
     node [shape=box, style=filled, fontname="Arial", fontsize=10];
     edge [fontname="Arial", fontsize=9];
     
     // Title
-    label="FeatherFace ECA-CBAM Hybrid Architecture (451,895 parameters)";
+    label="FeatherFace ECA-CBAM Parallel Hybrid Architecture (460,000 parameters)";
     labelloc="t";
     fontsize=14;
     fontname="Arial Bold";
@@ -20,22 +20,22 @@ digraph ECAcbamArchitecture {
         fillcolor="#FFF3E0";
         color="#F57C00";
         
-        mobilenet [label="MobileNetV1-0.25\n213,072 params\n(47.2%)", fillcolor="#FFE0B2"];
-        stage1 [label="Stage 1\nP3/8", fillcolor="#FFCC80"];
-        stage2 [label="Stage 2\nP4/16", fillcolor="#FFCC80"];
-        stage3 [label="Stage 3\nP5/32", fillcolor="#FFCC80"];
+        mobilenet [label="MobileNetV1-0.25\n213,072 params\n(46.3%)", fillcolor="#FFE0B2"];
+        stage1 [label="Stage 1\nP3/8\n64 channels", fillcolor="#FFCC80"];
+        stage2 [label="Stage 2\nP4/16\n128 channels", fillcolor="#FFCC80"];
+        stage3 [label="Stage 3\nP5/32\n256 channels", fillcolor="#FFCC80"];
     }
     
-    // Backbone ECA-CBAM Attention (Hybrid)
+    // Backbone ECA-CBAM Parallel Hybrid Attention
     subgraph cluster_backbone_ecacbam {
-        label="Backbone ECA-CBAM Hybrid Attention";
+        label="Backbone ECA-CBAM Parallel Hybrid Attention";
         style=filled;
         fillcolor="#E3F2FD";
         color="#2196F3";
         
-        backbone_ecacbam1 [label="ECA-CBAM\n64 ch\n101 params", fillcolor="#BBDEFB"];
-        backbone_ecacbam2 [label="ECA-CBAM\n128 ch\n103 params", fillcolor="#BBDEFB"];
-        backbone_ecacbam3 [label="ECA-CBAM\n256 ch\n103 params", fillcolor="#BBDEFB"];
+        backbone_ecacbam1 [label="ECA-CBAM\n64 ch\n120 params", fillcolor="#BBDEFB"];
+        backbone_ecacbam2 [label="ECA-CBAM\n128 ch\n120 params", fillcolor="#BBDEFB"];
+        backbone_ecacbam3 [label="ECA-CBAM\n256 ch\n120 params", fillcolor="#BBDEFB"];
     }
     
     // Feature Pyramid Network
@@ -45,22 +45,22 @@ digraph ECAcbamArchitecture {
         fillcolor="#E8F5E8";
         color="#4CAF50";
         
-        bifpn [label="BiFPN\n75,246 params\n(16.7%)", fillcolor="#C8E6C8"];
+        bifpn [label="BiFPN\n189,840 params\n(41.3%)", fillcolor="#C8E6C8"];
         p3_out [label="P3 Features\nout_channel=48", fillcolor="#A5D6A7"];
         p4_out [label="P4 Features\nout_channel=48", fillcolor="#A5D6A7"];
         p5_out [label="P5 Features\nout_channel=48", fillcolor="#A5D6A7"];
     }
     
-    // BiFPN ECA-CBAM Attention (Hybrid)
+    // BiFPN ECA-CBAM Parallel Hybrid Attention
     subgraph cluster_bifpn_ecacbam {
-        label="BiFPN ECA-CBAM Hybrid Attention";
+        label="BiFPN ECA-CBAM Parallel Hybrid Attention";
         style=filled;
         fillcolor="#E3F2FD";
         color="#2196F3";
         
-        bifpn_ecacbam1 [label="ECA-CBAM\n48 ch\nP3\n101 params", fillcolor="#BBDEFB"];
-        bifpn_ecacbam2 [label="ECA-CBAM\n48 ch\nP4\n101 params", fillcolor="#BBDEFB"];
-        bifpn_ecacbam3 [label="ECA-CBAM\n48 ch\nP5\n101 params", fillcolor="#BBDEFB"];
+        bifpn_ecacbam1 [label="ECA-CBAM\n48 ch\nP3\n120 params", fillcolor="#BBDEFB"];
+        bifpn_ecacbam2 [label="ECA-CBAM\n48 ch\nP4\n120 params", fillcolor="#BBDEFB"];
+        bifpn_ecacbam3 [label="ECA-CBAM\n48 ch\nP5\n120 params", fillcolor="#BBDEFB"];
     }
     
     // SSH Detection Heads
@@ -70,9 +70,9 @@ digraph ECAcbamArchitecture {
         fillcolor="#EDE7F6";
         color="#673AB7";
         
-        ssh1 [label="SSH1\n51,765 params\n(11.5%)", fillcolor="#D1C4E9"];
-        ssh2 [label="SSH2\n51,765 params\n(11.5%)", fillcolor="#D1C4E9"];
-        ssh3 [label="SSH3\n51,765 params\n(11.5%)", fillcolor="#D1C4E9"];
+        ssh1 [label="SSH1\n18,675 params\n(4.1%)", fillcolor="#D1C4E9"];
+        ssh2 [label="SSH2\n18,675 params\n(4.1%)", fillcolor="#D1C4E9"];
+        ssh3 [label="SSH3\n18,675 params\n(4.1%)", fillcolor="#D1C4E9"];
     }
     
     // Channel Shuffle
@@ -94,9 +94,9 @@ digraph ECAcbamArchitecture {
         fillcolor="#FFF8E1";
         color="#FF9800";
         
-        class_head [label="Classification\n552 params\n(0.1%)", fillcolor="#FFECB3"];
-        bbox_head [label="BBox Regression\n1,104 params\n(0.2%)", fillcolor="#FFECB3"];
-        landmark_head [label="Landmarks\n2,760 params\n(0.6%)", fillcolor="#FFECB3"];
+        class_head [label="Classification\n294 params\n(0.1%)", fillcolor="#FFECB3"];
+        bbox_head [label="BBox Regression\n588 params\n(0.1%)", fillcolor="#FFECB3"];
+        landmark_head [label="Landmarks\n1,470 params\n(0.3%)", fillcolor="#FFECB3"];
     }
     
     // Final Outputs
@@ -147,9 +147,9 @@ digraph ECAcbamArchitecture {
     bbox_head -> output;
     landmark_head -> output;
     
-    // ECA-CBAM Hybrid Module Detail (Parallel Architecture)
+    // ECA-CBAM Parallel Hybrid Module Detail
     subgraph cluster_ecacbam_detail {
-        label="ECA-CBAM Hybrid Module Detail (Parallel Architecture)";
+        label="ECA-CBAM Parallel Hybrid Module Detail";
         style=filled;
         fillcolor="#F0F4FF";
         color="#3F51B5";
@@ -167,10 +167,8 @@ digraph ECAcbamArchitecture {
             
             eca_gap [label="GAP", fillcolor="#C8E6C8"];
             eca_conv1d [label="Conv1D\nk=ψ(C)", fillcolor="#C8E6C8"];
-            eca_sigmoid [label="Sigmoid", fillcolor="#C8E6C8"];
+            eca_sigmoid [label="Sigmoid\nM_c", fillcolor="#C8E6C8"];
         }
-        
-        eca_output [label="ECA(X)\nℝ^(B×C×H×W)", fillcolor="#C8E6C8", shape=ellipse];
         
         // CBAM SAM Branch (Parallel)
         subgraph cluster_sam {
@@ -180,46 +178,60 @@ digraph ECAcbamArchitecture {
             
             sam_pool [label="AvgPool\n+\nMaxPool", fillcolor="#F8BBD9"];
             sam_conv7x7 [label="Conv2D\n7×7", fillcolor="#F8BBD9"];
-            sam_sigmoid [label="Sigmoid", fillcolor="#F8BBD9"];
+            sam_sigmoid [label="Sigmoid\nM_s", fillcolor="#F8BBD9"];
         }
         
-        sam_output [label="SAM(X)\nℝ^(B×C×H×W)", fillcolor="#F8BBD9", shape=ellipse];
+        // Parallel Application
+        apply_mc [label="F_c = X ⊙ M_c", fillcolor="#C8E6C8", shape=ellipse];
+        apply_ms [label="F_s = X ⊙ M_s", fillcolor="#F8BBD9", shape=ellipse];
         
-        // Cross Interaction Branch
-        cross_interaction [label="Cross\nInteraction\n30 params", fillcolor="#FFE0B2"];
-        interaction_output [label="I(X)", fillcolor="#FFE0B2", shape=ellipse];
+        // Matrix Interaction
+        matrix_interaction [label="F_combined = F_c ⊗ F_s", fillcolor="#FFE0B2", shape=diamond];
         
-        // Fusion
-        fusion [label="Hybrid Fusion\nECA(X) ⊙ SAM(X) ⊙ I(X)", fillcolor="#FFF3E0", shape=diamond];
-        residual [label="Residual\nX + α·Fused", fillcolor="#FFCDD2", shape=diamond];
+        // Residual Connection
+        residual [label="Output = F_combined + X", fillcolor="#FFCDD2", shape=diamond];
         
         detail_output [label="Output Feature\nY ∈ ℝ^(B×C×H×W)", fillcolor="#E8EAF6", shape=ellipse];
         
         // Parallel Processing Connections
         detail_input -> eca_gap [label="Channel", color="#4CAF50"];
         detail_input -> sam_pool [label="Spatial", color="#E91E63"];
-        detail_input -> cross_interaction [label="Interaction", color="#FF9800"];
         
         // ECA Branch
         eca_gap -> eca_conv1d;
         eca_conv1d -> eca_sigmoid;
-        eca_sigmoid -> eca_output;
+        eca_sigmoid -> apply_mc;
+        detail_input -> apply_mc [style=dashed];
         
         // SAM Branch
         sam_pool -> sam_conv7x7;
         sam_conv7x7 -> sam_sigmoid;
-        sam_sigmoid -> sam_output;
+        sam_sigmoid -> apply_ms;
+        detail_input -> apply_ms [style=dashed];
         
-        // Interaction Branch
-        cross_interaction -> interaction_output;
+        // Matrix Interaction
+        apply_mc -> matrix_interaction;
+        apply_ms -> matrix_interaction;
         
-        // Fusion
-        eca_output -> fusion;
-        sam_output -> fusion;
-        interaction_output -> fusion;
-        fusion -> residual;
+        // Residual Connection
+        matrix_interaction -> residual;
         detail_input -> residual [label="Residual", style=dashed];
         residual -> detail_output;
+    }
+    
+    // Mathematical Formulas
+    subgraph cluster_formulas {
+        label="Mathematical Formulation";
+        style=filled;
+        fillcolor="#F5F5F5";
+        color="#424242";
+        
+        formula1 [label="M_c = σ(Conv1D(GAP(X), k=ψ(C)))", fillcolor="#E0E0E0", shape=plaintext];
+        formula2 [label="M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))", fillcolor="#E0E0E0", shape=plaintext];
+        formula3 [label="F_c = X ⊙ M_c", fillcolor="#E0E0E0", shape=plaintext];
+        formula4 [label="F_s = X ⊙ M_s", fillcolor="#E0E0E0", shape=plaintext];
+        formula5 [label="F_combined = F_c ⊗ F_s", fillcolor="#E0E0E0", shape=plaintext];
+        formula6 [label="Output = F_combined + X", fillcolor="#E0E0E0", shape=plaintext];
     }
     
 }

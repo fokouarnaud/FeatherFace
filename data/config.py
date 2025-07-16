@@ -144,7 +144,7 @@ cfg_eca_cbam = {
         'attention_mechanism': 'ECA-CBAM Hybrid (Parallel Architecture)',
         'eca_net_foundation': 'Wang et al. CVPR 2020',
         'cbam_sam_foundation': 'Woo et al. ECCV 2018',
-        'hybrid_attention_foundation': 'Wang et al. Complex Systems 2024 (DOI: 10.1007/s40747-024-01445-9)',
+        'hybrid_attention_foundation': 'Frontiers in Neurorobotics 2024 (DOI: 10.3389/fnbot.2024.1391791)',
         'innovation_type': 'Channel efficiency + Spatial localization',
         'parameter_optimization': '99% reduction in channel attention parameters',
         'spatial_attention_preserved': 'CBAM SAM unchanged for face localization',

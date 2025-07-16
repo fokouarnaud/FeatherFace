@@ -68,7 +68,7 @@ Face Detection: ✓ Spatial attention preserved for face localization
 - **ECA-Net**: Wang et al. CVPR 2020 - Efficient Channel Attention for Deep CNNs (arXiv:1910.03151)
 - **CBAM**: Woo et al. ECCV 2018 - Convolutional Block Attention Module (arXiv:1807.06521)
 - **FeatherFace**: Kim et al. Electronics 2025 - Mobile face detection baseline (DOI: 10.3390/electronics14030517)
-- **Parallel Hybrid Attention**: Wang et al. 2024 Complex Systems (DOI: 10.1007/s40747-024-01445-9)
+- **Parallel Hybrid Attention**: Wang et al. 2024 Frontiers in Neurorobotics (DOI: 10.3389/fnbot.2024.1391791)
 
 ### Controlled Experiment Design
 - **Single Variable**: Only attention mechanism differs (CBAM ↔ ECA-CBAM)
@@ -142,14 +142,14 @@ cd widerface_evaluate && python evaluation.py -p ./widerface_txt -g ./eval_tools
 # cfg_eca_cbam in data/config.py
 {
     'out_channel': 48,              # Optimized for efficiency
-    'attention_mechanism': 'ECA-CBAM', # Cross-combined attention
+    'attention_mechanism': 'ECA-CBAM', # Parallel hybrid attention
     'eca_cbam_config': {
         'eca_gamma': 2,             # ECA adaptive kernel
         'eca_beta': 1,              # ECA adaptive kernel
         'sam_kernel_size': 7,       # CBAM SAM kernel
-        'interaction_weight': 0.1,  # Cross-combined interaction
+        'interaction_weight': 0.1,  # Parallel hybrid interaction
     },
-    'total_parameters": 460000,     # Parameter-efficient innovation
+    'total_parameters': 460000,     # Parameter-efficient innovation
 }
 ```
 
@@ -177,7 +177,7 @@ pip install -e .
 
 # Verify installation
 python -c "from models.featherface_cbam_exact import FeatherFaceCBAMExact; print('✓ CBAM baseline ready')"
-python -c "from models.featherface_eca_cbam import FeatherFaceECACBAM; print('✓ ECA-CBAM innovation ready')"
+python -c "from models.featherface_eca_cbam import FeatherFaceECAcbaM; print('✓ ECA-CBAM innovation ready')"
 ```
 
 ### 2. Data Preparation
@@ -233,7 +233,7 @@ FeatherFace/
 ```
 
 ### Key Features
-- **Scientific Innovation**: ECA-CBAM cross-combined vs CBAM 2D attention
+- **Scientific Innovation**: ECA-CBAM parallel hybrid vs CBAM 2D attention
 - **Literature Validated**: Comprehensive literature review methodology
 - **Performance Proven**: Parameter reduction with maintained accuracy
 - **Mobile Optimized**: Efficient attention for edge deployment

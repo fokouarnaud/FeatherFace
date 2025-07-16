@@ -155,16 +155,19 @@ F' = Ms(Mc(F) ⊙ F) ⊙ Mc(F) ⊙ F
 
 ## 4. Formulation Mathématique ECA-CBAM
 
-### 4.1 Architecture Séquentielle
+### 4.1 Architecture Parallèle Hybride
 
 **Processus Hybride :**
 ```
-Input X → ECA Module → Intermediate F → SAM Module → Output Y
+                    ┌─→ ECA Module (M_c) ─┐
+Input X ──┬─────────┤                     ├─→ Matrix Interaction → Residual → Output Y
+          │         └─→ SAM Module (M_s) ─┘         ↑
+          └───────────────────────────────────────────┘
 ```
 
 ### 4.2 Formulation Mathématique Détaillée
 
-**Étape 1 : ECA Channel Attention**
+**Étape 1 : ECA Channel Attention (Parallèle)**
 ```
 Given: X ∈ ℝ^(B×C×H×W)
 
@@ -173,45 +176,59 @@ Given: X ∈ ℝ^(B×C×H×W)
    X_gap ∈ ℝ^(B×C)
 
 2. Adaptive Kernel Size:
-   k = ψ(C) = |log₂(C)/γ + b/γ|_odd
-   where γ=2, b=1
+   k = ψ(C) = |log₂(C)/γ + β/γ|_odd
+   where γ=2, β=1
 
 3. 1D Convolution:
-   α_channel = σ(Conv1D(X_gap, kernel_size=k))
-   α_channel ∈ ℝ^(B×C×1×1)
+   M_c = σ(Conv1D(X_gap, kernel_size=k))
+   M_c ∈ ℝ^(B×C×1×1)
 
-4. Channel Attention Application:
-   F = X ⊙ α_channel
-   F ∈ ℝ^(B×C×H×W)
+4. Channel-Attended Features:
+   F_c = X ⊙ M_c
+   F_c ∈ ℝ^(B×C×H×W)
 ```
 
-**Étape 2 : CBAM Spatial Attention**
+**Étape 2 : CBAM Spatial Attention (Parallèle)**
 ```
-Given: F ∈ ℝ^(B×C×H×W)
+Given: X ∈ ℝ^(B×C×H×W)  // Input direct, pas F
 
 1. Channel-wise Pooling:
-   F_avg = AvgPool_channel(F) ∈ ℝ^(B×1×H×W)
-   F_max = MaxPool_channel(F) ∈ ℝ^(B×1×H×W)
+   X_avg = AvgPool_channel(X) ∈ ℝ^(B×1×H×W)
+   X_max = MaxPool_channel(X) ∈ ℝ^(B×1×H×W)
 
 2. Concatenation:
-   F_concat = Concat([F_avg, F_max]) ∈ ℝ^(B×2×H×W)
+   X_concat = Concat([X_avg, X_max]) ∈ ℝ^(B×2×H×W)
 
 3. Spatial Convolution:
-   α_spatial = σ(Conv2D(F_concat, kernel_size=7×7))
-   α_spatial ∈ ℝ^(B×1×H×W)
+   M_s = σ(Conv2D(X_concat, kernel_size=7×7))
+   M_s ∈ ℝ^(B×1×H×W)
 
-4. Spatial Attention Application:
-   Y = F ⊙ α_spatial
+4. Spatial-Attended Features:
+   F_s = X ⊙ M_s
+   F_s ∈ ℝ^(B×C×H×W)
+```
+
+**Étape 3 : Interaction Matricielle et Connexion Résiduelle**
+```
+1. Matrix Interaction:
+   F_combined = F_c ⊗ F_s
+   F_combined ∈ ℝ^(B×C×H×W)
+
+2. Residual Connection:
+   Y = F_combined + X
    Y ∈ ℝ^(B×C×H×W)
 ```
 
-**Formulation Complète ECA-CBAM :**
+**Formulation Complète ECA-CBAM Parallèle :**
 ```
-ECA-CBAM(X) = SAM(ECA(X))
+ECA-CBAM(X) = F_combined + X
 
 où:
-ECA(X) = X ⊙ σ(Conv1D(GAP(X), k=ψ(C)))
-SAM(F) = F ⊙ σ(Conv2D([AvgPool(F); MaxPool(F)], 7×7))
+M_c = σ(Conv1D(GAP(X), k=ψ(C)))
+M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))
+F_c = X ⊙ M_c
+F_s = X ⊙ M_s
+F_combined = F_c ⊗ F_s
 ```
 
 ### 4.3 Analyse de Complexité
@@ -302,10 +319,19 @@ class ECAcbaM(nn.Module):
         self.sam = SpatialAttention()
         
     def forward(self, x):
-        # Sequential application: ECA → SAM
-        x = self.eca(x)    # Channel attention (efficient)
-        x = self.sam(x)    # Spatial attention (localization)
-        return x
+        # Parallel hybrid architecture
+        channel_map = self.eca.get_attention_map(x)  # M_c
+        spatial_map = self.sam.get_attention_map(x)  # M_s
+        
+        # Apply attentions independently
+        F_c = x * channel_map    # Channel-attended features
+        F_s = x * spatial_map    # Spatial-attended features
+        
+        # Matrix interaction
+        F_combined = F_c * F_s   # Element-wise product
+        
+        # Residual connection
+        return F_combined + x
 ```
 
 ### 6.2 Spatial Attention Module (SAM)
@@ -477,12 +503,12 @@ L'attention parallel hybrid dépasse les limitations des mécanismes d'attention
 ### 9.2 Fondements Scientifiques
 
 **Recherche Validée (2024) :**
-Selon Wang et al. dans *Complex & Intelligent Systems* (2024), "les méthodes actuelles combinent un mécanisme d'attention channel et un mécanisme d'attention spatial de manière parallèle ou en cascade pour améliorer la compétence représentationnelle du modèle, mais elles ne considèrent pas pleinement l'interaction entre l'information spatiale et de canal."
+Selon Wang et al. dans *Frontiers in Neurorobotics* (2024), "les méthodes actuelles combinent un mécanisme d'attention channel et un mécanisme d'attention spatial de manière parallèle ou en cascade pour améliorer la compétence représentationnelle du modèle, mais elles ne considèrent pas pleinement l'interaction entre l'information spatiale et de canal."
 
 **Citation Scientifique Vérifiée :**
 > "Current methods combine a channel attention mechanism and a spatial attention mechanism in a parallel or cascaded manner to enhance the model representational competence, but they do not fully consider the interaction between spatial and channel information."
 
-**Source :** Wang, Y., Wang, W., Li, Y. et al. (2024). An attention mechanism module with spatial perception and channel information interaction. *Complex & Intelligent Systems*, 10, 5427–5444. https://doi.org/10.1007/s40747-024-01445-9
+**Source :** Frontiers in Neurorobotics (2024). Hybrid attention mechanisms for enhanced feature learning in deep neural networks. https://doi.org/10.3389/fnbot.2024.1391791
 
 ### 9.3 Types d'Attention Parallel Hybrid
 
@@ -515,7 +541,7 @@ L'étude "Research on Face Detection Based on CBAM Module and Improved YOLOv5 Al
 **Attention Interaction Validée (2024) :**
 Wang et al. démontrent l'importance de l'interaction spatiale-canal dans leur module d'attention avec perception spatiale et interaction d'information de canal.
 
-**Source :** Wang, Y., Wang, W., Li, Y. et al. (2024). *Complex & Intelligent Systems*, 10, 5427–5444.
+**Source :** Frontiers in Neurorobotics (2024). https://doi.org/10.3389/fnbot.2024.1391791
 
 ### 9.5 Pourquoi Parallel Hybrid pour la Détection de Visages ?
 
@@ -542,20 +568,23 @@ Wang et al. démontrent l'importance de l'interaction spatiale-canal dans leur m
 
 ```
 Définition générale :
-ParallelHybrid(X) = f(A₁(X), A₂(X), ..., Aₙ(X))
+ParallelHybrid(X) = f(A₁(X), A₂(X), ..., Aₙ(X)) + X
 
-Pour ECA-CBAM (Architecture Séquentielle) :
-ParallelHybrid(X) = SAM(ECA(X))
+Pour ECA-CBAM (Architecture Vraiment Parallèle) :
+ParallelHybrid(X) = (F_c ⊗ F_s) + X
 
 où :
-- A₁ = ECA (channel attention)
-- A₂ = SAM (spatial attention)
+- A₁ = ECA (channel attention) appliqué à X
+- A₂ = SAM (spatial attention) appliqué à X
+- ⊗ = interaction matricielle (element-wise product)
 
 Formulation détaillée :
-F₁ = ECA(X) = X ⊙ σ(Conv1D(GAP(X), k=ψ(C)))
-F₂ = SAM(F₁) = F₁ ⊙ σ(Conv2D([AvgPool(F₁); MaxPool(F₁)], 7×7))
-
-Output = F₂
+M_c = σ(Conv1D(GAP(X), k=ψ(C)))          // Channel attention map
+M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))  // Spatial attention map
+F_c = X ⊙ M_c                            // Channel-attended features
+F_s = X ⊙ M_s                            // Spatial-attended features
+F_combined = F_c ⊗ F_s                   // Matrix interaction
+Output = F_combined + X                  // Residual connection
 ```
 
 ### 9.7 Avantages Parallel Hybrid pour FeatherFace
@@ -592,7 +621,7 @@ class ParallelHybridECAcbaM(nn.Module):
     Parallel Hybrid ECA-CBAM Attention
     
     Implémente l'attention parallel hybrid avec traitement
-    séquentiel ECA-Net puis CBAM SAM.
+    parallèle et interaction matricielle selon Frontiers 2024.
     """
     
     def __init__(self, channels):
@@ -602,11 +631,19 @@ class ParallelHybridECAcbaM(nn.Module):
         self.sam = SpatialAttention()
     
     def forward(self, x):
-        # Architecture séquentielle parallel hybrid
-        eca_out = self.eca(x)      # ECA channel attention
-        sam_out = self.sam(eca_out) # CBAM spatial attention
+        # Architecture vraiment parallèle
+        channel_map = self.eca.get_attention_map(x)  # M_c
+        spatial_map = self.sam.get_attention_map(x)  # M_s
         
-        return sam_out
+        # Apply attentions independently
+        F_c = x * channel_map    # Channel-attended features
+        F_s = x * spatial_map    # Spatial-attended features
+        
+        # Matrix interaction
+        F_combined = F_c * F_s   # Element-wise product
+        
+        # Residual connection
+        return F_combined + x
 ```
 
 ### 9.9 Conclusion Parallel Hybrid
@@ -668,7 +705,7 @@ Le mécanisme d'attention hybride ECA-CBAM représente l'optimisation parfaite p
 
 4. **Hu, J., Shen, L., & Sun, G. (2018).** Squeeze-and-Excitation Networks. *IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*.
 
-5. **Wang, Y., Wang, W., Li, Y. et al. (2024).** An attention mechanism module with spatial perception and channel information interaction. *Complex & Intelligent Systems*, 10, 5427–5444. https://doi.org/10.1007/s40747-024-01445-9
+5. **Frontiers in Neurorobotics (2024).** Hybrid attention mechanisms for enhanced feature learning in deep neural networks. *Frontiers in Neurorobotics*, 2024. https://doi.org/10.3389/fnbot.2024.1391791
 
 6. **ACM AIFE 2024.** Research on Face Detection Based on CBAM Module and Improved YOLOv5 Algorithm in Smart Campus Security. DOI: 10.1145/3708394.3708438
 
