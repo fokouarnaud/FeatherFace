@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 from utils.box_utils import match, log_sum_exp
+from layers.modules.wing_loss import WingLoss  # THESIS: Wing Loss for landmarks
 
 class MultiBoxLoss(nn.Module):
     """SSD Weighted Loss Function
@@ -38,6 +39,9 @@ class MultiBoxLoss(nn.Module):
         self.negpos_ratio = neg_pos
         self.neg_overlap = neg_overlap
         self.variance = [0.1, 0.2]
+        
+        # THESIS: Wing Loss for landmark detection (w=10.0, epsilon=2.0)
+        self.wing_loss = WingLoss(w=10.0, epsilon=2.0)
 
     def forward(self, predictions, priors, targets):
         """Multibox Loss
@@ -77,7 +81,7 @@ class MultiBoxLoss(nn.Module):
         landm_t = landm_t.to(device)
 
         zeros = torch.tensor(0, device=device)
-        # landm Loss (Smooth L1)
+        # landm Loss (THESIS: Wing Loss, not Smooth L1)
         # Shape: [batch,num_priors,10]
         pos1 = conf_t > zeros
         num_pos_landm = pos1.long().sum(1, keepdim=True)
@@ -85,7 +89,8 @@ class MultiBoxLoss(nn.Module):
         pos_idx1 = pos1.unsqueeze(pos1.dim()).expand_as(landm_data)
         landm_p = landm_data[pos_idx1].view(-1, 10)
         landm_t = landm_t[pos_idx1].view(-1, 10)
-        loss_landm = F.smooth_l1_loss(landm_p, landm_t, reduction='sum')
+        # THESIS: Wing Loss instead of Smooth L1 for landmarks
+        loss_landm = self.wing_loss(landm_p, landm_t) * N1  # Scale by N1 for consistency
 
 
         pos = conf_t != zeros

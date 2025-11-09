@@ -92,10 +92,6 @@ class SpatialAttention(nn.Module):
         # Sigmoid activation
         self.sigmoid = nn.Sigmoid()
         
-        # Control flags for multi-phase training
-        self.eca_enabled = True
-        self.sam_enabled = True
-        
         # Initialize weights
         self._initialize_weights()
     
@@ -222,10 +218,6 @@ class ECAcbaM(nn.Module):
         
         # Pure parallel architecture: no additional interaction modules needed
         
-        # Control flags for multi-phase training
-        self.eca_enabled = True
-        self.sam_enabled = True
-        
         # Initialize weights
         self._initialize_weights()
     
@@ -234,60 +226,68 @@ class ECAcbaM(nn.Module):
         # ECA and SAM modules initialize their own weights
         pass
     
-    def enable_eca_only(self):
-        """Enable only ECA, disable SAM (for Phase 2a training)"""
-        self.eca_enabled = True
-        self.sam_enabled = False
-    
-    def enable_both(self):
-        """Enable both ECA and SAM (for Phase 2b and Phase 3 training)"""
-        self.eca_enabled = True
-        self.sam_enabled = True
-    
-    def disable_all(self):
-        """Disable all attention (for Phase 1 training)"""
-        self.eca_enabled = False
-        self.sam_enabled = False
-    
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
-        Forward pass of ECA-CBAM hybrid attention - SEQUENTIAL ARCHITECTURE
+        Forward pass of ECA-CBAM hybrid attention
         
-        Sequential Architecture Process (Thesis Methodology):
-        1. Apply ECA Channel Attention FIRST: F_ECA = ECA(X)
-        2. Apply CBAM Spatial Attention SECOND: F_out = SAM(F_ECA)
+        Parallel Architecture Process (Frontiers Neurorobotics 2024):
+        1. Channel attention mask: M_c = σ(Conv1D(GAP(X), k=ψ(C)))
+        2. Spatial attention mask: M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))
+        3. Apply masks independently: F_c = X ⊙ M_c, F_s = X ⊙ M_s
+        4. Matrix interaction: F_combined = F_c ⊗ F_s
+        5. Residual connection: Output = F_combined + X
         
-        Mathematical Flow (Sequential):
-        X -> ECA(X) -> F_ECA -> SAM(F_ECA) -> F_out
+        Mathematical Flow (Parallel):
+        X → [M_c || M_s] → [F_c || F_s] → F_combined → Y = F_combined + X
         
         Args:
             x: Input tensor [B, C, H, W]
             
         Returns:
-            torch.Tensor: Sequentially attended features [B, C, H, W]
+            torch.Tensor: Hybrid attended features [B, C, H, W]
         """
-        # Phase 1: No attention (backbone only)
-        if not self.eca_enabled and not self.sam_enabled:
-            return x
+        # Step 1: Get attention masks independently (parallel)
+        # M_c = σ(Conv1D(GAP(X), k=ψ(C)))
+        channel_mask = self.eca.get_attention_mask(x)  # [B, C, 1, 1]
         
-        # Step 1: Apply ECA Channel Attention FIRST
-        if self.eca_enabled:
-            F_eca = self.eca(x)  # [B, C, H, W]
-        else:
-            F_eca = x
+        # M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))
+        spatial_mask = self.sam.get_spatial_mask(x)  # [B, 1, H, W]
         
-        # Phase 2a: ECA only
-        if self.eca_enabled and not self.sam_enabled:
-            return F_eca
+        # Step 2: Apply masks independently to original input
+        # F_c = X ⊙ M_c
+        F_c = x * channel_mask  # [B, C, H, W]
         
-        # Step 2: Apply CBAM Spatial Attention SECOND on ECA output
-        if self.sam_enabled:
-            F_out = self.sam(F_eca)  # [B, C, H, W]
-        else:
-            F_out = F_eca
+        # F_s = X ⊙ M_s
+        F_s = x * spatial_mask  # [B, C, H, W]
         
-        # Phase 2b/3: Both enabled (full sequential architecture)
-        return F_out
+        # Step 3: Matrix interaction
+        # F_combined = F_c ⊗ F_s (element-wise product)
+        F_combined = F_c * F_s  # [B, C, H, W]
+        
+        # Step 4: Residual connection
+        # Output = F_combined + X
+        output = F_combined + x
+        
+        return output
+    
+    def get_parameter_count(self) -> dict:
+        """
+        Get detailed parameter count for efficiency analysis
+        
+        Returns:
+            dict: Parameter breakdown including ECA, SAM, and interaction
+        """
+        # ECA parameters
+        eca_params = self.eca.get_parameter_count()
+        
+        # SAM parameters
+        sam_params = self.sam.get_parameter_count()
+        
+        # No cross-interaction parameters in pure parallel architecture
+        interaction_params = 0
+        
+        # No interaction weight parameter in pure parallel architecture
+        weight_params = 0
         
         total_params = (eca_params['total_parameters'] + 
                        sam_params['total_parameters'])

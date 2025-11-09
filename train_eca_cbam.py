@@ -194,31 +194,34 @@ def create_optimizer(model, cfg, args):
     """Create optimizer and scheduler"""
     print(f"⚙️  Creating optimizer...")
     
-    # Choose optimizer
-    if cfg['optim'] == 'adamw':
-        optimizer = optim.AdamW(
+    # Choose optimizer (THESIS: Adam, not AdamW)
+    if cfg['optim'] == 'adam' or cfg['optim'] == 'adamw':
+        optimizer = optim.Adam(
             model.parameters(),
             lr=args.lr,
-            weight_decay=5e-4
+            betas=(0.9, 0.999),
+            eps=1e-8,
+            weight_decay=1e-4  # THESIS: 1e-4 (not 5e-4)
         )
-        print(f"✅ AdamW optimizer created (lr={args.lr})")
+        print(f"Adam optimizer created (lr={args.lr}, weight_decay=1e-4)")
     else:
         optimizer = optim.SGD(
             model.parameters(),
             lr=args.lr,
             momentum=args.momentum,
-            weight_decay=5e-4
+            weight_decay=1e-4
         )
-        print(f"✅ SGD optimizer created (lr={args.lr}, momentum={args.momentum})")
+        print(f"SGD optimizer created (lr={args.lr}, momentum={args.momentum})")
     
-    # Learning rate scheduler
-    scheduler = optim.lr_scheduler.MultiStepLR(
+    # Learning rate scheduler (THESIS: CosineAnnealingWarmRestarts, not MultiStepLR)
+    scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
         optimizer,
-        milestones=cfg['lr_steps'],
-        gamma=0.1
+        T_0=args.max_epoch,  # Restart period = total epochs
+        T_mult=1,            # No period increase
+        eta_min=1e-6         # Minimum learning rate
     )
     
-    print(f"📈 LR scheduler: MultiStepLR (milestones={cfg['lr_steps']})")
+    print(f"LR scheduler: CosineAnnealingWarmRestarts(T_0={args.max_epoch}, eta_min=1e-6)")
     
     return optimizer, scheduler
 

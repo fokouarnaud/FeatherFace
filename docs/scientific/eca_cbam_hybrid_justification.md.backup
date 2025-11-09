@@ -155,7 +155,7 @@ F' = Ms(Mc(F) ⊙ F) ⊙ Mc(F) ⊙ F
 
 ## 4. Formulation Mathématique ECA-CBAM
 
-### 4.1 Architecture Séquentielle Hybride
+### 4.1 Architecture Parallèle Hybride
 
 **Processus Hybride :**
 ```
@@ -167,7 +167,7 @@ Input X ──┬─────────┤                     ├─→ Ma
 
 ### 4.2 Formulation Mathématique Détaillée
 
-**Étape 1 : ECA Channel Attention (Première Étape Séquentielle)**
+**Étape 1 : ECA Channel Attention (Parallèle)**
 ```
 Given: X ∈ ℝ^(B×C×H×W)
 
@@ -183,43 +183,52 @@ Given: X ∈ ℝ^(B×C×H×W)
    M_c = σ(Conv1D(X_gap, kernel_size=k))
    M_c ∈ ℝ^(B×C×1×1)
 
-4. Channel-Attended Features (Output Étape 1):
-   F_eca = X ⊙ M_c
-   F_eca ∈ ℝ^(B×C×H×W)
+4. Channel-Attended Features:
+   F_c = X ⊙ M_c
+   F_c ∈ ℝ^(B×C×H×W)
 ```
 
-**Étape 2 : CBAM Spatial Attention (Deuxième Étape Séquentielle)**
+**Étape 2 : CBAM Spatial Attention (Parallèle)**
 ```
-Given: F_eca ∈ ℝ^(B×C×H×W)  // Output de l'Étape 1
+Given: X ∈ ℝ^(B×C×H×W)  // Input direct, pas F
 
 1. Channel-wise Pooling:
-   F_avg = AvgPool_channel(F_eca) ∈ ℝ^(B×1×H×W)
-   F_max = MaxPool_channel(F_eca) ∈ ℝ^(B×1×H×W)
+   X_avg = AvgPool_channel(X) ∈ ℝ^(B×1×H×W)
+   X_max = MaxPool_channel(X) ∈ ℝ^(B×1×H×W)
 
 2. Concatenation:
-   F_concat = Concat([F_avg, F_max]) ∈ ℝ^(B×2×H×W)
+   X_concat = Concat([X_avg, X_max]) ∈ ℝ^(B×2×H×W)
 
 3. Spatial Convolution:
-   M_s = σ(Conv2D(F_concat, kernel_size=7×7))
+   M_s = σ(Conv2D(X_concat, kernel_size=7×7))
    M_s ∈ ℝ^(B×1×H×W)
 
-4. Spatial-Attended Features (Output Final):
-   Y = F_eca ⊙ M_s
+4. Spatial-Attended Features:
+   F_s = X ⊙ M_s
+   F_s ∈ ℝ^(B×C×H×W)
+```
+
+**Étape 3 : Interaction Matricielle et Connexion Résiduelle**
+```
+1. Matrix Interaction:
+   F_combined = F_c ⊗ F_s
+   F_combined ∈ ℝ^(B×C×H×W)
+
+2. Residual Connection:
+   Y = F_combined + X
    Y ∈ ℝ^(B×C×H×W)
 ```
 
-**Formulation Complète ECA-CBAM Séquentiel :**
+**Formulation Complète ECA-CBAM Parallèle :**
 ```
-ECA-CBAM(X) = SAM(ECA(X))
+ECA-CBAM(X) = F_combined + X
 
 où:
-Étape 1 (ECA):
-  M_c = σ(Conv1D(GAP(X), k=ψ(C)))
-  F_eca = X ⊙ M_c
-
-Étape 2 (SAM):
-  M_s = σ(Conv2D([AvgPool(F_eca); MaxPool(F_eca)], 7×7))
-  Y = F_eca ⊙ M_s
+M_c = σ(Conv1D(GAP(X), k=ψ(C)))
+M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))
+F_c = X ⊙ M_c
+F_s = X ⊙ M_s
+F_combined = F_c ⊗ F_s
 ```
 
 ### 4.3 Analyse de Complexité
@@ -310,14 +319,19 @@ class ECAcbaM(nn.Module):
         self.sam = SpatialAttention()
         
     def forward(self, x):
-        # Sequential hybrid attention architecture
-        # Step 1: ECA Channel Attention
-        F_eca = self.eca(x)  # Channel-attended features
+        # Hybrid attention module architecture
+        channel_map = self.eca.get_attention_map(x)  # M_c
+        spatial_map = self.sam.get_attention_map(x)  # M_s
         
-        # Step 2: CBAM Spatial Attention on ECA output
-        output = self.sam(F_eca)  # Spatial attention on channel-refined features
+        # Apply attentions independently
+        F_c = x * channel_map    # Channel-attended features
+        F_s = x * spatial_map    # Spatial-attended features
         
-        return output
+        # Matrix interaction
+        F_combined = F_c * F_s   # Element-wise product
+        
+        # Residual connection
+        return F_combined + x
 ```
 
 ### 6.2 Spatial Attention Module (SAM)
@@ -420,7 +434,7 @@ class FeatherFaceECAcbaM(nn.Module):
 
 | Mécanisme | CBAM Baseline | ECA-Only | ECA-CBAM Hybride |
 |-----------|---------------|----------|-------------------|
-| **Paramètres Totaux** | 488,664 | 449,113 | 449,017 |
+| **Paramètres Totaux** | 488,664 | 449,113 | ~460,000 |
 | **Attention Params** | ~6,500 | 22 | ~600 |
 | **Overhead** | 1.33% | 0.005% | 0.13% |
 | **Efficacité** | Baseline | -8.1% | -5.9% |
@@ -498,17 +512,17 @@ Selon Wang et al. dans *Frontiers in Neurorobotics* (2024), "les méthodes actue
 
 ### 9.3 Types d'Attention Hybride (Hybrid Attention Module)
 
-**1. Attention Séquentielle (Sequential Attention) :** [Notre Approche]
+**1. Attention Séquentielle (Sequential Attention) :**
 - Traitement étape par étape où chaque couche d'attention s'appuie sur la sortie précédente
-- Exemple : ECA → SAM (notre implémentation)
-- Avantage : Construction progressive, convergence stable, pas de redondance
-- Inconvénient : Latence légèrement plus élevée (mais négligeable)
+- Exemple : ECA → SAM (notre approche)
+- Avantage : Construction progressive des caractéristiques
+- Inconvénient : Latence plus élevée
 
-**2. Attention Parallèle (Parallel Attention) :** [Non utilisée]
+**2. Attention Parallèle (Parallel Attention) :**
 - Traitement simultané de plusieurs computations d'attention
 - Exemple : ECA || SAM (fusion parallèle)
-- Avantage : Efficacité computationnelle théorique
-- Inconvénient : Redondance computationnelle, convergence instable
+- Avantage : Efficacité computationnelle
+- Inconvénient : Interactions potentiellement limitées
 
 **3. Attention Hybride (Hybrid Attention) :**
 - Combinaison optimale des approches séquentielle et parallèle
@@ -554,23 +568,23 @@ Wang et al. démontrent l'importance de l'interaction spatiale-canal dans leur m
 
 ```
 Définition générale :
-SequentialHybrid(X) = Aₙ(...A₂(A₁(X)))
+ParallelHybrid(X) = f(A₁(X), A₂(X), ..., Aₙ(X)) + X
 
-Pour ECA-CBAM (Architecture Séquentielle) :
-SequentialHybrid(X) = SAM(ECA(X))
+Pour ECA-CBAM (Architecture Vraiment Parallèle) :
+ParallelHybrid(X) = (F_c ⊗ F_s) + X
 
 où :
 - A₁ = ECA (channel attention) appliqué à X
-- A₂ = SAM (spatial attention) appliqué au résultat de ECA
+- A₂ = SAM (spatial attention) appliqué à X
+- ⊗ = interaction matricielle (element-wise product)
 
 Formulation détaillée :
-Étape 1 - ECA Channel Attention:
-  M_c = σ(Conv1D(GAP(X), k=ψ(C)))        // Channel attention map
-  F_eca = X ⊙ M_c                         // Channel-attended features
-
-Étape 2 - SAM Spatial Attention:
-  M_s = σ(Conv2D([AvgPool(F_eca); MaxPool(F_eca)], 7×7))  // Spatial attention map
-  Output = F_eca ⊙ M_s                    // Final output
+M_c = σ(Conv1D(GAP(X), k=ψ(C)))          // Channel attention map
+M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))  // Spatial attention map
+F_c = X ⊙ M_c                            // Channel-attended features
+F_s = X ⊙ M_s                            // Spatial-attended features
+F_combined = F_c ⊗ F_s                   // Matrix interaction
+Output = F_combined + X                  // Residual connection
 ```
 
 ### 9.7 Avantages Hybrid Attention Module pour FeatherFace
@@ -602,12 +616,12 @@ Formulation détaillée :
 **Code d'Implémentation :**
 
 ```python
-class SequentialHybridECAcbaM(nn.Module):
+class ParallelHybridECAcbaM(nn.Module):
     """
     Hybrid Attention Module ECA-CBAM
     
     Implémente le hybrid attention module avec traitement
-    séquentiel (ECA → SAM) pour détection faciale optimisée.
+    parallèle et interaction matricielle selon Frontiers 2024.
     """
     
     def __init__(self, channels):
@@ -617,14 +631,19 @@ class SequentialHybridECAcbaM(nn.Module):
         self.sam = SpatialAttention()
     
     def forward(self, x):
-        # Sequential hybrid attention architecture
-        # Step 1: ECA Channel Attention
-        F_eca = self.eca(x)  # Channel-attended features
+        # Architecture vraiment parallèle
+        channel_map = self.eca.get_attention_map(x)  # M_c
+        spatial_map = self.sam.get_attention_map(x)  # M_s
         
-        # Step 2: CBAM Spatial Attention
-        output = self.sam(F_eca)  # Spatial attention on ECA output
+        # Apply attentions independently
+        F_c = x * channel_map    # Channel-attended features
+        F_s = x * spatial_map    # Spatial-attended features
         
-        return output
+        # Matrix interaction
+        F_combined = F_c * F_s   # Element-wise product
+        
+        # Residual connection
+        return F_combined + x
 ```
 
 ### 9.9 Conclusion Hybrid Attention Module

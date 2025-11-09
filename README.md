@@ -50,15 +50,15 @@ Attention: Channel + Spatial (2D)
 Complexity: O(C² + H×W)
 ```
 
-### ECA-CBAM Hybrid Innovation (Hybrid Attention Module)
+### ECA-CBAM Hybrid Innovation (Sequential Attention Architecture)
 ```
 Input → MobileNet-0.25 → ECA-CBAM Attention₁ → BiFPN → ECA-CBAM Attention₂ → SSH → Channel Shuffle → Detection Heads
                                ↓                          ↓                                      ↓
                         Backbone ECA-CBAM (3×)      BiFPN ECA-CBAM (3×)                Class/Bbox/Landmark
-                        64,128,256 channels         48 channels each                   (449,017 params)
+                        64,128,256 channels         52 channels each                   (449,017 params)
 
-Attention: ECA-Net (Channel) + CBAM SAM (Spatial) + Hybrid Attention Interaction
-Complexity: O(C×log₂(C)) + O(H×W) - 99% channel attention parameter reduction
+Attention: ECA-Net (Channel) → CBAM SAM (Spatial) [Sequential Processing]
+Complexity: O(C) [ECA] + O(H×W) [SAM] - Sequential stages, 99% channel parameter reduction
 Face Detection: ✓ Spatial attention preserved for face localization
 ```
 

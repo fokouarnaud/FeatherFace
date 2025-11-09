@@ -8,7 +8,7 @@ Cette analyse présente les métriques de performance attendues et mesurées lor
 - **mAP WIDERFace Hard :** 80.0% (+1.7% vs CBAM 78.3%)
 - **Paramètres totaux :** 449,017 (-8.1% vs CBAM 488,664)
 - **Temps inférence :** Maintenu ou amélioré grâce à l'efficacité ECA-Net
-- **Réduction faux positifs :** Amélioration qualitative via attention hybride séquentiel
+- **Réduction faux positifs :** Amélioration qualitative via attention hybride parallèle
 
 ---
 
@@ -26,7 +26,7 @@ Cette analyse présente les métriques de performance attendues et mesurées lor
 **Base des prédictions :**
 - Gains ECA-Net efficacité : +1.4% ImageNet (CVPR 2020)
 - Préservation CBAM SAM : Maintien localisation spatiale
-- Amélioration Hard > Easy/Medium (attention hybride séquentiel)
+- Amélioration Hard > Easy/Medium (attention hybride parallèle)
 
 ### 1.2 Efficacité Paramétrique
 
@@ -83,7 +83,7 @@ python evaluation.py -p ./widerface_txt -g ./eval_tools/ground_truth
 python test_v1_v2_comparison.py  # Adapté pour CBAM vs ECA-CBAM
 ```
 
-### 2.3 Métriques d'Attention Hybride Séquentielle
+### 2.3 Métriques d'Attention Hybride Parallèle
 
 **Nouvelles métriques ECA-CBAM-spécifiques :**
 ```python
@@ -96,7 +96,7 @@ métriques = {
     'combined_attention_mean': float,         # Attention hybride combinée
     'channel_mask_mean': float,               # Masque canal ECA
     'spatial_mask_mean': float,               # Masque spatial SAM
-    'sequential_interaction': float           # Interaction séquentielle
+    'parallel_interaction': float             # Interaction parallèle
 }
 ```
 
@@ -153,14 +153,14 @@ hard_eca_cbam = hard_baseline * (1 + 0.017) = 80.0%
 **Justification hybride :**
 - ECA-Net : Efficacité canal prouvée
 - CBAM SAM : Localisation spatiale préservée
-- Hybride séquentiel : Synergie additionnelle
+- Hybride parallèle : Synergie additionnelle
 
 ### 3.3 Facteurs d'Amélioration ECA-CBAM
 
-**1. Attention hybride séquentielle :**
+**1. Attention hybride parallèle :**
 - **Canal ECA-Net** : Efficacité O(C×log₂(C)) vs O(C²) CBAM
 - **Spatial CBAM SAM** : Localisation faciale préservée
-- **Interaction séquentielle** : Progression ECA → SAM
+- **Interaction parallèle** : Fusion synergique
 
 **2. Préservation des forces :**
 - ECA-Net : Efficacité paramétrique prouvée
@@ -254,7 +254,7 @@ validation_metrics = {
 ### 5.1 Risques Techniques
 
 **Convergence entraînement :**
-- **Risque :** Instabilité attention hybride séquentiel
+- **Risque :** Instabilité attention hybride parallèle
 - **Mitigation :** ECA gamma/beta optimisés, learning rate adaptatif
 - **Probabilité :** Faible (validé CVPR 2020 + ECCV 2018)
 
@@ -317,7 +317,7 @@ validation_metrics = {
 - ✅ **Innovation hybride** ECA-CBAM pour face detection
 - ✅ **Validation empirique** gains théoriques CVPR 2020 + ECCV 2018
 - ✅ **Comparaison contrôlée** vs CBAM baseline établi
-- ✅ **Optimisation mobile** attention hybride séquentiel
+- ✅ **Optimisation mobile** attention hybride parallèle
 
 **Publications potentielles :**
 - Conference paper : "ECA-CBAM Hybrid for Mobile Face Detection"
