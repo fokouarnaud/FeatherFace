@@ -489,7 +489,7 @@ Le hybrid attention module dépasse les limitations des mécanismes d'attention 
 ### 9.2 Fondements Scientifiques
 
 **Recherche Validée (2024) :**
-Selon Wang et al. dans *Frontiers in Neurorobotics* (2024), "les méthodes actuelles combinent un mécanisme d'attention channel et un mécanisme d'attention spatial de manière parallèle ou en cascade pour améliorer la compétence représentationnelle du modèle, mais elles ne considèrent pas pleinement l'interaction entre l'information spatiale et de canal."
+Selon Lu et al. dans *Frontiers in Neurorobotics* (2024), "les méthodes actuelles combinent un mécanisme d'attention channel et un mécanisme d'attention spatial de manière parallèle ou en cascade pour améliorer la compétence représentationnelle du modèle, mais elles ne considèrent pas pleinement l'interaction entre l'information spatiale et de canal."
 
 **Citation Scientifique Vérifiée :**
 > "Current methods combine a channel attention mechanism and a spatial attention mechanism in a parallel or cascaded manner to enhance the model representational competence, but they do not fully consider the interaction between spatial and channel information."

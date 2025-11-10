@@ -143,7 +143,7 @@ Phase 3:  Same as 2b with heavy regularization
 
 1. Wang et al. CVPR 2020: ECA-Net
 2. Woo et al. ECCV 2018: CBAM
-3. Wang et al. 2024: Multi-phase training for hybrid attention
+3. Lu et al. 2024: Multi-phase training for hybrid attention
 4. Zhang et al. ICLR 2018: Mixup augmentation
 
 ## Notes

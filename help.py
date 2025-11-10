@@ -183,7 +183,7 @@ def print_eca_cbam_details():
     print("Scientific Foundation:")
     print("  • ECA-Net: Wang et al. CVPR 2020 (Efficient Channel Attention)")
     print("  • CBAM SAM: Woo et al. ECCV 2018 (Spatial Attention Module)")
-    print("  • Hybrid Attention Module: Wang et al. Frontiers in Neurorobotics 2024")
+    print("  • Hybrid Attention Module: Lu et al. Frontiers in Neurorobotics 2024")
     print("")
     print("Performance Targets:")
     print("  • Parameters: 460,000 (5.9% reduction vs CBAM)")

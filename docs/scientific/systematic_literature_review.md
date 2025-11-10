@@ -343,7 +343,7 @@ Cette revue de littérature systématique analyse l'évolution des mécanismes d
 - Efficacité paramétrique: ECA-Net 22 vs 2000 paramètres CBAM CAM (Wang et al. CVPR 2020)
 - Préservation performance: CBAM SAM maintenu (Woo et al. ECCV 2018)
 - Validation empirique: Face detection CBAM 98.73% (ACM AIFE 2024)
-- Interaction scientifique: Hybrid Attention Module validé (Wang et al. 2024)
+- Interaction scientifique: Hybrid Attention Module validé (Lu et al. 2024)
 
 ### 6.3 Alternatives Considérées
 

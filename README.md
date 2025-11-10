@@ -68,7 +68,7 @@ Face Detection: ✓ Spatial attention preserved for face localization
 - **ECA-Net**: Wang et al. CVPR 2020 - Efficient Channel Attention for Deep CNNs (arXiv:1910.03151)
 - **CBAM**: Woo et al. ECCV 2018 - Convolutional Block Attention Module (arXiv:1807.06521)
 - **FeatherFace**: Kim et al. Electronics 2025 - Mobile face detection baseline (DOI: 10.3390/electronics14030517)
-- **Hybrid Attention Module**: Wang et al. 2024 Frontiers in Neurorobotics (DOI: 10.3389/fnbot.2024.1391791)
+- **ECA-CBAM Application**: ECA-CBAM: Classification of Diabetic Retinopathy. ACM AIAI 2022 (DOI: 10.1145/3529466.3529468)
 
 ### Controlled Experiment Design
 - **Single Variable**: Only attention mechanism differs (CBAM ↔ ECA-CBAM)
@@ -249,13 +249,46 @@ FeatherFace/
 **Key Findings**:
 - **ECA-Net (CVPR 2020)**: Efficient channel attention with O(C×log₂(C)) complexity
 - **CBAM SAM (ECCV 2018)**: Critical spatial attention for face localization
-- **Hybrid Attention Module**: Synergistic effects validated in verified scientific literature (Wang et al. 2024, Frontiers in Neurorobotics)
+- **Sequential Attention Architecture**: ECA-Net efficiency combined with CBAM spatial attention in sequential processing (Wang et al. 2020; Woo et al. 2018)
 
 **Selection Rationale**: ECA-CBAM selected based on:
 ✅ Parameter efficiency (99% channel attention reduction)
 ✅ Spatial attention preservation for face detection
 ✅ Hybrid attention module synergistic effects
 ✅ Literature validation and reproducibility
+
+
+## 🔮 Future Work and Alternative Approaches
+
+### Parallel Hybrid Attention Architecture
+
+Recent work by Lu et al. (2024) proposes an alternative **parallel architecture** where channel and spatial attention maps are computed independently and then multiplied together, rather than applied sequentially:
+
+```python
+# Lu et al. 2024 Parallel Approach
+M_channel = channel_attention(X)  # Parallel branch 1
+M_spatial = spatial_attention(X)  # Parallel branch 2
+M_hybrid = M_channel * M_spatial   # Attention map multiplication
+output = X + (M_hybrid * X)        # Residual connection
+```
+
+**Reference:** Lu W, Yang Y and Yang L. (2024). Fine-grained image classification method based on hybrid attention module. *Frontiers in Neurorobotics*. DOI: 10.3389/fnbot.2024.1391791
+
+**Key Differences from Our Sequential Approach:**
+- **Parallel computation** vs sequential (ECA → SAM)
+- **Multiplication of attention maps** vs direct application
+- **Explicit residual connection** to preserve original features
+- May reduce information loss from strict sequential processing
+
+**Why We Chose Sequential:**
+- ✅ Aligned with standard CBAM architecture (Woo et al. 2018)
+- ✅ Proven parameter efficiency (449,017 vs 488,664 params)
+- ✅ Stable convergence during training
+- ✅ Better mobile deployment compatibility
+- ✅ Demonstrated performance gains (+1.7% mAP Hard)
+
+**Future Exploration:**
+An empirical comparison between sequential and parallel hybrid attention architectures would be valuable for understanding the trade-offs in face detection applications.
 
 ## 📄 Citation
 

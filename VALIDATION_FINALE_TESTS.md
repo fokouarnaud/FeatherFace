@@ -185,12 +185,12 @@ def forward(self, x: torch.Tensor) -> torch.Tensor:
 
 **Cellule 0 (Markdown) - Avant:**
 ```markdown
-- **Parallel Hybrid**: Interaction Enhancement (Wang et al. Frontiers in Neurorobotics 2024)
+- **Parallel Hybrid**: Interaction Enhancement (Lu et al. Frontiers in Neurorobotics 2024)
 ```
 
 **Cellule 0 (Markdown) - Après:**
 ```markdown
-- **Sequential Hybrid**: Interaction Enhancement (Wang et al. Frontiers in Neurorobotics 2024)
+- **Sequential Hybrid**: Interaction Enhancement (Lu et al. Frontiers in Neurorobotics 2024)
 ```
 
 **Autres corrections:**

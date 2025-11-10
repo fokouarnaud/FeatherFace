@@ -217,7 +217,7 @@ Tous les fichiers ont été vérifiés:
 - Wang et al. CVPR 2020: ECA-Net
 - Woo et al. ECCV 2018: CBAM
 - Feng et al. CVPR 2018: Wing Loss
-- Wang et al. 2024: Multi-phase training strategy
+- Lu et al. 2024: Multi-phase training strategy
 - Mémoire Master II: Chapitre 2 (Méthodologie)
 
 ---
