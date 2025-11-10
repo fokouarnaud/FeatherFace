@@ -157,12 +157,13 @@ F' = Ms(Mc(F) ⊙ F) ⊙ Mc(F) ⊙ F
 
 ### 4.1 Architecture Séquentielle Hybride
 
-**Processus Hybride :**
+**Processus Séquentiel :**
 ```
-                    ┌─→ ECA Module (M_c) ─┐
-Input X ──┬─────────┤                     ├─→ Matrix Interaction → Residual → Output Y
-          │         └─→ SAM Module (M_s) ─┘         ↑
-          └───────────────────────────────────────────┘
+Input X → ECA Module (M_c) → F_eca → SAM Module (M_s) → Output Y
+
+Flow séquentiel:
+   Step 1: X → ECA → F_eca = X ⊙ M_c
+   Step 2: F_eca → SAM → Y = F_eca ⊙ M_s
 ```
 
 ### 4.2 Formulation Mathématique Détaillée
