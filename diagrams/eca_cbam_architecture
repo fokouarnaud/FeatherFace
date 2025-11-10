@@ -24,7 +24,7 @@ digraph ECAcbamArchitecture {
     subgraph cluster_backbone_att {
         label="Backbone ECA-CBAM Sequential Attention";
         style=filled;
-        fillcolor="#E3F2FD";
+        fillcolor="#E3F2FD"];
         
         backbone_att1 [label="ECA->SAM\n64 ch\n~120 params", fillcolor="#BBDEFB"];
         backbone_att2 [label="ECA->SAM\n128 ch\n~120 params", fillcolor="#BBDEFB"];
