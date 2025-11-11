@@ -37,7 +37,7 @@ dependencies = [
     # ONNX Export
     "onnx>=1.10.0",
     "onnxruntime>=1.9.0",
-    "onnx-simplifier>=0.3.0",
+    "onnxsim>=0.3.0",  # Package name is onnxsim not onnx-simplifier
     
     # Jupyter Support
     "jupyter>=1.0.0",

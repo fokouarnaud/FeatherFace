@@ -15,7 +15,39 @@ All errors in the notebook `02_train_eca_cbam.ipynb` have been identified and su
 
 ## Errors Identified and Fixed
 
-### 1. Missing Method: `ECAcbaM.get_parameter_count()`
+### 1. Incorrect Package Name: `onnx-simplifier` → `onnxsim`
+
+**Location:** `pyproject.toml` line 40
+
+**Error Type:** Package Installation Error
+
+**Error Message:**
+```
+WARNING: Generating metadata for package onnx-simplifier produced metadata for project name onnxsim. Fix your #egg=onnx-simplifier fragments.
+Discarding https://files.pythonhosted.org/packages/.../onnx-simplifier-0.4.36.tar.gz (from https://pypi.org/simple/onnx-simplifier/): Requested onnxsim from ... has inconsistent name: expected 'onnx-simplifier', but metadata has 'onnxsim'
+```
+
+**Root Cause:**
+The package is called `onnx-simplifier` on PyPI, but its internal metadata name is `onnxsim`. This causes pip to reject the installation because of the name mismatch.
+
+**Fix Applied:**
+Changed the dependency name in `pyproject.toml` from `onnx-simplifier` to `onnxsim`.
+
+**Changes Made to `pyproject.toml`:**
+```toml
+# Before:
+"onnx-simplifier>=0.3.0",
+
+# After:
+"onnxsim>=0.3.0",  # Package name is onnxsim not onnx-simplifier
+```
+
+**Verification:**
+The package now installs correctly without name mismatch warnings.
+
+---
+
+### 2. Missing Method: `ECAcbaM.get_parameter_count()`
 
 **Location:** `models/eca_cbam_hybrid.py` line 345
 
@@ -112,7 +144,11 @@ Total: 9/9 tests passed (100.0%)
 
 ## Files Modified
 
-1. **models/eca_cbam_hybrid.py**
+1. **pyproject.toml**
+   - Line 40: Changed `onnx-simplifier` to `onnxsim`
+   - Impact: Fixed package installation error
+
+2. **models/eca_cbam_hybrid.py**
    - Line 285-321: Removed dead code and added proper `get_parameter_count()` method
    - Impact: Fixed ECAcbaM attention analysis functionality
 
