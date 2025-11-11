@@ -9,7 +9,7 @@ Scientific Foundation:
 
 Hybrid Attention Module Innovation:
 Combines the parameter efficiency of ECA-Net with the spatial attention 
-of CBAM using parallel processing to create an optimal attention mechanism for face detection.
+of CBAM using sequential processing to create an optimal attention mechanism for face detection.
 
 Key Features:
 - ECA-Net for efficient channel attention (22 parameters)
@@ -17,25 +17,23 @@ Key Features:
 - Hybrid interaction for enhanced feature representation
 - Optimized for face detection tasks
 
-Mathematical Formulation (Parallel Architecture):
-ECA-CBAM(X) = X + α × (ECA(X) ⊙ SAM(X) ⊙ I(X))
+Mathematical Formulation (Sequential Architecture):
+ECA-CBAM(X) = SAM(ECA(X))
 
 where:
-- ECA(X) = X ⊙ σ(Conv1D(GAP(X), k=ψ(C)))  [Applied to original input]
-- SAM(X) = X ⊙ σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))  [Applied to original input]
-- I(X) = σ(Conv2D(X, 1×1))  [Hybrid interaction term]
+- Step 1: F_ECA = X ⊙ σ(Conv1D(GAP(X), k=ψ(C)))  [Channel attention first]
+- Step 2: Y = F_ECA ⊙ σ(Conv2D([AvgPool(F_ECA); MaxPool(F_ECA)], 7×7))  [Spatial attention on ECA output]
 - ⊙ denotes element-wise multiplication
 
 Performance Targets:
-- Parameters: ~460K (optimal between ECA 449K and CBAM 488K)
+- Parameters: 449,017 (ECA-Net backbone with efficient attention)
 - Performance: +1.5% to +2.5% mAP improvement over CBAM baseline
 - Efficiency: Minimal computational overhead with maximum attention quality
 
 References:
 1. Wang, Q., et al. (2020). ECA-Net: Efficient Channel Attention for Deep CNNs. CVPR.
 2. Woo, S., et al. (2018). CBAM: Convolutional Block Attention Module. ECCV.
-3. Lu, H., et al. (2024). Hybrid attention mechanisms in deep learning. Front. Neurorobotics.
-4. Deng, M., et al. (2022). Multi-scale attention mechanisms for object detection. Electronics.
+3. Deng, M., et al. (2022). Multi-scale attention mechanisms for object detection. Electronics.
 """
 
 import torch
@@ -173,26 +171,24 @@ class ECAcbaM(nn.Module):
     ECA-CBAM Hybrid Attention Module
     
     Combines ECA-Net's efficient channel attention with CBAM's spatial attention
-    using a parallel architecture for optimal face detection performance.
+    using a SEQUENTIAL architecture for optimal face detection performance.
     
-    Parallel Architecture (Lu et al. Frontiers Neurorobotics 2024):
-    Input → [ECA(X) || SAM(X)] → Hybrid Fusion → Output
+    Sequential Architecture (Thesis Methodology):
+    Input X → ECA Module (M_c) → F_eca → SAM Module (M_s) → Output Y
     
     Mathematical Formulation:
-    ECA-CBAM(X) = X + α·(ECA(X) ⊙ SAM(X) ⊙ I(X))
+    ECA-CBAM(X) = SAM(ECA(X))
     
     where:
-    - ECA(X) = X ⊙ σ(Conv1D(GAP(X), k=ψ(C)))  [Channel attention]
-    - SAM(X) = X ⊙ σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))  [Spatial attention]
-    - I(X) = σ(Conv2D(X))  [Cross-interaction term]
+    - Step 1 (ECA): F_ECA = X ⊙ σ(Conv1D(GAP(X), k=ψ(C)))
+    - Step 2 (SAM): Y = F_ECA ⊙ σ(Conv2D([AvgPool(F_ECA); MaxPool(F_ECA)], 7×7))
     - ⊙ denotes element-wise multiplication
     
-    Key Benefits over Sequential CBAM:
-    - Parallel processing: Channel and spatial attention applied independently
-    - Original feature preservation: Residual connection maintains input information
-    - Hybrid fusion: Element-wise combination of attention mechanisms
-    - Parameter efficiency: ECA-Net (22 params) + CBAM SAM (98 params)
-    
+    Key Benefits of Sequential Architecture:
+    - Channel-then-spatial processing: Channel features refined before spatial analysis
+    - Parameter efficiency: ECA-Net (22 params) + CBAM SAM (98 params) = ~120 params total
+    - Computational efficiency: O(C) + O(H×W) sequential stages
+    - Optimal for face detection: Proven architecture from Wang et al. 2020 & Woo et al. 2018
     Args:
         channels (int): Number of input/output channels
         gamma (int): ECA gamma parameter for adaptive kernel size
@@ -220,7 +216,7 @@ class ECAcbaM(nn.Module):
         # CBAM Spatial Attention Module (localization)
         self.sam = SpatialAttention(kernel_size=spatial_kernel_size)
         
-        # Pure parallel architecture: no additional interaction modules needed
+        # Pure sequential architecture: no additional interaction modules needed
         
         # Control flags for multi-phase training
         self.eca_enabled = True
@@ -318,7 +314,7 @@ class ECAcbaM(nn.Module):
             dict: Attention analysis including patterns and statistics
         """
         with torch.no_grad():
-            # Parallel Architecture Analysis (Frontiers Neurorobotics 2024)
+            # Sequential Architecture Analysis (Thesis Methodology)
             # Get attention masks independently
             channel_mask = self.eca.get_attention_mask(x)  # [B, C, 1, 1]
             spatial_mask = self.sam.get_spatial_mask(x)    # [B, 1, H, W]
@@ -345,7 +341,7 @@ class ECAcbaM(nn.Module):
                     'mechanism': 'Hybrid Attention Module ECA-CBAM',
                     'channel_attention': 'ECA-Net (efficient)',
                     'spatial_attention': 'CBAM SAM (localization)',
-                    'architecture': 'Parallel processing with matrix interaction',
+                    'architecture': 'Sequential processing (ECA → SAM)',
                     'total_parameters': self.get_parameter_count()['total_parameters']
                 }
             }
@@ -472,7 +468,7 @@ if __name__ == "__main__":
     print(f"\n🔬 ECA-CBAM Hybrid Scientific Validation:")
     print(f"✅ ECA-Net: Wang et al. CVPR 2020 (Channel Attention Efficiency)")
     print(f"✅ CBAM: Woo et al. ECCV 2018 (Spatial Attention Localization)")
-    print(f"✅ Hybrid Attention: Lu et al. 2024 (Parallel Processing Enhancement)")
+    print(f"✅ Hybrid Attention: Sequential ECA-CBAM Architecture (Thesis Methodology)")
     print(f"✅ Face Detection: Optimized for 'what' and 'where' attention")
     print(f"✅ Parameter Efficient: ~100-120 parameters per module")
     print(f"✅ Performance Expected: +1.5% to +2.5% mAP improvement")

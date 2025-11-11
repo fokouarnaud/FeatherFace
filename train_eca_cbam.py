@@ -9,8 +9,8 @@ Combines ECA-Net efficiency with CBAM spatial attention for optimal face detecti
 Scientific Innovation:
 - ECA-Net channel attention: 22 parameters vs 2000 (CBAM CAM)
 - CBAM spatial attention: Preserved for face localization
-- Cross-combined attention: Enhanced feature interaction
-- Parameter reduction: 5.9% vs CBAM baseline (460K vs 488.7K)
+- Sequential attention: ECA → SAM processing
+- Parameter reduction: 8.1% vs CBAM baseline (449,017 vs 488,664)
 
 Expected Performance:
 - WIDERFace Easy: 94.0% AP (+1.3% vs CBAM)

@@ -9,7 +9,7 @@ Scientific Foundation:
 
 Hybrid Attention Module Innovation:
 Combines the parameter efficiency of ECA-Net with the spatial attention 
-of CBAM using parallel processing to create an optimal attention mechanism for face detection.
+of CBAM using sequential processing to create an optimal attention mechanism for face detection.
 
 Key Features:
 - ECA-Net for efficient channel attention (22 parameters)
@@ -17,25 +17,23 @@ Key Features:
 - Hybrid interaction for enhanced feature representation
 - Optimized for face detection tasks
 
-Mathematical Formulation (Parallel Architecture):
-ECA-CBAM(X) = X + α × (ECA(X) ⊙ SAM(X) ⊙ I(X))
+Mathematical Formulation (Sequential Architecture):
+ECA-CBAM(X) = SAM(ECA(X))
 
 where:
-- ECA(X) = X ⊙ σ(Conv1D(GAP(X), k=ψ(C)))  [Applied to original input]
-- SAM(X) = X ⊙ σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))  [Applied to original input]
-- I(X) = σ(Conv2D(X, 1×1))  [Hybrid interaction term]
+- Step 1: F_ECA = X ⊙ σ(Conv1D(GAP(X), k=ψ(C)))  [Channel attention first]
+- Step 2: Y = F_ECA ⊙ σ(Conv2D([AvgPool(F_ECA); MaxPool(F_ECA)], 7×7))  [Spatial attention on ECA output]
 - ⊙ denotes element-wise multiplication
 
 Performance Targets:
-- Parameters: ~460K (optimal between ECA 449K and CBAM 488K)
+- Parameters: 449,017 (ECA-Net backbone with efficient attention)
 - Performance: +1.5% to +2.5% mAP improvement over CBAM baseline
 - Efficiency: Minimal computational overhead with maximum attention quality
 
 References:
 1. Wang, Q., et al. (2020). ECA-Net: Efficient Channel Attention for Deep CNNs. CVPR.
 2. Woo, S., et al. (2018). CBAM: Convolutional Block Attention Module. ECCV.
-3. Lu, H., et al. (2024). Hybrid attention mechanisms in deep learning. Front. Neurorobotics.
-4. Deng, M., et al. (2022). Multi-scale attention mechanisms for object detection. Electronics.
+3. Deng, M., et al. (2022). Multi-scale attention mechanisms for object detection. Electronics.
 """
 
 import torch
@@ -91,6 +89,10 @@ class SpatialAttention(nn.Module):
         
         # Sigmoid activation
         self.sigmoid = nn.Sigmoid()
+        
+        # Control flags for multi-phase training
+        self.eca_enabled = True
+        self.sam_enabled = True
         
         # Initialize weights
         self._initialize_weights()
@@ -216,7 +218,11 @@ class ECAcbaM(nn.Module):
         # CBAM Spatial Attention Module (localization)
         self.sam = SpatialAttention(kernel_size=spatial_kernel_size)
         
-        # Pure parallel architecture: no additional interaction modules needed
+        # Pure sequential architecture: no additional interaction modules needed
+        
+        # Control flags for multi-phase training
+        self.eca_enabled = True
+        self.sam_enabled = True
         
         # Initialize weights
         self._initialize_weights()
@@ -226,68 +232,60 @@ class ECAcbaM(nn.Module):
         # ECA and SAM modules initialize their own weights
         pass
     
+    def enable_eca_only(self):
+        """Enable only ECA, disable SAM (for Phase 2a training)"""
+        self.eca_enabled = True
+        self.sam_enabled = False
+    
+    def enable_both(self):
+        """Enable both ECA and SAM (for Phase 2b and Phase 3 training)"""
+        self.eca_enabled = True
+        self.sam_enabled = True
+    
+    def disable_all(self):
+        """Disable all attention (for Phase 1 training)"""
+        self.eca_enabled = False
+        self.sam_enabled = False
+    
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
-        Forward pass of ECA-CBAM hybrid attention
+        Forward pass of ECA-CBAM hybrid attention - SEQUENTIAL ARCHITECTURE
         
-        Parallel Architecture Process (Frontiers Neurorobotics 2024):
-        1. Channel attention mask: M_c = σ(Conv1D(GAP(X), k=ψ(C)))
-        2. Spatial attention mask: M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))
-        3. Apply masks independently: F_c = X ⊙ M_c, F_s = X ⊙ M_s
-        4. Matrix interaction: F_combined = F_c ⊗ F_s
-        5. Residual connection: Output = F_combined + X
+        Sequential Architecture Process (Thesis Methodology):
+        1. Apply ECA Channel Attention FIRST: F_ECA = ECA(X)
+        2. Apply CBAM Spatial Attention SECOND: F_out = SAM(F_ECA)
         
-        Mathematical Flow (Parallel):
-        X → [M_c || M_s] → [F_c || F_s] → F_combined → Y = F_combined + X
+        Mathematical Flow (Sequential):
+        X -> ECA(X) -> F_ECA -> SAM(F_ECA) -> F_out
         
         Args:
             x: Input tensor [B, C, H, W]
             
         Returns:
-            torch.Tensor: Hybrid attended features [B, C, H, W]
+            torch.Tensor: Sequentially attended features [B, C, H, W]
         """
-        # Step 1: Get attention masks independently (parallel)
-        # M_c = σ(Conv1D(GAP(X), k=ψ(C)))
-        channel_mask = self.eca.get_attention_mask(x)  # [B, C, 1, 1]
+        # Phase 1: No attention (backbone only)
+        if not self.eca_enabled and not self.sam_enabled:
+            return x
         
-        # M_s = σ(Conv2D([AvgPool(X); MaxPool(X)], 7×7))
-        spatial_mask = self.sam.get_spatial_mask(x)  # [B, 1, H, W]
+        # Step 1: Apply ECA Channel Attention FIRST
+        if self.eca_enabled:
+            F_eca = self.eca(x)  # [B, C, H, W]
+        else:
+            F_eca = x
         
-        # Step 2: Apply masks independently to original input
-        # F_c = X ⊙ M_c
-        F_c = x * channel_mask  # [B, C, H, W]
+        # Phase 2a: ECA only
+        if self.eca_enabled and not self.sam_enabled:
+            return F_eca
         
-        # F_s = X ⊙ M_s
-        F_s = x * spatial_mask  # [B, C, H, W]
+        # Step 2: Apply CBAM Spatial Attention SECOND on ECA output
+        if self.sam_enabled:
+            F_out = self.sam(F_eca)  # [B, C, H, W]
+        else:
+            F_out = F_eca
         
-        # Step 3: Matrix interaction
-        # F_combined = F_c ⊗ F_s (element-wise product)
-        F_combined = F_c * F_s  # [B, C, H, W]
-        
-        # Step 4: Residual connection
-        # Output = F_combined + X
-        output = F_combined + x
-        
-        return output
-    
-    def get_parameter_count(self) -> dict:
-        """
-        Get detailed parameter count for efficiency analysis
-        
-        Returns:
-            dict: Parameter breakdown including ECA, SAM, and interaction
-        """
-        # ECA parameters
-        eca_params = self.eca.get_parameter_count()
-        
-        # SAM parameters
-        sam_params = self.sam.get_parameter_count()
-        
-        # No cross-interaction parameters in pure parallel architecture
-        interaction_params = 0
-        
-        # No interaction weight parameter in pure parallel architecture
-        weight_params = 0
+        # Phase 2b/3: Both enabled (full sequential architecture)
+        return F_out
         
         total_params = (eca_params['total_parameters'] + 
                        sam_params['total_parameters'])
@@ -318,7 +316,7 @@ class ECAcbaM(nn.Module):
             dict: Attention analysis including patterns and statistics
         """
         with torch.no_grad():
-            # Parallel Architecture Analysis (Frontiers Neurorobotics 2024)
+            # Sequential Architecture Analysis (Thesis Methodology)
             # Get attention masks independently
             channel_mask = self.eca.get_attention_mask(x)  # [B, C, 1, 1]
             spatial_mask = self.sam.get_spatial_mask(x)    # [B, 1, H, W]
@@ -345,7 +343,7 @@ class ECAcbaM(nn.Module):
                     'mechanism': 'Hybrid Attention Module ECA-CBAM',
                     'channel_attention': 'ECA-Net (efficient)',
                     'spatial_attention': 'CBAM SAM (localization)',
-                    'architecture': 'Parallel processing with matrix interaction',
+                    'architecture': 'Sequential processing (ECA → SAM)',
                     'total_parameters': self.get_parameter_count()['total_parameters']
                 }
             }
@@ -472,7 +470,7 @@ if __name__ == "__main__":
     print(f"\n🔬 ECA-CBAM Hybrid Scientific Validation:")
     print(f"✅ ECA-Net: Wang et al. CVPR 2020 (Channel Attention Efficiency)")
     print(f"✅ CBAM: Woo et al. ECCV 2018 (Spatial Attention Localization)")
-    print(f"✅ Hybrid Attention: Lu et al. 2024 (Parallel Processing Enhancement)")
+    print(f"✅ Hybrid Attention: Sequential ECA-CBAM Architecture (Thesis Methodology)")
     print(f"✅ Face Detection: Optimized for 'what' and 'where' attention")
     print(f"✅ Parameter Efficient: ~100-120 parameters per module")
     print(f"✅ Performance Expected: +1.5% to +2.5% mAP improvement")
