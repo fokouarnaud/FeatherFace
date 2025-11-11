@@ -284,14 +284,31 @@ class ECAcbaM(nn.Module):
         
         # Phase 2b/3: Both enabled (full sequential architecture)
         return F_out
-        
-        total_params = (eca_params['total_parameters'] + 
-                       sam_params['total_parameters'])
-        
+
+    def get_parameter_count(self) -> dict:
+        """
+        Get parameter count for analysis
+
+        Returns:
+            dict: Parameter count breakdown
+        """
+        # Get ECA parameters
+        eca_params = self.eca.get_parameter_count()
+
+        # Get SAM parameters
+        sam_params = sum(p.numel() for p in self.sam.parameters())
+
+        # Sequential architecture has no interaction parameters
+        interaction_params = 0
+        weight_params = 0
+
+        total_params = (eca_params['total_parameters'] +
+                       sam_params)
+
         return {
             'total_parameters': total_params,
             'eca_parameters': eca_params['total_parameters'],
-            'sam_parameters': sam_params['total_parameters'],
+            'sam_parameters': sam_params,
             'interaction_parameters': interaction_params,
             'weight_parameters': weight_params,
             'efficiency_ratio': total_params / (self.channels * self.channels),  # vs SE-Net
@@ -302,7 +319,7 @@ class ECAcbaM(nn.Module):
                 'weight': weight_params
             }
         }
-    
+
     def get_attention_analysis(self, x: torch.Tensor) -> dict:
         """
         Analyze attention patterns for debugging and visualization
