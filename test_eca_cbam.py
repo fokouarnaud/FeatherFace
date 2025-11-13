@@ -170,14 +170,14 @@ def analyze_model_attention(model, args):
     for stage, stats in analysis['backbone_attention'].items():
         print(f"      {stage}: ECA={stats['eca_attention_mean']:.4f}, "
               f"SAM={stats['sam_attention_mean']:.4f}, "
-              f"Weight={stats['interaction_weight']:.4f}")
+              f"Combined={stats['combined_attention_mean']:.4f}")
     
     # BiFPN attention statistics
     print(f"   📊 BiFPN Attention:")
     for level, stats in analysis['bifpn_attention'].items():
         print(f"      {level}: ECA={stats['eca_attention_mean']:.4f}, "
               f"SAM={stats['sam_attention_mean']:.4f}, "
-              f"Weight={stats['interaction_weight']:.4f}")
+              f"Combined={stats['combined_attention_mean']:.4f}")
 
 
 def decode_predictions(loc, conf, landms, priors, args):

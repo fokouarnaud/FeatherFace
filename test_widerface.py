@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-FeatherFace WIDERFace Testing Script
-Adapted for CBAM baseline model with attention architecture
+FeatherFace WIDERFace Testing Script - Unified Evaluation
+Supports all model architectures for consistent scientific evaluation
 
-Scientific evaluation on WIDERFace dataset for CBAM baseline:
+Supported models:
 - CBAM Baseline (488,664 parameters): 6 CBAM modules (3 backbone + 3 BiFPN)
-
-Note: For ECA-CBAM hybrid testing, use test_eca_cbam.py
+- ECA-CBAM Hybrid (476,345 parameters): 6 ECA-CBAM modules (3 backbone + 3 BiFPN)
 
 Usage:
     python test_widerface.py -m weights/cbam/featherface_cbam_final.pth --network cbam
+    python test_widerface.py -m weights/eca_cbam/featherface_eca_cbam_final.pth --network eca_cbam --analyze_attention
 """
 
 from __future__ import print_function
@@ -18,11 +18,12 @@ import argparse
 import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
-from data import cfg_cbam_paper_exact
+from data import cfg_cbam_paper_exact, cfg_eca_cbam
 from layers.functions.prior_box import PriorBox
 from utils.nms.py_cpu_nms import py_cpu_nms
 import cv2
 from models.featherface_cbam_exact import FeatherFaceCBAMExact
+from models.featherface_eca_cbam import FeatherFaceECAcbaM
 from utils.box_utils import decode, decode_landm
 from utils.timer import Timer
 import time
@@ -32,11 +33,11 @@ def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
 
-parser = argparse.ArgumentParser(description='FeatherFace WIDERFace Test')
+parser = argparse.ArgumentParser(description='FeatherFace WIDERFace Test - Unified Evaluation')
 parser.add_argument('-m', '--trained_model', default='./weights/cbam/featherface_cbam_final.pth',
                     type=str, help='Trained state_dict file path to open')
-parser.add_argument('--network', default='cbam', choices=['cbam'], 
-                    help='Network architecture: cbam (baseline only)')
+parser.add_argument('--network', default='cbam', choices=['cbam', 'eca_cbam'],
+                    help='Network architecture: cbam (baseline) or eca_cbam (hybrid)')
 parser.add_argument('--dataset_folder', default='./data/widerface/val/images/', type=str, help='dataset path')
 parser.add_argument('--confidence_threshold', default=0.02, type=float, help='confidence_threshold')
 parser.add_argument('--top_k', default=5000, type=int, help='top_k')
@@ -46,6 +47,7 @@ parser.add_argument('-s', '--save_folder', default='./widerface_evaluate/widerfa
 parser.add_argument('--cpu', action="store_true", default=False, help='Use cpu inference')
 parser.add_argument('--dataset', default='WIDERFace', type=str, choices=['WIDERFace'], help='dataset')
 parser.add_argument('--vis_thres', default=0.5, type=float, help='visualization_threshold')
+parser.add_argument('--analyze_attention', action="store_true", default=False, help='Analyze attention patterns (ECA-CBAM only)')
 args = parser.parse_args()
 
 
@@ -66,7 +68,7 @@ def check_keys(model, pretrained_state_dict):
 
 def remove_prefix(state_dict, prefix):
     """Remove module prefix from state dict keys"""
-    print('remove prefix \\'{}\\''.format(prefix))
+    print(f"remove prefix '{prefix}'")
     def f(x): return x.split(prefix, 1)[-1] if x.startswith(prefix) else x
     return {f(key): value for key, value in state_dict.items()}
 
@@ -99,29 +101,79 @@ def load_model(model, pretrained_path, load_to_cpu):
 if __name__ == '__main__':
     torch.set_grad_enabled(False)
 
-    # Use CBAM configuration
-    cfg = cfg_cbam_paper_exact
-    print("🔬 Testing CBAM Baseline (488,664 parameters)")
-    print("   Architecture: 6 CBAM modules (3 backbone + 3 BiFPN)")
-    print("   Scientific foundation: Woo et al. ECCV 2018")
-    print("   Note: For ECA-CBAM hybrid testing, use test_eca_cbam.py")
+    # Load appropriate configuration and model based on network type
+    if args.network == 'cbam':
+        cfg = cfg_cbam_paper_exact
+        print("🔬 Testing CBAM Baseline")
+        print("=" * 60)
+        print("   Architecture: 6 CBAM modules (3 backbone + 3 BiFPN)")
+        print("   Scientific foundation: Woo et al. ECCV 2018")
+        print("   Expected parameters: 488,664")
 
-    # net and model
-    net = FeatherFaceCBAMExact(cfg=cfg, phase='test')
+        net = FeatherFaceCBAMExact(cfg=cfg, phase='test')
+        expected_params = 488664
+
+    elif args.network == 'eca_cbam':
+        cfg = cfg_eca_cbam
+        print("🔬 Testing ECA-CBAM Hybrid")
+        print("=" * 60)
+        print("   Architecture: 6 ECA-CBAM modules (3 backbone + 3 BiFPN)")
+        print("   Scientific foundation: Wang et al. CVPR 2020 + Woo et al. ECCV 2018")
+        print("   Expected parameters: 476,345")
+        print("   Innovation: Sequential ECA→SAM attention")
+
+        net = FeatherFaceECAcbaM(cfg=cfg, phase='test')
+        expected_params = 476345
+
+    else:
+        raise ValueError(f"Unsupported network: {args.network}")
+
+    # Load model weights
     net = load_model(net, args.trained_model, args.cpu)
     net.eval()
-    print('Finished loading model!')
-    
+    print('✅ Finished loading model!')
+
     # Verify model parameter count
     total_params = sum(p.numel() for p in net.parameters())
-    expected_params = 488664
-    print(f'✓ Model loaded: {total_params:,} parameters (expected: {expected_params:,})')
-    if abs(total_params - expected_params) > 100:
-        print(f'⚠️  Warning: Parameter count mismatch by {total_params - expected_params:+,}')
+    print(f'📊 Model loaded: {total_params:,} parameters (expected: {expected_params:,})')
 
+    param_diff = total_params - expected_params
+    if abs(param_diff) > 100:
+        print(f'⚠️  Warning: Parameter count mismatch by {param_diff:+,}')
+    else:
+        print(f'✅ Parameter count verified!')
+
+    # Move model to device BEFORE attention analysis
     cudnn.benchmark = True
     device = torch.device("cpu" if args.cpu else "cuda")
     net = net.to(device)
+
+    # Show attention analysis for ECA-CBAM
+    if args.network == 'eca_cbam' and args.analyze_attention:
+        print("\n🔍 Analyzing ECA-CBAM Attention Patterns...")
+        dummy_input = torch.randn(1, 3, 640, 640).to(device)
+
+        with torch.no_grad():
+            analysis = net.get_attention_analysis(dummy_input)
+
+        print("📊 Attention Analysis:")
+        print(f"   🧠 Mechanism: {analysis['attention_summary']['mechanism']}")
+        print(f"   📈 Modules: {analysis['attention_summary']['modules_count']}")
+        print(f"   🔧 Channel: {analysis['attention_summary']['channel_attention']}")
+        print(f"   📍 Spatial: {analysis['attention_summary']['spatial_attention']}")
+        print(f"   🚀 Innovation: {analysis['attention_summary']['innovation']}")
+
+        print("\n   📊 Backbone Attention:")
+        for stage, stats in analysis['backbone_attention'].items():
+            print(f"      {stage}: ECA={stats['eca_attention_mean']:.4f}, "
+                  f"SAM={stats['sam_attention_mean']:.4f}, "
+                  f"Combined={stats['combined_attention_mean']:.4f}")
+
+        print("\n   📊 BiFPN Attention:")
+        for level, stats in analysis['bifpn_attention'].items():
+            print(f"      {level}: ECA={stats['eca_attention_mean']:.4f}, "
+                  f"SAM={stats['sam_attention_mean']:.4f}, "
+                  f"Combined={stats['combined_attention_mean']:.4f}")
 
     # testing dataset
     testset_folder = args.dataset_folder
@@ -234,14 +286,32 @@ if __name__ == '__main__':
         print('im_detect: {:d}/{:d} forward_pass_time: {:.4f}s misc: {:.4f}s'.format(i + 1, num_images, _t['forward_pass'].average_time, _t['misc'].average_time))
 
     # Print final statistics
-    print(f'\\n🎯 CBAM Baseline Testing Complete!')
+    print(f'\\n🎯 {args.network.upper()} Testing Complete!')
+    print("=" * 60)
     print(f'   Model: {args.trained_model}')
+    print(f'   Network: {args.network}')
     print(f'   Parameters: {total_params:,}')
-    print(f'   Attention modules: 6 (CBAM: 3 backbone + 3 BiFPN)')
+
+    if args.network == 'cbam':
+        print(f'   Attention: 6 CBAM modules (3 backbone + 3 BiFPN)')
+        print(f'   Baseline: Woo et al. ECCV 2018')
+    elif args.network == 'eca_cbam':
+        print(f'   Attention: 6 ECA-CBAM modules (3 backbone + 3 BiFPN)')
+        print(f'   Innovation: Wang et al. CVPR 2020 + Woo et al. ECCV 2018')
+        param_reduction = ((488664 - total_params) / 488664) * 100
+        print(f'   Efficiency: {param_reduction:.1f}% parameter reduction vs CBAM')
+
     print(f'   Images processed: {num_images}')
     print(f'   Average inference time: {_t["forward_pass"].average_time:.4f}s')
     print(f'   Results saved to: {args.save_folder}')
     print(f'\\n📊 Next step: Run evaluation with:')
-    print(f'   python evaluate_widerface.py --model {args.trained_model} --network cbam --show_results')
-    print(f'\\n🔗 For ECA-CBAM hybrid testing:')
-    print(f'   python test_eca_cbam.py -m weights/eca_cbam/featherface_eca_cbam_final.pth --network eca_cbam')
+    print(f'   cd widerface_evaluate')
+    print(f'   python evaluation.py -p {args.save_folder} -g eval_tools/ground_truth/')
+
+    if args.network == 'eca_cbam':
+        print(f'\\n🔬 ECA-CBAM Innovation Summary:')
+        print(f'   ✅ Sequential attention: X → ECA → SAM → Y')
+        print(f'   ✅ Parameter efficiency: {total_params:,} parameters')
+        print(f'   ✅ Expected improvement: +1.5% to +2.5% mAP vs CBAM')
+
+    print(f'\\n✅ Unified evaluation complete for {args.network}!')

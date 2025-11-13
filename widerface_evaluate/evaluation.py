@@ -144,14 +144,23 @@ def get_preds(pred_dir):
     for event in pbar:
         pbar.set_description('Reading Predictions ')
         event_dir = os.path.join(pred_dir, event)
-        
+
+        # Skip if not a directory
+        if not os.path.isdir(event_dir):
+            continue
+
         print("event_dir")
         print(event_dir)
-        
+
         event_images = os.listdir(event_dir)
         current_event = dict()
         for imgtxt in event_images:
-            imgname, _boxes = read_pred_file(os.path.join(event_dir, imgtxt))
+            # Skip if not a file
+            img_path = os.path.join(event_dir, imgtxt)
+            if not os.path.isfile(img_path):
+                continue
+
+            imgname, _boxes = read_pred_file(img_path)
             current_event[imgname.rstrip('.jpg')] = _boxes
         boxes[event] = current_event
     return boxes
@@ -267,6 +276,7 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
     pred = get_preds(pred)
     norm_score(pred)
     facebox_list, event_list, file_list, hard_gt_list, medium_gt_list, easy_gt_list = get_gt_boxes(gt_path)
+    print(f'file list shape: {len(file_list)}, file list contains: {(file_list[0][0]).shape} images, event list shape: {len(event_list)}')
     event_num = len(event_list)
     thresh_num = 1000
     settings = ['easy', 'medium', 'hard']
