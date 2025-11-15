@@ -18,12 +18,13 @@ import argparse
 import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
-from data import cfg_cbam_paper_exact, cfg_eca_cbam
+from data import cfg_cbam_paper_exact, cfg_eca_cbam, cfg_eca_cbam_parallel
 from layers.functions.prior_box import PriorBox
 from utils.nms.py_cpu_nms import py_cpu_nms
 import cv2
 from models.featherface_cbam_exact import FeatherFaceCBAMExact
 from models.featherface_eca_cbam import FeatherFaceECAcbaM
+from models.featherface_eca_cbam_parallel import FeatherFaceECAcbaMParallel
 from utils.box_utils import decode, decode_landm
 from utils.timer import Timer
 import time
@@ -35,8 +36,8 @@ def str2bool(v):
 
 parser = argparse.ArgumentParser(description='FeatherFace WIDERFace Test - Unified Evaluation')
 parser.add_argument('-m', '--trained_model', default='./weights/cbam/featherface_cbam_final.pth',
-                    type=str, help='Trained state_dict file path to open')
-parser.add_argument('--network', default='cbam', choices=['cbam', 'eca_cbam'],
+                    type=str, help="Trained state_dict file path to open")
+parser.add_argument('--network', default='cbam', choices=['cbam', 'eca_cbam', 'eca_cbam_parallel'],
                     help='Network architecture: cbam (baseline) or eca_cbam (hybrid)')
 parser.add_argument('--dataset_folder', default='./data/widerface/val/images/', type=str, help='dataset path')
 parser.add_argument('--confidence_threshold', default=0.02, type=float, help='confidence_threshold')
@@ -123,6 +124,17 @@ if __name__ == '__main__':
         print("   Innovation: Sequential ECA→SAM attention")
 
         net = FeatherFaceECAcbaM(cfg=cfg, phase='test')
+        expected_params = 476345
+    elif args.network == 'eca_cbam_parallel':
+        cfg = cfg_eca_cbam_parallel
+        print("🔬 Testing ECA-CBAM Hybrid Parallel")
+        print("=" * 60)
+        print("   Architecture: 6 ECA-CBAM parallel modules (3 backbone + 3 BiFPN)")
+        print("   Scientific foundation: Wang et al. 2024 + ECA-Net + CBAM")
+        print("   Expected parameters: 476,345")
+        print("   Innovation: Parallel M_c∥M_s → multiplicative fusion")
+
+        net = FeatherFaceECAcbaMParallel(cfg=cfg, phase='test')
         expected_params = 476345
 
     else:

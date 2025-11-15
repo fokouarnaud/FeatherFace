@@ -427,6 +427,180 @@ class ECAcbaM_Parallel(nn.Module):
         return output
 
 
+class ECAcbaM_Parallel_Simple(nn.Module):
+    """
+    ECA-CBAM Parallel Attention Module - Simple Multiplicative Fusion (Wang et al. 2024)
+
+    Schéma parallèle hybride inspiré de Wang et al. (2024) pour la comparaison
+    avec l'architecture séquentielle. Utilise une fusion multiplicative pure
+    des masques d'attention sans poids apprenables supplémentaires.
+
+    Architecture Parallèle Simple:
+    Input X → [M_c = ECA(X) || M_s = SAM(X)] → M_hybrid = M_c ⊙ M_s → Y = X ⊙ M_hybrid
+
+    Formulation Mathématique:
+    1. M_c = σ(Conv1D(GAP(X)))          [Masque canal, shape: B×C×1×1]
+    2. M_s = σ(Conv2D([AvgPool; MaxPool]))  [Masque spatial, shape: B×1×H×W]
+    3. M_hybrid = M_c ⊙ M_s              [Fusion multiplicative, shape: B×C×H×W]
+    4. Y = X ⊙ M_hybrid                  [Application finale]
+
+    Différences clés vs Séquentiel:
+    - Parallèle: M_c et M_s calculés simultanément sur X, puis fusionnés
+    - Séquentiel: M_c appliqué d'abord, puis M_s appliqué sur résultat
+
+    Avantages attendus (Wang et al. 2024):
+    - Meilleure complémentarité canal/spatial
+    - Réduction interférences entre modules
+    - Amélioration densité de recalibrage sur régions pertinentes
+    - +1.5% à +2.5% mAP vs séquentiel (cible)
+
+    Références:
+    - Wang, L., et al. (2024). Hybrid Parallel Attention Mechanisms.
+
+    Args:
+        channels (int): Nombre de canaux d'entrée/sortie
+        gamma (int): Paramètre gamma ECA pour taille de kernel adaptative
+        beta (int): Paramètre beta ECA pour taille de kernel adaptative
+        spatial_kernel_size (int): Taille du kernel pour convolution SAM
+
+    Example:
+        >>> ecacbam_par = ECAcbaM_Parallel_Simple(64)
+        >>> x = torch.randn(2, 64, 32, 32)
+        >>> y = ecacbam_par(x)  # Shape: (2, 64, 32, 32)
+    """
+
+    def __init__(self, channels: int, gamma: int = 2, beta: int = 1,
+                 spatial_kernel_size: int = 7):
+        super(ECAcbaM_Parallel_Simple, self).__init__()
+
+        self.channels = channels
+        self.gamma = gamma
+        self.beta = beta
+        self.spatial_kernel_size = spatial_kernel_size
+
+        # Modules d'attention parallèles (pas de poids de fusion)
+        self.eca = ECAModule(channels, gamma=gamma, beta=beta)
+        self.sam = SpatialAttention(kernel_size=spatial_kernel_size)
+
+        # Pas de poids apprenables supplémentaires (fusion multiplicative pure)
+        # Nombre de paramètres = ECA params + SAM params (identique au séquentiel)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Passage avant parallèle avec fusion multiplicative simple
+
+        Processus (Wang et al. 2024):
+        1. Génération parallèle des masques M_c et M_s à partir de X
+        2. Fusion multiplicative: M_hybrid = M_c ⊙ M_s
+        3. Application finale: Y = X ⊙ M_hybrid
+
+        Args:
+            x: Tenseur d'entrée [B, C, H, W]
+
+        Returns:
+            torch.Tensor: Features avec attention hybride parallèle [B, C, H, W]
+        """
+        # Étape 1: Génération parallèle des masques
+        M_c = self.eca.get_attention_mask(x)  # Masque canal [B, C, 1, 1]
+        M_s = self.sam.get_spatial_mask(x)    # Masque spatial [B, 1, H, W]
+
+        # Étape 2: Fusion multiplicative des masques
+        # M_c sera broadcasté de [B, C, 1, 1] à [B, C, H, W]
+        # M_s sera broadcasté de [B, 1, H, W] à [B, C, H, W]
+        M_hybrid = M_c * M_s  # [B, C, H, W]
+
+        # Étape 3: Application du masque hybride
+        Y = x * M_hybrid  # [B, C, H, W]
+
+        return Y
+
+    def get_channel_mask(self, x: torch.Tensor) -> torch.Tensor:
+        """Extrait le masque canal pour visualisation/analyse"""
+        with torch.no_grad():
+            return self.eca.get_attention_mask(x)
+
+    def get_spatial_mask(self, x: torch.Tensor) -> torch.Tensor:
+        """Extrait le masque spatial pour visualisation/analyse"""
+        with torch.no_grad():
+            return self.sam.get_spatial_mask(x)
+
+    def get_hybrid_mask(self, x: torch.Tensor) -> torch.Tensor:
+        """Extrait le masque hybride fusionné pour visualisation/analyse"""
+        with torch.no_grad():
+            M_c = self.eca.get_attention_mask(x)
+            M_s = self.sam.get_spatial_mask(x)
+            return M_c * M_s
+
+    def get_attention_heatmaps(self, x: torch.Tensor) -> dict:
+        """Génère tous les heatmaps d'attention pour analyse qualitative"""
+        with torch.no_grad():
+            M_c = self.get_channel_mask(x)
+            M_s = self.get_spatial_mask(x)
+            M_hybrid = self.get_hybrid_mask(x)
+            Y = self.forward(x)
+
+            return {
+                'channel_mask': M_c,      # [B, C, 1, 1]
+                'spatial_mask': M_s,      # [B, 1, H, W]
+                'hybrid_mask': M_hybrid,  # [B, C, H, W]
+                'output': Y               # [B, C, H, W]
+            }
+
+    def get_parameter_count(self) -> dict:
+        """Compte les paramètres pour analyse d'efficience"""
+        eca_params = self.eca.get_parameter_count()
+        sam_params = sum(p.numel() for p in self.sam.parameters())
+        total_params = eca_params['total_parameters'] + sam_params
+
+        return {
+            'total_parameters': total_params,
+            'eca_parameters': eca_params['total_parameters'],
+            'sam_parameters': sam_params,
+            'fusion_parameters': 0,  # 0 pour fusion simple
+            'efficiency_ratio': total_params / (self.channels * self.channels),
+            'parameter_breakdown': {
+                'eca': eca_params,
+                'sam': sam_params,
+                'fusion': 'multiplicative_simple (0 params)'
+            }
+        }
+
+    def get_attention_analysis(self, x: torch.Tensor) -> dict:
+        """Analyse complète des patterns d'attention pour débogage/visualisation"""
+        with torch.no_grad():
+            M_c = self.get_channel_mask(x)
+            M_s = self.get_spatial_mask(x)
+            M_hybrid = self.get_hybrid_mask(x)
+            F_c = x * M_c
+            F_s = x * M_s
+            Y = x * M_hybrid
+            param_info = self.get_parameter_count()
+
+            return {
+                'channel_mask_mean': torch.mean(M_c).item(),
+                'spatial_mask_mean': torch.mean(M_s).item(),
+                'hybrid_mask_mean': torch.mean(M_hybrid).item(),
+                'channel_effect_mean': torch.mean(F_c).item(),
+                'spatial_effect_mean': torch.mean(F_s).item(),
+                'hybrid_output_mean': torch.mean(Y).item(),
+                'attention_summary': {
+                    'mechanism': 'ECA-CBAM Hybrid Parallel (Simple Multiplicative)',
+                    'channel_attention': 'ECA-Net (efficient)',
+                    'spatial_attention': 'CBAM SAM (localization)',
+                    'fusion_type': 'Multiplicative (M_c ⊙ M_s)',
+                    'architecture': 'Parallel processing (Wang et al. 2024)',
+                    'total_parameters': param_info['total_parameters']
+                },
+                'architecture_type': 'parallel_simple'
+            }
+
+    def extra_repr(self) -> str:
+        """Représentation textuelle pour débogage"""
+        return (f'channels={self.channels}, gamma={self.gamma}, beta={self.beta}, '
+                f'spatial_kernel_size={self.spatial_kernel_size}, '
+                f'fusion=multiplicative_simple')
+
+
 def test_eca_cbam_hybrid():
     """
     Test ECA-CBAM hybrid attention implementation

@@ -1,0 +1,20 @@
+--- test_widerface.py.orig
++++ test_widerface.py
+@@ -127,6 +127,17 @@
+         net = FeatherFaceECAcbaM(cfg=cfg, phase='test')
+         expected_params = 476345
+ 
++    elif args.network == 'eca_cbam_parallel':
++        cfg = cfg_eca_cbam_parallel
++        print("🔬 Testing ECA-CBAM Hybrid Parallel")
++        print("=" * 60)
++        print("   Architecture: 6 ECA-CBAM parallel modules (3 backbone + 3 BiFPN)")
++        print("   Scientific foundation: Wang et al. 2024 + ECA-Net + CBAM")
++        print("   Expected parameters: 476,345")
++        print("   Innovation: Parallel M_c∥M_s → multiplicative fusion")
++
++        net = FeatherFaceECAcbaMParallel(cfg=cfg, phase='test')
++        expected_params = 476345
++
+     else:
+         raise ValueError(f"Unsupported network: {args.network}")
