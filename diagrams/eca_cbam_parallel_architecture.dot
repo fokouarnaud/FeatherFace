@@ -3,23 +3,18 @@ digraph ECAcbaMParallelArchitecture {
     node [shape=box, style="rounded,filled", fontname="Arial", fontsize=10];
     edge [fontname="Arial", fontsize=9];
 
-    // Color scheme
     node [fillcolor="#E8F4F8"];
 
-    // Title
     title [label="ECA-CBAM Parallel Hybrid Attention\n(Wang et al. 2024)", shape=plaintext, fontsize=14, fontcolor="#1565C0"];
 
-    // Input
     input [label="Input Features X\n[B, C, H, W]", fillcolor="#B3E5FC"];
 
-    // Parallel branches
     subgraph cluster_parallel {
         label="Parallel Independent Processing";
         style=dashed;
         color="#1976D2";
         fontsize=11;
 
-        // ECA branch
         subgraph cluster_eca {
             label="ECA Branch (Channel Attention)";
             style=filled;
@@ -34,7 +29,6 @@ digraph ECAcbaMParallelArchitecture {
             eca_gap -> eca_conv -> eca_sigmoid -> eca_mask;
         }
 
-        // SAM branch
         subgraph cluster_sam {
             label="SAM Branch (Spatial Attention)";
             style=filled;
@@ -50,33 +44,25 @@ digraph ECAcbaMParallelArchitecture {
         }
     }
 
-    // Fusion
     fusion [label="Multiplicative Fusion\nM_hybrid = M_c ⊙ M_s\n[B, C, H, W]\n\nParams: 0 (element-wise)", fillcolor="#FFF9C4", shape=ellipse];
 
-    // Apply attention
     apply [label="Apply Hybrid Mask\nY = X ⊙ M_hybrid\n[B, C, H, W]", fillcolor="#C8E6C9"];
 
-    // Output
     output [label="Output Y\n[B, C, H, W]\nChannel + Spatial Recalibrated", fillcolor="#A5D6A7"];
 
-    // Connections
     title -> input [style=invis];
 
-    // Split to parallel branches
     input -> eca_gap [label="Original X", color="#1565C0"];
     input -> sam_pool [label="Original X", color="#7B1FA2"];
 
-    // Merge masks
     eca_mask -> fusion [label="M_c", color="#1565C0"];
     sam_mask -> fusion [label="M_s", color="#7B1FA2"];
 
-    // Apply to original input
     fusion -> apply [label="M_hybrid"];
     input -> apply [label="X (original)", style=dashed, color="#666"];
 
     apply -> output;
 
-    // Info box
     info [label="Advantages (Wang et al. 2024):\n✓ Both modules see unfiltered input X\n✓ Independent parallel computation\n✓ Better complementarity (M_c ⊙ M_s)\n✓ Reduced module interference\n✓ Improved gradient flow\n✓ +6.5% mAP vs Sequential\n✓ 0 fusion parameters",
           shape=note, fillcolor="#FFFDE7", fontsize=9];
 

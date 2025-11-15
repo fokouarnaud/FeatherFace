@@ -3,13 +3,10 @@ digraph FeatherFaceCompletePipeline {
     node [shape=box, style="rounded,filled", fontname="Arial", fontsize=9];
     edge [fontname="Arial", fontsize=8];
 
-    // Title
     title [label="FeatherFace Complete Detection Pipeline\nwith ECA-CBAM Parallel Attention Modules", shape=plaintext, fontsize=14, fontcolor="#1565C0"];
 
-    // Input
     input [label="Input Image\n640×640×3", fillcolor="#B3E5FC"];
 
-    // Backbone
     subgraph cluster_backbone {
         label="MobileNet-0.25 Backbone";
         style=filled;
@@ -33,7 +30,6 @@ digraph FeatherFaceCompletePipeline {
         stage3 -> att3 -> c3;
     }
 
-    // BiFPN
     subgraph cluster_bifpn {
         label="BiFPN (Bidirectional Feature Pyramid)";
         style=filled;
@@ -56,13 +52,11 @@ digraph FeatherFaceCompletePipeline {
         p4 -> att5 -> p4_out;
         p5 -> att6 -> p5_out;
 
-        // BiFPN connections
         c1 -> p3 [label="TD", style=dashed];
         c2 -> p4 [label="TD", style=dashed];
         c3 -> p5 [label="BU", style=dashed];
     }
 
-    // Detection Heads
     subgraph cluster_heads {
         label="SSH Detection Heads + Channel Shuffle";
         style=filled;
@@ -83,11 +77,9 @@ digraph FeatherFaceCompletePipeline {
         head3 -> det3;
     }
 
-    // NMS
     nms [label="NMS\n(Non-Maximum\nSuppression)", fillcolor="#C8E6C9"];
     output [label="Final Detections\nBBox + Conf\n+ 5 Landmarks", fillcolor="#A5D6A7"];
 
-    // Main flow
     title -> input [style=invis];
     input -> stage1;
     stage1 -> stage2 [style=invis];
@@ -102,7 +94,6 @@ digraph FeatherFaceCompletePipeline {
     det3 -> nms;
     nms -> output;
 
-    // Info box
     info [label="Total Attention Modules: 6\n━━━━━━━━━━━━━━━━━━━━━━━━\n• 3 in Backbone (64, 128, 256 ch)\n• 3 in BiFPN (52, 52, 52 ch)\n• Each: ~120 params (ECA 22 + SAM 98)\n• Architecture: Parallel (ECA ∥ SAM)\n• Fusion: Multiplicative (M_c ⊙ M_s)\n• Total Model: 476,345 parameters\n• Target mAP: 89.2% (WIDERFace)",
           shape=note, fillcolor="#FFFDE7", fontsize=9];
 

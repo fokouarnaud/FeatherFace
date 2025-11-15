@@ -10,7 +10,7 @@
 <title>HybridAttentionModule</title>
 <polygon fill="white" stroke="none" points="-4,4 -4,-1001.76 372,-1001.76 372,4 -4,4"/>
 <text xml:space="preserve" text-anchor="middle" x="184" y="-980.46" font-family="Arial Bold" font-size="14.00">ECA&#45;CBAM Sequential Hybrid Attention Module</text>
-<text xml:space="preserve" text-anchor="middle" x="184" y="-964.71" font-family="Arial Bold" font-size="14.00">449,017 parameters</text>
+<text xml:space="preserve" text-anchor="middle" x="184" y="-964.71" font-family="Arial Bold" font-size="14.00">476,345 parameters</text>
 <g id="clust1" class="cluster">
 <title>cluster_eca</title>
 <polygon fill="#e8f5e8" stroke="#4caf50" points="8,-536.26 8,-876.51 309,-876.51 309,-536.26 8,-536.26"/>

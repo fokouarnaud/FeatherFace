@@ -1,19 +1,15 @@
 digraph HybridAttentionModule {
-    // Graph configuration - Top-to-bottom for sequential flow
     rankdir=TB;
     node [shape=box, style=filled, fontname="Arial", fontsize=10];
     edge [fontname="Arial", fontsize=9];
-    
-    // Title
-    label="ECA-CBAM Sequential Hybrid Attention Module\n449,017 parameters";
+
+    label="ECA-CBAM Sequential Hybrid Attention Module\n476,345 parameters";
     labelloc="t";
     fontsize=14;
     fontname="Arial Bold";
     
-    // Input
     input [label="Input Feature Map\nX in R^(B×C×H×W)", fillcolor="#E8F4FD", color="#1E88E5", shape=ellipse];
-    
-    // STEP 1: ECA Channel Attention
+
     subgraph cluster_eca {
         label="STEP 1: ECA Channel Attention (First Stage)";
         style=filled;
@@ -25,11 +21,9 @@ digraph HybridAttentionModule {
         eca_sigmoid [label="Sigmoid\nM_c", fillcolor="#81C784"];
         eca_mult [label="Channel Recalibration\nF_ECA = X * M_c", fillcolor="#66BB6A", shape=diamond];
     }
-    
-    // Intermediate output
+
     intermediate [label="Intermediate Output\nF_ECA", fillcolor="#FFF9C4", shape=ellipse];
-    
-    // STEP 2: CBAM SAM Spatial Attention
+
     subgraph cluster_sam {
         label="STEP 2: CBAM Spatial Attention (Second Stage)";
         style=filled;
@@ -41,11 +35,9 @@ digraph HybridAttentionModule {
         sam_sigmoid [label="Sigmoid\nM_s", fillcolor="#E91E63"];
         sam_mult [label="Spatial Recalibration\nY = F_ECA * M_s", fillcolor="#D81B60", shape=diamond];
     }
-    
-    // Output
+
     output [label="Final Output\nY", fillcolor="#E8F4FD", color="#1E88E5", shape=ellipse];
-    
-    // Sequential Flow
+
     input -> eca_gap [label="X", penwidth=2];
     eca_gap -> eca_conv1d;
     eca_conv1d -> eca_sigmoid;

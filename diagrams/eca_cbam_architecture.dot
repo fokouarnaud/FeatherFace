@@ -2,8 +2,8 @@ digraph ECAcbamArchitecture {
     rankdir=LR;
     node [shape=box, style=filled, fontname="Arial", fontsize=10];
     edge [fontname="Arial", fontsize=9];
-    
-    label="FeatherFace ECA-CBAM Sequential Architecture (449,017 parameters)";
+
+    label="FeatherFace ECA-CBAM Sequential Architecture (476,345 parameters)";
     labelloc="t";
     fontsize=14;
     fontname="Arial Bold";

@@ -3,7 +3,6 @@ digraph SequentialVsParallel {
     node [shape=box, style="rounded,filled", fontname="Arial", fontsize=9];
     edge [fontname="Arial", fontsize=8];
 
-    // Title
     title [label="Sequential vs Parallel Architecture Comparison", shape=plaintext, fontsize=14, fontcolor="#1565C0"];
 
     subgraph cluster_sequential {
@@ -33,7 +32,6 @@ digraph SequentialVsParallel {
 
         par_input [label="X\n[B,C,H,W]", fillcolor="#B2DFDB"];
 
-        // Parallel branches
         par_eca [label="ECA\nM_c", fillcolor="#80CBC4"];
         par_sam [label="SAM\nM_s", fillcolor="#4DB6AC"];
 
@@ -49,11 +47,9 @@ digraph SequentialVsParallel {
         par_output -> par_info [style=invis];
     }
 
-    // Comparison arrow
     title -> seq_input [style=invis];
     title -> par_input [style=invis];
 
-    // Key differences
     key [label="Key Differences:\n━━━━━━━━━━━━━━━\nSequential: ECA first, SAM on filtered\nParallel: Both on original, fused masks\n\nParameter Count: IDENTICAL (476,345)\nPerformance: Parallel +6.5% mAP\nFusion: Multiplicative (0 params)",
          shape=box, style="filled,rounded", fillcolor="#FFF9C4", fontsize=10];
 
