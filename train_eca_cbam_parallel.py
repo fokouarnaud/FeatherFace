@@ -20,7 +20,7 @@ Expected Performance:
 
 Usage:
     python train_eca_cbam_parallel.py --training_dataset ./data/widerface/train/label.txt
-    python train_eca_cbam_parallel.py --training_dataset ./data/widerface/train/label.txt --resume_net ./weights/eca_cbam_parallel_parallel/epoch_100.pth
+    python train_eca_cbam_parallel.py --training_dataset ./data/widerface/train/label.txt --resume_net ./weights/eca_cbam_parallel/epoch_100.pth
 """
 
 import os
@@ -39,8 +39,8 @@ from torch.utils.tensorboard import SummaryWriter
 # Add current directory to path
 sys.path.append('.')
 
-from data import cfg_eca_cbam_parallel_parallel, cfg_mnet
-from models.featherface_eca_cbam_parallel_parallel import FeatherFaceECAcbaMParallel
+from data import cfg_eca_cbam_parallel, cfg_mnet
+from models.featherface_eca_cbam_parallel import FeatherFaceECAcbaMParallel
 from data.wider_face import WiderFaceDetection, detection_collate
 from layers.modules import MultiBoxLoss
 from layers.functions.prior_box import PriorBox
@@ -79,7 +79,7 @@ def parse_args():
                        type=int,
                        help='Resume training from epoch')
     parser.add_argument('--save_folder', 
-                       default='./weights/eca_cbam_parallel_parallel/',
+                       default='./weights/eca_cbam_parallel/',
                        help='Folder to save checkpoints')
     parser.add_argument('--batch_size', 
                        default=32, 
@@ -357,7 +357,7 @@ def save_checkpoint(model, optimizer, epoch, args, param_info):
     
     # Save final model
     if epoch == args.max_epoch or epoch % 50 == 0:
-        final_path = os.path.join(args.save_folder, f'featherface_eca_cbam_parallel_parallel_epoch_{epoch}.pth')
+        final_path = os.path.join(args.save_folder, f'featherface_eca_cbam_parallel_epoch_{epoch}.pth')
         torch.save(model.state_dict(), final_path)
         print(f"💾 Model saved: {final_path}")
 
@@ -389,7 +389,7 @@ def main():
         os.makedirs(args.save_folder)
     
     # Load configuration
-    cfg = cfg_eca_cbam_parallel_parallel.copy()
+    cfg = cfg_eca_cbam_parallel.copy()
     cfg.update(vars(args))
     
     # Create model
@@ -457,7 +457,7 @@ def main():
             writer.add_scalar('Epoch/Learning_Rate', optimizer.param_groups[0]['lr'], epoch)
     
     # Final model save
-    final_model_path = os.path.join(args.save_folder, 'featherface_eca_cbam_parallel_parallel_final.pth')
+    final_model_path = os.path.join(args.save_folder, 'featherface_eca_cbam_parallel_final.pth')
     torch.save(model.state_dict(), final_model_path)
     print(f"🎉 Final model saved: {final_model_path}")
     
