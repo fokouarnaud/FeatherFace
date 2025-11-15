@@ -143,20 +143,25 @@ def create_model(cfg, args):
     
     # Create model
     model = FeatherFaceECAcbaMParallel(cfg=cfg, phase='train')
-    
-    # Validate model
-    validation, param_info = model.validate_eca_cbam_parallel_hybrid()
-    
+
+    # Get parameter count and validation
+    param_info = model.get_parameter_count()
+    validation = param_info['validation']
+
     print(f"✅ Model created successfully!")
     print(f"📈 Total parameters: {param_info['total']:,}")
-    print(f"📉 Parameter reduction: {param_info['parameter_reduction']:,} ({param_info['efficiency_gain']:.1f}%)")
+    print(f"📉 Parameter reduction vs CBAM: {param_info['parameter_reduction_vs_cbam']:,} ({param_info['efficiency_gain_vs_cbam']:.1f}%)")
+    print(f"📉 Difference vs Sequential: {param_info['parameter_diff_vs_sequential']:,}")
     print(f"🎯 Attention efficiency: {param_info['attention_efficiency']:.0f} params/module")
-    
-    if not validation['parameter_target_achieved']:
-        print(f"⚠️  WARNING: Parameter target not achieved!")
-    
-    if validation['hybrid_innovation']:
-        print(f"🚀 Innovation: ECA-CBAM hybrid attention validated!")
+
+    if not validation['similar_to_sequential']:
+        print(f"⚠️  WARNING: Parameters not similar to sequential!")
+
+    if validation['efficiency_vs_cbam']:
+        print(f"🚀 Innovation: Parameter efficiency vs CBAM achieved!")
+
+    if validation['attention_efficient']:
+        print(f"🚀 Innovation: Attention efficiency validated!")
     
     return model, param_info
 
@@ -464,16 +469,17 @@ def main():
     # Training summary
     print(f"\n🎉 Training completed!")
     print(f"📊 Total parameters: {param_info['total']:,}")
-    print(f"📉 Parameter reduction: {param_info['efficiency_gain']:.1f}% vs CBAM baseline")
+    print(f"📉 Parameter reduction: {param_info['efficiency_gain_vs_cbam']:.1f}% vs CBAM baseline")
     print(f"🎯 Expected performance: +1.5% to +2.5% mAP improvement")
     print(f"⏱️  Training time: {datetime.datetime.now()}")
     
     # Final comparison
-    comparison = model.compare_with_cbam_baseline()
-    print(f"\n🔬 Final Comparison with CBAM Baseline:")
-    print(f"   📊 Parameter efficiency: {comparison['parameter_comparison']['efficiency_gain']}")
-    print(f"   📈 Expected performance: {comparison['performance_prediction']['expected_performance']}")
-    print(f"   🚀 Innovation: {comparison['performance_prediction']['deployment']}")
+    comparison = model.compare_with_sequential()
+    print(f"\n🔬 Final Comparison:")
+    print(f"   📊 Parallel vs Sequential: {comparison['parameter_comparison']['diff_vs_sequential']} params difference")
+    print(f"   📉 Reduction vs CBAM: {comparison['parameter_comparison']['reduction_vs_cbam']:,} params")
+    print(f"   📈 Architecture: {comparison['architecture_comparison']['parallel']['processing']}")
+    print(f"   🚀 Expected improvement: {comparison['expected_advantages_parallel']['performance']}")
     
     writer.close()
 
