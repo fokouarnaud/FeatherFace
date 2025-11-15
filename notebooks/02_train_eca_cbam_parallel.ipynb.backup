@@ -221,8 +221,8 @@
       "Requirement already satisfied: click>=8.0.0 in /home/zeus/miniconda3/envs/cloudspace/lib/python3.12/site-packages (from typer-slim->huggingface_hub->timm>=0.5.0->featherface==2.0.0) (8.3.0)\n",
       "Building wheels for collected packages: featherface\n",
       "  Building editable for featherface (pyproject.toml) ... \u001b[?25ldone\n",
-      "\u001b[?25h  Created wheel for featherface: filename=featherface-2.0.0-0.editable-py3-none-any.whl size=7331 sha256=70bd73afe72305105f0cb88f5ae0c4b078647f0e74247bba6095195ba8d18382\n",
-      "  Stored in directory: /tmp/pip-ephem-wheel-cache-s1l_htnk/wheels/60/d0/1d/0a3fcb3ce2a5919efc8a212b5570d1fafdb89ae39d970fb784\n",
+      "\u001b[?25h  Created wheel for featherface: filename=featherface-2.0.0-0.editable-py3-none-any.whl size=7331 sha256=88c8f67a4d0a7be371e3cbcfd89a346546e799d52fc7bac9f88ec4c91a8401c9\n",
+      "  Stored in directory: /tmp/pip-ephem-wheel-cache-anf1p5oe/wheels/60/d0/1d/0a3fcb3ce2a5919efc8a212b5570d1fafdb89ae39d970fb784\n",
       "Successfully built featherface\n",
       "Installing collected packages: featherface\n",
       "  Attempting uninstall: featherface\n",
@@ -744,9 +744,9 @@
      "text": [
       "Downloading...\n",
       "From (original): https://drive.google.com/uc?id=11UGV3nbVv1x9IC--_tK3Uxf7hA6rlbsS\n",
-      "From (redirected): https://drive.google.com/uc?id=11UGV3nbVv1x9IC--_tK3Uxf7hA6rlbsS&confirm=t&uuid=265d72c3-76eb-4af0-acd8-beefa196eca5\n",
+      "From (redirected): https://drive.google.com/uc?id=11UGV3nbVv1x9IC--_tK3Uxf7hA6rlbsS&confirm=t&uuid=ecbd0552-9413-495e-b189-0efeb1e02801\n",
       "To: /teamspace/studios/this_studio/FeatherFace/data/widerface.zip\n",
-      "100%|██████████| 1.83G/1.83G [00:14<00:00, 131MB/s] \n"
+      "100%|██████████| 1.83G/1.83G [00:12<00:00, 142MB/s] \n"
      ]
     },
     {
@@ -1265,18 +1265,49 @@
       "  • Parameter reduction: 12,319 (2.5%)\n",
       "  • Architecture: 6 ECA-CBAM Parallel modules (3 backbone + 3 BiFPN)\n",
       "\n",
-      "💻 Evaluation Device:\n"
-     ]
-    },
-    {
-     "ename": "NameError",
-     "evalue": "name 'eval_device' is not defined",
-     "output_type": "error",
-     "traceback": [
-      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
-      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
-      "Cell \u001b[0;32mIn[9], line 113\u001b[0m\n\u001b[1;32m    110\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m  • Architecture: 6 ECA-CBAM Parallel modules (3 backbone + 3 BiFPN)\u001b[39m\u001b[38;5;124m\"\u001b[39m)\n\u001b[1;32m    112\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;130;01m\\n\u001b[39;00m\u001b[38;5;124m💻 Evaluation Device:\u001b[39m\u001b[38;5;124m\"\u001b[39m)\n\u001b[0;32m--> 113\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m  • Device used: \u001b[39m\u001b[38;5;132;01m{\u001b[39;00m\u001b[43meval_device\u001b[49m\u001b[38;5;241m.\u001b[39mupper()\u001b[38;5;132;01m}\u001b[39;00m\u001b[38;5;124m\"\u001b[39m)\n\u001b[1;32m    114\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m  • GPU available: \u001b[39m\u001b[38;5;132;01m{\u001b[39;00m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124m✅\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;250m \u001b[39m\u001b[38;5;28;01mif\u001b[39;00m\u001b[38;5;250m \u001b[39mtorch\u001b[38;5;241m.\u001b[39mcuda\u001b[38;5;241m.\u001b[39mis_available()\u001b[38;5;250m \u001b[39m\u001b[38;5;28;01melse\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124m❌\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;132;01m}\u001b[39;00m\u001b[38;5;124m\"\u001b[39m)\n\u001b[1;32m    115\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m  • Config setting: \u001b[39m\u001b[38;5;132;01m{\u001b[39;00m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mGPU\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;250m \u001b[39m\u001b[38;5;28;01mif\u001b[39;00m\u001b[38;5;250m \u001b[39mUSE_GPU_FOR_EVALUATION\u001b[38;5;250m \u001b[39m\u001b[38;5;28;01melse\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mCPU\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;132;01m}\u001b[39;00m\u001b[38;5;124m\"\u001b[39m)\n",
-      "\u001b[0;31mNameError\u001b[0m: name 'eval_device' is not defined"
+      "💻 Evaluation Device:\n",
+      "  • Device used: CPU\n",
+      "  • GPU available: ❌\n",
+      "  • Config setting: CPU\n",
+      "\n",
+      "🎯 Innovation Features:\n",
+      "  • Channel Attention: ECA-Net (efficient - 22 params/module)\n",
+      "  • Spatial Attention: CBAM SAM (localization - 98 params/module)\n",
+      "  • Parallel Architecture: X ⇉ [ECA, SAM] → M_c ⊙ M_s → Y\n",
+      "  • Expected Performance: +6.5% mAP (89.2% target) vs sequential\n",
+      "\n",
+      "📊 CBAM Baseline Comparison:\n",
+      "  • CBAM Easy:   92.7%\n",
+      "  • CBAM Medium: 90.7%\n",
+      "  • CBAM Hard:   78.3%\n",
+      "  • CBAM Parameters: 488,664\n",
+      "\n",
+      "⚠️ Evaluation Status:\n",
+      "  ❌ Step 1: Predictions generated\n",
+      "  ❌ Step 2: mAP scores calculated\n",
+      "\n",
+      "📁 Output Files:\n",
+      "  • Predictions: ./widerface_evaluate/widerface_txt/\n",
+      "  • Attention analysis: Console output above\n",
+      "  • mAP results: Console output above\n",
+      "\n",
+      "🚀 Unified Evaluation Benefits:\n",
+      "  ✅ Consistent methodology across all models\n",
+      "  ✅ Same test script (test_widerface.py) for CBAM and ECA-CBAM Parallel\n",
+      "  ✅ Fair scientific comparison\n",
+      "  ✅ Reproducible results\n",
+      "  ✅ Automated mAP calculation\n",
+      "  ✅ Flexible CPU/GPU usage\n",
+      "  ✅ Smart skip: Reuses existing predictions\n",
+      "\n",
+      "💡 TIPS:\n",
+      "  • To regenerate predictions: Delete ./widerface_evaluate/widerface_txt/ and re-run\n",
+      "  • To only recalculate mAP: Just re-run this cell (Step 1 will be skipped)\n",
+      "  • To use GPU for evaluation: Set USE_GPU_FOR_EVALUATION=True in Cell 3\n",
+      "\n",
+      "======================================================================\n",
+      "🎊 ECA-CBAM Parallel EVALUATION COMPLETE!\n",
+      "======================================================================\n"
      ]
     }
    ],
@@ -1285,9 +1316,10 @@
     "# Respects USE_GPU_FOR_EVALUATION configuration\n",
     "# Smart: Skips Step 1 if predictions already exist\n",
     "\n",
-    "if evaluation_ready:\n",
-    "    eval_device = 'gpu' if USE_GPU_FOR_EVALUATION and torch.cuda.is_available() else 'cpu'\n",
+    "# Initialize eval_device (needed for summary even when evaluation_ready is False)\n",
+    "eval_device = 'gpu' if USE_GPU_FOR_EVALUATION and torch.cuda.is_available() else 'cpu'\n",
     "\n",
+    "if evaluation_ready:\n",
     "    print(f\"🚀 Starting comprehensive ECA-CBAM Parallel evaluation...\")\n",
     "    print(f\"   Device: {eval_device.upper()}\")\n",
     "    print(f\"   Images: 3,226 validation images\")\n",
@@ -1331,7 +1363,7 @@
     "        print(f\"🎯 Unified Evaluation Command:\")\n",
     "        print(' '.join(unified_eval_cmd))\n",
     "        print(f\"📁 Predictions will be saved to: {prediction_folder}\")\n",
-    "        print(f\"💻 Device: {eval_device.upper()}\")\n",
+    "        print(f\"💻 Device: {eval_device.UPPER()}\")\n",
     "\n",
     "        result = subprocess.run(unified_eval_cmd, capture_output=True, text=True)\n",
     "        print(result.stdout)\n",
@@ -1375,6 +1407,7 @@
     "else:\n",
     "    print(f\"❌ Cannot evaluate - ECA-CBAM Parallel model not ready\")\n",
     "    evaluation_completed = False\n",
+    "    predictions_generated = False\n",
     "\n",
     "# Get actual model parameters for display\n",
     "if 'param_info' not in locals():\n",
@@ -1412,7 +1445,7 @@
     "\n",
     "if evaluation_completed:\n",
     "    print(f\"\\n✅ Complete Evaluation Status:\")\n",
-    "    if predictions_exist and not predictions_generated:\n",
+    "    if 'predictions_exist' in locals() and predictions_exist and not predictions_generated:\n",
     "        print(f\"  ⏭️  Step 1: Predictions (skipped - already exist)\")\n",
     "    else:\n",
     "        print(f\"  ✅ Step 1: Predictions generated\")\n",
@@ -1425,7 +1458,10 @@
     "    print(f\"  ❌ Step 2: mAP scores calculated\")\n",
     "\n",
     "print(f\"\\n📁 Output Files:\")\n",
-    "print(f\"  • Predictions: {prediction_folder}\")\n",
+    "if 'prediction_folder' in locals():\n",
+    "    print(f\"  • Predictions: {prediction_folder}\")\n",
+    "else:\n",
+    "    print(f\"  • Predictions: ./widerface_evaluate/widerface_txt/\")\n",
     "print(f\"  • Attention analysis: Console output above\")\n",
     "print(f\"  • mAP results: Console output above\")\n",
     "\n",
@@ -1439,7 +1475,10 @@
     "print(f\"  ✅ Smart skip: Reuses existing predictions\")\n",
     "\n",
     "print(f\"\\n💡 TIPS:\")\n",
-    "print(f\"  • To regenerate predictions: Delete {prediction_folder} and re-run\")\n",
+    "if 'prediction_folder' in locals():\n",
+    "    print(f\"  • To regenerate predictions: Delete {prediction_folder} and re-run\")\n",
+    "else:\n",
+    "    print(f\"  • To regenerate predictions: Delete ./widerface_evaluate/widerface_txt/ and re-run\")\n",
     "print(f\"  • To only recalculate mAP: Just re-run this cell (Step 1 will be skipped)\")\n",
     "print(f\"  • To use GPU for evaluation: Set USE_GPU_FOR_EVALUATION=True in Cell 3\")\n",
     "\n",
@@ -1457,9 +1496,26 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 10,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "📦 ECA-CBAM Parallel MODEL EXPORT AND DEPLOYMENT\n",
+      "============================================================\n",
+      "💻 Export Device: CPU\n",
+      "❌ No trained ECA-CBAM Parallel model available for export\n",
+      "Expected location: weights/eca_cbam_parallel/featherface_eca_cbam_parallel_final.pth\n",
+      "Please complete training first\n",
+      "\n",
+      "🎯 Export Status: ❌ TRAIN MODEL FIRST\n",
+      "\n",
+      "💡 TIP: To use GPU for export, set USE_GPU_FOR_EXPORT=True in Cell 3\n"
+     ]
+    }
+   ],
    "source": [
     "# ECA-CBAM Parallel Model Export for Deployment\n",
     "# Respects USE_GPU_FOR_EXPORT configuration\n",
@@ -1685,9 +1741,44 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 11,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "🔬 ECA-CBAM Parallel HYBRID SCIENTIFIC VALIDATION AND INNOVATION SUMMARY\n",
+      "======================================================================\n",
+      "📋 Pipeline Completion Status:\n",
+      "  Environment Setup: ✅\n",
+      "  ECA-CBAM Parallel Validation: ✅\n",
+      "  Attention Analysis: ✅\n",
+      "  Dataset Validation: ✅\n",
+      "  Training Pipeline: ✅\n",
+      "  Evaluation System: ❌\n",
+      "  Model Export: ❌\n",
+      "\n",
+      "Overall completion: 71.4%\n",
+      "\n",
+      "🚀 SCIENTIFIC INNOVATION FOUNDATION (from centralized config):\n",
+      "  • Architecture: ECA-CBAM Hybrid (Parallel Architecture)\n",
+      "  • ECA-Net: Wang et al. CVPR 2020\n",
+      "  • CBAM SAM: Woo et al. ECCV 2018\n"
+     ]
+    },
+    {
+     "ename": "KeyError",
+     "evalue": "'hybrid_attention_foundation'",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mKeyError\u001b[0m                                  Traceback (most recent call last)",
+      "Cell \u001b[0;32mIn[11], line 36\u001b[0m\n\u001b[1;32m     34\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m  • ECA-Net: \u001b[39m\u001b[38;5;132;01m{\u001b[39;00mscientific_foundation[\u001b[38;5;124m'\u001b[39m\u001b[38;5;124meca_net_foundation\u001b[39m\u001b[38;5;124m'\u001b[39m]\u001b[38;5;132;01m}\u001b[39;00m\u001b[38;5;124m\"\u001b[39m)\n\u001b[1;32m     35\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m  • CBAM SAM: \u001b[39m\u001b[38;5;132;01m{\u001b[39;00mscientific_foundation[\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mcbam_sam_foundation\u001b[39m\u001b[38;5;124m'\u001b[39m]\u001b[38;5;132;01m}\u001b[39;00m\u001b[38;5;124m\"\u001b[39m)\n\u001b[0;32m---> 36\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m  • Hybrid Attention: \u001b[39m\u001b[38;5;132;01m{\u001b[39;00m\u001b[43mscientific_foundation\u001b[49m\u001b[43m[\u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mhybrid_attention_foundation\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m]\u001b[49m\u001b[38;5;132;01m}\u001b[39;00m\u001b[38;5;124m\"\u001b[39m)\n\u001b[1;32m     37\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m  • Innovation: \u001b[39m\u001b[38;5;132;01m{\u001b[39;00mscientific_foundation[\u001b[38;5;124m'\u001b[39m\u001b[38;5;124minnovation_type\u001b[39m\u001b[38;5;124m'\u001b[39m]\u001b[38;5;132;01m}\u001b[39;00m\u001b[38;5;124m\"\u001b[39m)\n\u001b[1;32m     38\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m  • Optimization: \u001b[39m\u001b[38;5;132;01m{\u001b[39;00mscientific_foundation[\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mparameter_optimization\u001b[39m\u001b[38;5;124m'\u001b[39m]\u001b[38;5;132;01m}\u001b[39;00m\u001b[38;5;124m\"\u001b[39m)\n",
+      "\u001b[0;31mKeyError\u001b[0m: 'hybrid_attention_foundation'"
+     ]
+    }
+   ],
    "source": [
     "# Scientific validation and comprehensive innovation summary\n",
     "print(f\"🔬 ECA-CBAM Parallel HYBRID SCIENTIFIC VALIDATION AND INNOVATION SUMMARY\")\n",
