@@ -120,18 +120,42 @@ def get_gt_boxes_from_txt(gt_path, cache_dir):
 
 
 def read_pred_file(filepath):
-#     print('filepath')
-#     print(filepath)
-
     with open(filepath, 'r') as f:
-        lines = f.readlines()
-        img_file = lines[0].rstrip('\n\r')
-        lines = lines[2:]
-#         print("!!!!!!!!!!!!!!!!!!!!!!!")
-#         print(lines)
-        
-    boxes = np.array(list(map(lambda x: [a for a in x.strip().split()], lines))).astype('float')
-    return img_file.split('/')[-1], boxes
+        content = f.read()
+    
+    # split by literal \n in the file (corrupted format from test_widerface.py)
+    # content looks like: "image_name\n11\n157 401 ... box data...\n..."
+    # but with literal \n characters instead of real newlines
+    parts = content.split('\\n')
+    
+    if len(parts) < 3:
+        # fallback for correctly formatted files
+        lines = content.split('\n')
+        img_file = lines[0].strip() if lines else ''
+        bbox_lines = lines[2:] if len(lines) > 2 else []
+    else:
+        # handle corrupted format
+        img_file = parts[0].strip()
+        num_boxes_str = parts[1].strip()
+        # remaining parts are bbox data (5 values per box)
+        bbox_lines = []
+        for i in range(2, len(parts)):
+            part = parts[i].strip()
+            if part and not part.isdigit():  # skip the count number
+                bbox_lines.append(part)
+    
+    # normalize image id to basename without extension for consistent keys
+    img_basename = os.path.basename(img_file)
+    img_name_noext = os.path.splitext(img_basename)[0]
+    
+    # parse bbox lines
+    try:
+        boxes = np.array(list(map(lambda x: [float(a) for a in x.strip().split()], bbox_lines))).astype('float')
+    except (ValueError, IndexError):
+        # handle lines that don't parse as floats
+        boxes = np.zeros((0, 5), dtype='float')
+    
+    return img_name_noext, boxes
 
 
 
@@ -161,7 +185,8 @@ def get_preds(pred_dir):
                 continue
 
             imgname, _boxes = read_pred_file(img_path)
-            current_event[imgname.rstrip('.jpg')] = _boxes
+            # imgname from read_pred_file is already basename without extension
+            current_event[imgname] = _boxes
         boxes[event] = current_event
     return boxes
 
@@ -272,11 +297,23 @@ def voc_ap(rec, prec):
     return ap
 
 
-def evaluation(pred, gt_path, iou_thresh=0.5):
-    pred = get_preds(pred)
-    norm_score(pred)
+def evaluation(pred, gt_path, iou_thresh=0.5, debug=False):
+    # keep original pred path for filesystem checks
+    pred_path = pred
+    preds = get_preds(pred_path)
+    # normalize scores across all loaded predictions
+    norm_score(preds)
     facebox_list, event_list, file_list, hard_gt_list, medium_gt_list, easy_gt_list = get_gt_boxes(gt_path)
-    print(f'file list shape: {len(file_list)}, file list contains: {(file_list[0][0]).shape} images, event list shape: {len(event_list)}')
+
+    if debug:
+        print(f"[DEBUG] pred_path = {pred_path}")
+        print(f"[DEBUG] loaded events from predictions: {len(preds)}")
+        sample_events = list(preds.keys())[:6]
+        for ev in sample_events:
+            try:
+                print(f"  - {ev}: {len(preds[ev])} images (sample keys: {list(preds[ev].keys())[:6]})")
+            except Exception:
+                print(f"  - {ev}: <error listing keys>")
     event_num = len(event_list)
     thresh_num = 1000
     settings = ['easy', 'medium', 'hard']
@@ -293,13 +330,44 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
             pbar.set_description('Processing {}'.format(settings[setting_id]))
             event_name = str(event_list[i][0][0])
             img_list = file_list[i][0]
-            pred_list = pred[event_name]
+            # safe lookup of event predictions
+            pred_list = preds.get(event_name)
+            if pred_list is None:
+                # print helpful debug info and skip this event
+                print(f"[WARN] No predictions found for event '{event_name}'.")
+                # check filesystem for event folder
+                event_dir = os.path.join(pred_path, event_name)
+                if os.path.exists(event_dir):
+                    files = os.listdir(event_dir)
+                    print(f"  Found {len(files)} files in {event_dir}; sample: {files[:5]}")
+                else:
+                    print(f"  Event directory does not exist on disk: {event_dir}")
+                continue
             sub_gt_list = gt_list[i][0]
             # img_pr_info_list = np.zeros((len(img_list), thresh_num, 2))
             gt_bbx_list = facebox_list[i][0]
 
             for j in range(len(img_list)):
-                pred_info = pred_list[str(img_list[j][0][0])]
+                img_key = str(img_list[j][0][0])
+                # image keys in preds are stored without extensions (basename)
+                # try exact lookup first, then fallback to basename without extension
+                pred_info = pred_list.get(img_key)
+                if pred_info is None:
+                    # fallback to basename without extension
+                    img_key_base = os.path.splitext(os.path.basename(img_key))[0]
+                    pred_info = pred_list.get(img_key_base)
+                if pred_info is None:
+                    # detailed debug output to help trace mismatch
+                    #print(f"[DEBUG] Missing prediction for image '{img_key}' in event '{event_name}'")
+                    sample_keys = list(pred_list.keys())[:10]
+                    #print(f"  Available keys for event '{event_name}' (sample {len(sample_keys)}): {sample_keys}")
+                    # Also print candidate path on disk
+                    candidate_file = os.path.join(pred_path, event_name, img_key + '.txt')
+                    candidate_file2 = os.path.join(pred_path, event_name, img_key_base + '.txt')
+                    #print(f"  Candidate files: {candidate_file} -> exists? {os.path.exists(candidate_file)}")
+                    #print(f"               {candidate_file2} -> exists? {os.path.exists(candidate_file2)}")
+                    # skip this image
+                    continue
 
                 gt_boxes = gt_bbx_list[j][0].astype('float')
                 keep_index = sub_gt_list[j][0]
@@ -322,12 +390,23 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
 
         ap = voc_ap(recall, propose)
         aps.append(ap)
+    # Use tqdm.write when available so printed results are not hidden/overwritten by tqdm
+    def safe_print(*args, **kwargs):
+        try:
+            # compose message similarly to print, then use tqdm.write which is safe with progress bars
+            sep = kwargs.get('sep', ' ')
+            end = kwargs.get('end', '\n')
+            msg = sep.join(str(a) for a in args) + end
+            # tqdm.write expects no trailing newline
+            tqdm.tqdm.write(msg.rstrip('\n'))
+        except Exception:
+            print(*args, **kwargs, flush=True)
 
-    print("==================== Results ====================")
-    print("Easy   Val AP: {}".format(aps[0]))
-    print("Medium Val AP: {}".format(aps[1]))
-    print("Hard   Val AP: {}".format(aps[2]))
-    print("=================================================")
+    safe_print("==================== Results ====================")
+    safe_print("Easy   Val AP: {}".format(aps[0]))
+    safe_print("Medium Val AP: {}".format(aps[1]))
+    safe_print("Hard   Val AP: {}".format(aps[2]))
+    safe_print("=================================================")
 
 
 if __name__ == '__main__':
@@ -335,6 +414,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--pred')
     parser.add_argument('-g', '--gt', default='/Users/Vic/Downloads/eval_tools/ground_truth/')
+    parser.add_argument('--debug', action='store_true', help='Enable debug prints showing loaded prediction keys')
 
     args = parser.parse_args()
-    evaluation(args.pred, args.gt)
+    evaluation(args.pred, args.gt, debug=args.debug)
