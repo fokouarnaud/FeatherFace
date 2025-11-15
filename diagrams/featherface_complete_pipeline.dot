@@ -1,0 +1,110 @@
+digraph FeatherFaceCompletePipeline {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fontname="Arial", fontsize=9];
+    edge [fontname="Arial", fontsize=8];
+
+    // Title
+    title [label="FeatherFace Complete Detection Pipeline\nwith ECA-CBAM Parallel Attention Modules", shape=plaintext, fontsize=14, fontcolor="#1565C0"];
+
+    // Input
+    input [label="Input Image\n640×640×3", fillcolor="#B3E5FC"];
+
+    // Backbone
+    subgraph cluster_backbone {
+        label="MobileNet-0.25 Backbone";
+        style=filled;
+        fillcolor="#E3F2FD";
+        color="#1976D2";
+
+        stage1 [label="Stage 1\n64 channels", fillcolor="#BBDEFB"];
+        att1 [label="Attention\nModule 1\n(ECA∥SAM)\n120 params", fillcolor="#90CAF9", shape=ellipse];
+        c1 [label="C1' Features\n64 ch", fillcolor="#64B5F6"];
+
+        stage2 [label="Stage 2\n128 channels", fillcolor="#BBDEFB"];
+        att2 [label="Attention\nModule 2\n(ECA∥SAM)\n120 params", fillcolor="#90CAF9", shape=ellipse];
+        c2 [label="C2' Features\n128 ch", fillcolor="#64B5F6"];
+
+        stage3 [label="Stage 3\n256 channels", fillcolor="#BBDEFB"];
+        att3 [label="Attention\nModule 3\n(ECA∥SAM)\n120 params", fillcolor="#90CAF9", shape=ellipse];
+        c3 [label="C3' Features\n256 ch", fillcolor="#64B5F6"];
+
+        stage1 -> att1 -> c1;
+        stage2 -> att2 -> c2;
+        stage3 -> att3 -> c3;
+    }
+
+    // BiFPN
+    subgraph cluster_bifpn {
+        label="BiFPN (Bidirectional Feature Pyramid)";
+        style=filled;
+        fillcolor="#F3E5F5";
+        color="#7B1FA2";
+
+        p3 [label="P3\n52 ch", fillcolor="#E1BEE7"];
+        att4 [label="Attention\nModule 4\n(ECA∥SAM)\n120 params", fillcolor="#CE93D8", shape=ellipse];
+        p3_out [label="P3'\n52 ch", fillcolor="#BA68C8"];
+
+        p4 [label="P4\n52 ch", fillcolor="#E1BEE7"];
+        att5 [label="Attention\nModule 5\n(ECA∥SAM)\n120 params", fillcolor="#CE93D8", shape=ellipse];
+        p4_out [label="P4'\n52 ch", fillcolor="#BA68C8"];
+
+        p5 [label="P5\n52 ch", fillcolor="#E1BEE7"];
+        att6 [label="Attention\nModule 6\n(ECA∥SAM)\n120 params", fillcolor="#CE93D8", shape=ellipse];
+        p5_out [label="P5'\n52 ch", fillcolor="#BA68C8"];
+
+        p3 -> att4 -> p3_out;
+        p4 -> att5 -> p4_out;
+        p5 -> att6 -> p5_out;
+
+        // BiFPN connections
+        c1 -> p3 [label="TD", style=dashed];
+        c2 -> p4 [label="TD", style=dashed];
+        c3 -> p5 [label="BU", style=dashed];
+    }
+
+    // Detection Heads
+    subgraph cluster_heads {
+        label="SSH Detection Heads + Channel Shuffle";
+        style=filled;
+        fillcolor="#FFF9C4";
+        color="#F57F17";
+
+        head1 [label="SSH Head 1\n+ Shuffle", fillcolor="#FFF59D"];
+        det1 [label="Small Faces\nCls + BBox\n+ 5 Landmarks", fillcolor="#FFF176"];
+
+        head2 [label="SSH Head 2\n+ Shuffle", fillcolor="#FFF59D"];
+        det2 [label="Medium Faces\nCls + BBox\n+ 5 Landmarks", fillcolor="#FFF176"];
+
+        head3 [label="SSH Head 3\n+ Shuffle", fillcolor="#FFF59D"];
+        det3 [label="Large Faces\nCls + BBox\n+ 5 Landmarks", fillcolor="#FFF176"];
+
+        head1 -> det1;
+        head2 -> det2;
+        head3 -> det3;
+    }
+
+    // NMS
+    nms [label="NMS\n(Non-Maximum\nSuppression)", fillcolor="#C8E6C9"];
+    output [label="Final Detections\nBBox + Conf\n+ 5 Landmarks", fillcolor="#A5D6A7"];
+
+    // Main flow
+    title -> input [style=invis];
+    input -> stage1;
+    stage1 -> stage2 [style=invis];
+    stage2 -> stage3 [style=invis];
+
+    p3_out -> head1;
+    p4_out -> head2;
+    p5_out -> head3;
+
+    det1 -> nms;
+    det2 -> nms;
+    det3 -> nms;
+    nms -> output;
+
+    // Info box
+    info [label="Total Attention Modules: 6\n━━━━━━━━━━━━━━━━━━━━━━━━\n• 3 in Backbone (64, 128, 256 ch)\n• 3 in BiFPN (52, 52, 52 ch)\n• Each: ~120 params (ECA 22 + SAM 98)\n• Architecture: Parallel (ECA ∥ SAM)\n• Fusion: Multiplicative (M_c ⊙ M_s)\n• Total Model: 476,345 parameters\n• Target mAP: 89.2% (WIDERFace)",
+          shape=note, fillcolor="#FFFDE7", fontsize=9];
+
+    output -> info [style=invis];
+}

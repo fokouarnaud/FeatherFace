@@ -1,0 +1,84 @@
+digraph ECAcbaMParallelArchitecture {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fontname="Arial", fontsize=10];
+    edge [fontname="Arial", fontsize=9];
+
+    // Color scheme
+    node [fillcolor="#E8F4F8"];
+
+    // Title
+    title [label="ECA-CBAM Parallel Hybrid Attention\n(Wang et al. 2024)", shape=plaintext, fontsize=14, fontcolor="#1565C0"];
+
+    // Input
+    input [label="Input Features X\n[B, C, H, W]", fillcolor="#B3E5FC"];
+
+    // Parallel branches
+    subgraph cluster_parallel {
+        label="Parallel Independent Processing";
+        style=dashed;
+        color="#1976D2";
+        fontsize=11;
+
+        // ECA branch
+        subgraph cluster_eca {
+            label="ECA Branch (Channel Attention)";
+            style=filled;
+            fillcolor="#E3F2FD";
+            color="#1565C0";
+
+            eca_gap [label="Global Average Pooling\n[B, C, 1, 1]", fillcolor="#BBDEFB"];
+            eca_conv [label="1D Conv (adaptive k)\nk = |log₂(C)/γ + β/γ|\nParams: ~22", fillcolor="#90CAF9"];
+            eca_sigmoid [label="Sigmoid\nσ(·)", fillcolor="#64B5F6"];
+            eca_mask [label="Channel Mask M_c\n[B, C, 1, 1]", fillcolor="#42A5F5"];
+
+            eca_gap -> eca_conv -> eca_sigmoid -> eca_mask;
+        }
+
+        // SAM branch
+        subgraph cluster_sam {
+            label="SAM Branch (Spatial Attention)";
+            style=filled;
+            fillcolor="#F3E5F5";
+            color="#7B1FA2";
+
+            sam_pool [label="Max & Avg Pooling\n[B, 2, H, W]", fillcolor="#E1BEE7"];
+            sam_conv [label="Conv 7×7\nParams: 98", fillcolor="#CE93D8"];
+            sam_sigmoid [label="Sigmoid\nσ(·)", fillcolor="#BA68C8"];
+            sam_mask [label="Spatial Mask M_s\n[B, 1, H, W]", fillcolor="#AB47BC"];
+
+            sam_pool -> sam_conv -> sam_sigmoid -> sam_mask;
+        }
+    }
+
+    // Fusion
+    fusion [label="Multiplicative Fusion\nM_hybrid = M_c ⊙ M_s\n[B, C, H, W]\n\nParams: 0 (element-wise)", fillcolor="#FFF9C4", shape=ellipse];
+
+    // Apply attention
+    apply [label="Apply Hybrid Mask\nY = X ⊙ M_hybrid\n[B, C, H, W]", fillcolor="#C8E6C9"];
+
+    // Output
+    output [label="Output Y\n[B, C, H, W]\nChannel + Spatial Recalibrated", fillcolor="#A5D6A7"];
+
+    // Connections
+    title -> input [style=invis];
+
+    // Split to parallel branches
+    input -> eca_gap [label="Original X", color="#1565C0"];
+    input -> sam_pool [label="Original X", color="#7B1FA2"];
+
+    // Merge masks
+    eca_mask -> fusion [label="M_c", color="#1565C0"];
+    sam_mask -> fusion [label="M_s", color="#7B1FA2"];
+
+    // Apply to original input
+    fusion -> apply [label="M_hybrid"];
+    input -> apply [label="X (original)", style=dashed, color="#666"];
+
+    apply -> output;
+
+    // Info box
+    info [label="Advantages (Wang et al. 2024):\n✓ Both modules see unfiltered input X\n✓ Independent parallel computation\n✓ Better complementarity (M_c ⊙ M_s)\n✓ Reduced module interference\n✓ Improved gradient flow\n✓ +6.5% mAP vs Sequential\n✓ 0 fusion parameters",
+          shape=note, fillcolor="#FFFDE7", fontsize=9];
+
+    output -> info [style=invis];
+}

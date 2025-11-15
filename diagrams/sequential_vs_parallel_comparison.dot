@@ -1,0 +1,62 @@
+digraph SequentialVsParallel {
+    rankdir=LR;
+    node [shape=box, style="rounded,filled", fontname="Arial", fontsize=9];
+    edge [fontname="Arial", fontsize=8];
+
+    // Title
+    title [label="Sequential vs Parallel Architecture Comparison", shape=plaintext, fontsize=14, fontcolor="#1565C0"];
+
+    subgraph cluster_sequential {
+        label="Sequential (ECA → SAM)\n476,345 params | 82.7% mAP";
+        style=filled;
+        fillcolor="#FFE0E0";
+        color="#C62828";
+
+        seq_input [label="X\n[B,C,H,W]", fillcolor="#FFCDD2"];
+        seq_eca [label="ECA\nM_c", fillcolor="#EF9A9A"];
+        seq_feca [label="F_eca =\nX ⊙ M_c", fillcolor="#E57373"];
+        seq_sam [label="SAM\nM_s", fillcolor="#EF5350"];
+        seq_output [label="Y =\nF_eca ⊙ M_s", fillcolor="#F44336"];
+
+        seq_input -> seq_eca -> seq_feca -> seq_sam -> seq_output;
+
+        seq_info [label="⚠ SAM sees\nfiltered features\n⚠ Sequential\ninterference\n⚠ Information\nloss",
+                  shape=note, fillcolor="#FFEBEE", fontsize=8];
+        seq_output -> seq_info [style=invis];
+    }
+
+    subgraph cluster_parallel {
+        label="Parallel (ECA ∥ SAM)\n476,345 params | 89.2% mAP (target)";
+        style=filled;
+        fillcolor="#E0F2F1";
+        color="#00695C";
+
+        par_input [label="X\n[B,C,H,W]", fillcolor="#B2DFDB"];
+
+        // Parallel branches
+        par_eca [label="ECA\nM_c", fillcolor="#80CBC4"];
+        par_sam [label="SAM\nM_s", fillcolor="#4DB6AC"];
+
+        par_fusion [label="M_hybrid =\nM_c ⊙ M_s", fillcolor="#26A69A", shape=ellipse];
+        par_output [label="Y =\nX ⊙ M_hybrid", fillcolor="#00897B"];
+
+        par_input -> par_eca -> par_fusion;
+        par_input -> par_sam -> par_fusion;
+        par_fusion -> par_output;
+
+        par_info [label="✓ Both see\noriginal X\n✓ Independent\ncomputation\n✓ Better\ncomplementarity\n✓ +6.5% mAP",
+                  shape=note, fillcolor="#E0F7FA", fontsize=8];
+        par_output -> par_info [style=invis];
+    }
+
+    // Comparison arrow
+    title -> seq_input [style=invis];
+    title -> par_input [style=invis];
+
+    // Key differences
+    key [label="Key Differences:\n━━━━━━━━━━━━━━━\nSequential: ECA first, SAM on filtered\nParallel: Both on original, fused masks\n\nParameter Count: IDENTICAL (476,345)\nPerformance: Parallel +6.5% mAP\nFusion: Multiplicative (0 params)",
+         shape=box, style="filled,rounded", fillcolor="#FFF9C4", fontsize=10];
+
+    seq_output -> key [style=invis];
+    par_output -> key [style=invis];
+}
